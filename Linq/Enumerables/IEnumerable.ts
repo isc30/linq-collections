@@ -51,5 +51,7 @@ namespace Linq
 
         sum(): TOut;
         sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+        
+        average(selector: Selector<TOut, number>): number;
     }
 }

@@ -47,6 +47,8 @@ namespace Linq
         {
             document.write(`<meta http-equiv="refresh" content="1" />`);
 
+            runTest("array iterator", arrayIterator);
+            runTest("enumerable", enumerable);
             runTest("empty", empty);
             runTest("range", range);
             runTest("repeat", repeat);
@@ -134,7 +136,7 @@ namespace Linq
             Assert.check(Assert.isArrayEqual(baseString.toArray(), ["a", "a"]));
         }
 
-        function iterator(): void
+        function arrayIterator(): void
         {
             let i = new ArrayIterator<number>([]);
             Assert.check(Assert.isEqual(i.next(), false));
@@ -331,7 +333,7 @@ namespace Linq
             Assert.check(Assert.isEqual(sooooOld.count(), 0));
 
             let i = Enumerable.fromSource([1, 2, 3, 4, 5, 6, 7, 8]);
-            i = i.where(e => e % 2 == 0);
+            i = i.where(e => e % 2 === 0);
             Assert.check(Assert.isEqual(i.next(), true));
             Assert.check(Assert.isEqual(i.value(), 2));
             Assert.check(Assert.isEqual(i.next(), true));
@@ -344,7 +346,7 @@ namespace Linq
             Assert.throwsException(() => i.value());
 
             i = Enumerable.fromSource(new ArrayIterator<number>([1, 2, 3, 4, 5, 6, 7, 8]));
-            i = i.where(e => e % 2 == 0);
+            i = i.where(e => e % 2 === 0);
             i = i.where(e => e < 5);
             Assert.check(Assert.isEqual(i.next(), true));
             Assert.check(Assert.isEqual(i.value(), 2));
@@ -507,16 +509,17 @@ namespace Linq
 
         function average(): void
         {
-            throw new Error("implement selectors");
-
-            /*let base = Enumerable.fromSource();
-            Assert.throwsException(() => base.max());
+            let base = Enumerable.empty<number>();
+            Assert.throwsException(() => base.average(e => e));
 
             base = Enumerable.fromSource([2]);
-            Assert.check(Assert.isEqual(base.max(), 2);
+            Assert.check(Assert.isEqual(base.average(e => e), 2));
 
-            base = Enumerable.fromSource([3, 4, -8, 77, 1]);
-            Assert.check(Assert.isEqual(base.max(), 77);*/
+            base = Enumerable.fromSource([3, 4, -2, 79, 1]);
+            Assert.check(Assert.isEqual(base.average(e => e), 17));
+
+            let strbase = Enumerable.fromSource(["112", "432", "46"]);
+            Assert.check(Assert.isEqual(strbase.average(e => parseInt(e[0])), 3));
         }
 
         function sum(): void

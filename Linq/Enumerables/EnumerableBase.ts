@@ -206,6 +206,7 @@ namespace Linq
         public aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue?: TValue): TValue
         {
             let value = initialValue;
+
             this.reset();
 
             if (!this.next())
@@ -215,12 +216,11 @@ namespace Linq
 
             do
             {
-                const thisVal = this.value();
                 value = aggregator(value as TValue, this.value());
             }
             while (this.next())
 
-            return value;
+            return value as TValue;
         }
 
         public min(): TOut;
@@ -270,6 +270,30 @@ namespace Linq
                     previous !== undefined
                         ? previous + current
                         : current);
+        }
+        
+        public average(selector: Selector<TOut, number>): number
+        {
+            const transformEnumerable = new TransformEnumerable<TOut, number>(this, selector);
+            
+            transformEnumerable.reset();
+
+            if (!transformEnumerable.next())
+            {
+                throw new Error("Sequence contains no elements");
+            }
+
+            let sum = 0;
+            let count = 0;
+
+            do
+            {
+                sum += transformEnumerable.value();
+                count++;
+            }
+            while (transformEnumerable.next())
+
+            return sum / count;
         }
     }
 }
