@@ -11,61 +11,65 @@ Best performance and 100% strongly typed *Linq* implementation for *TypeScript* 
 Provides an internal iterator for the real collection
 ```typescript
 static empty<TElement>(): IEnumerable<TElement>;
+static range(start: number, count: number): IEnumerable<number, number>;
+static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement, TElement>;
 
-clone(): IEnumerable<TElement>;
+clone(): IEnumerable<TElement, TOut>;
 
-asArray(): Array<TElement>;
-toArray(): Array<TElement>;
-
-reverse(): IEnumerable<TElement>;
-concat(other: IEnumerable<TElement>): IEnumerable<TElement>;
-
-aggregate(accumulator: Accumulator<TElement, TElement>, initialValue?: TElement): TElement;
-aggregate<TOut>(accumulator: Accumulator<TElement, TOut>, initialValue: TOut): TOut;
+toArray(): Array<TOut>;
 
 count(): number;
-count(predicate: Predicate<TElement, boolean>): number;
+count(predicate: Predicate<TOut>): number;
 
 any(): boolean;
-any(predicate: Predicate<TElement, boolean>): boolean;
+any(predicate: Predicate<TOut>): boolean;
 
-all(predicate: Predicate<TElement, boolean>): boolean;
+all(predicate: Predicate<TOut>): boolean;
 
-contains(element: TElement): boolean;
+reverse(): IEnumerable<TOut, TOut>;
 
-where(predicate: Predicate<TElement, boolean>): IEnumerable<TElement>;
+contains(element: TOut): boolean;
 
-select<TOut>(predicate: Predicate<TElement, TOut>): IEnumerable<TOut>;
+where(predicate: Predicate<TOut>): IEnumerable<TOut, TOut>;
 
-elementAt(index: number): TElement;
-elementAtOrDefault(index: number): TElement | undefined;
+select<TPredicateOut>(selector: Selector<TOut, TPredicateOut>): IEnumerable<TOut, TPredicateOut>;
 
-indexOf(element: TElement): number | undefined;
-lastIndexOf(element: TElement): number | undefined;
+concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>;
 
-first(): TElement;
-first(predicate: Predicate<TElement, boolean>): TElement;
+first(): TOut;
+first(predicate: Predicate<TOut>): TOut;
 
-firstOrDefault(): TElement | undefined;
-firstOrDefault(predicate: Predicate<TElement, boolean>): TElement | undefined;
+firstOrDefault(): TOut | undefined;
+firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-last(): TElement;
-last(predicate: Predicate<TElement, boolean>): TElement;
+last(): TOut;
+last(predicate: Predicate<TOut>): TOut;
 
-lastOrDefault(): TElement | undefined;
-lastOrDefault(predicate: Predicate<TElement, boolean>): TElement | undefined;
+lastOrDefault(): TOut | undefined;
+lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-single(): TElement;
-single(predicate: Predicate<TElement, boolean>): TElement;
+single(): TOut;
+single(predicate: Predicate<TOut>): TOut;
 
-singleOrDefault(): TElement | undefined;
-singleOrDefault(predicate: Predicate<TElement, boolean>): TElement | undefined;
+singleOrDefault(): TOut | undefined;
+singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-distinct(): IEnumerable<TElement>;
+distinct(): IEnumerable<TOut, TOut>;
 
-min(): TElement;
-max(): TElement;
+aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
+aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
 
-skip(amount: number): IEnumerable<TElement>;
-take(amount: number): IEnumerable<TElement>;
+min(): TOut;
+min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+
+max(): TOut;
+max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+
+sum(): TOut;
+sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+
+average(selector: Selector<TOut, number>): number;
+
+skip(amount: number): IEnumerable<TOut, TOut>;
+take(amount: number): IEnumerable<TOut, TOut>;
 ```
