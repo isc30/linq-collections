@@ -13,6 +13,8 @@ namespace Linq
             this._first = first;
             this._second = second;
             this._isFirstFinished = false;
+
+            this.reset();
         }
 
         public clone(): IIterator<TElement>

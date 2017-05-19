@@ -20,6 +20,8 @@ namespace Linq
 
         all(predicate: Predicate<TOut>): boolean;
 
+        //reverse(): IEnumerable<TOut, TOut>;
+
         contains(element: TOut): boolean;
 
         where(predicate: Predicate<TOut>): IEnumerable<TOut, TOut>;
@@ -34,11 +36,19 @@ namespace Linq
         firstOrDefault(): TOut | undefined;
         firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
+        //last(): TOut;
+        //last(predicate: Predicate<TOut>): TOut;
+
+        //lastOrDefault(): TOut | undefined;
+        //lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+
         single(): TOut;
         single(predicate: Predicate<TOut>): TOut;
 
         singleOrDefault(): TOut | undefined;
         singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+
+        //distinct(): IEnumerable<TOut, TOut>;
 
         aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
         aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
@@ -53,5 +63,8 @@ namespace Linq
         sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
         
         average(selector: Selector<TOut, number>): number;
+
+        skip(amount: number): IEnumerable<TOut, TOut>;
+        take(amount: number): IEnumerable<TOut, TOut>;
     }
 }

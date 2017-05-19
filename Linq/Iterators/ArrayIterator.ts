@@ -10,10 +10,11 @@ namespace Linq
         public constructor(source: Array<TElement>)
         {
             this._source = source;
+
             this.reset();
         }
 
-        public clone(): ArrayIterator<TElement>
+        public clone(): IIterator<TElement>
         {
             return new ArrayIterator<TElement>(this._source);
         }

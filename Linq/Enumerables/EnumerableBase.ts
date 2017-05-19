@@ -295,5 +295,15 @@ namespace Linq
 
             return sum / count;
         }
+
+        public skip(amount: number): IEnumerable<TOut, TOut>
+        {
+            return new Enumerable<TOut>(new RangeIterator<TOut>(this.clone(), amount, undefined));
+        }
+
+        public take(amount: number): IEnumerable<TOut, TOut>
+        {
+            return new Enumerable<TOut>(new RangeIterator<TOut>(this.clone(), undefined, amount));
+        }
     }
 }

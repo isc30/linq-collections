@@ -75,6 +75,7 @@ namespace Linq
             runTest("sum", sum);
             runTest("skip", skip);
             runTest("take", take);
+            runTest("skip + take", skipTake);
         }
 
         function runTest(testName: string, testMethod: () => void)
@@ -540,32 +541,35 @@ namespace Linq
 
         function skip(): void
         {
-            throw new Error("NOPE");
-
-            /*
             const base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
-
             Assert.throwsException(() => base.skip(-666));
-            Assert.throwsException(() => base.skip(99999));
+
+            const y = base.skip(0).toArray();
 
             Assert.check(Assert.isArrayEqual(base.skip(0).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]));
-            Assert.check(Assert.isArrayEqual(base.skip(1).toArray(), [4, 65, 32, 1, 36, 7, 2]));
-            Assert.check(Assert.isArrayEqual(base.skip(6).toArray(), [7, 2]));*/
+
+            const x = base.skip(1).toArray();
+
+            Assert.check(Assert.isArrayEqual(x, [4, 65, 32, 1, 36, 7, 2]));
+            Assert.check(Assert.isArrayEqual(base.skip(6).toArray(), [7, 2]));
         }
 
         function take(): void
         {
-            throw new Error("NOPE");
-
-            /*
             const base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
-
             Assert.throwsException(() => base.take(-666));
-            Assert.throwsException(() => base.take(99999));
 
             Assert.check(Assert.isArrayEqual(base.take(0).toArray(), [] as Array<number>));
             Assert.check(Assert.isArrayEqual(base.take(1).toArray(), [-2]));
-            Assert.check(Assert.isArrayEqual(base.take(6).toArray(), [-2, 4, 65, 32, 1, 36]));*/
+            Assert.check(Assert.isArrayEqual(base.take(6).toArray(), [-2, 4, 65, 32, 1, 36]));
+        }
+
+        function skipTake(): void
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
+
+            Assert.check(Assert.isArrayEqual(base.skip(2).take(2).toArray(), [65, 32]));
+            Assert.check(Assert.isArrayEqual(base.skip(7).take(5).toArray(), [2]));
         }
     }
 }

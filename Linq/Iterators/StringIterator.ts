@@ -11,10 +11,11 @@ namespace Linq
         public constructor(source: string)
         {
             this._source = source;
+
             this.reset();
         }
 
-        public clone(): StringIterator
+        public clone(): IIterator<string>
         {
             return new StringIterator(this._source);
         }
