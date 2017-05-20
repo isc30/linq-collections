@@ -1,2 +1,3 @@
-﻿/// <reference path="Linq/UnitTests.ts" />
-Linq.UnitTests.run();
+﻿import { UnitTests } from "./Linq/Linq"
+
+UnitTests.run();
