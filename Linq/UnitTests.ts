@@ -467,11 +467,11 @@ namespace Linq
 
         function distinct(): void
         {
-            throw new Error("NOPE");
+            let base = Enumerable.empty<number>();
+            Assert.check(Assert.isArrayEqual(base.distinct().toArray(), []));
 
-            /*
-            const base = Enumerable.fromSource([-5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0]);
-            Assert.check(Assert.isArrayEqual(base.distinct().toArray(), [-5, 6, 2, 99, 0, 7]));*/
+            base = Enumerable.fromSource([-5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0]);
+            Assert.check(Assert.isArrayEqual(base.distinct().toArray(), [-5, 6, 2, 99, 0, 7]));
         }
 
         function min(): void

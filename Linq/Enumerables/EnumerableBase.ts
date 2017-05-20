@@ -201,6 +201,11 @@ namespace Linq
             return element;
         }
 
+        public distinct(): IEnumerable<TOut, TOut>
+        {
+            return new UniqueEnumerable<TOut>(this.clone());
+        }
+
         public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
         public aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
         public aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue?: TValue): TValue

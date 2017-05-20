@@ -48,7 +48,7 @@ namespace Linq
         singleOrDefault(): TOut | undefined;
         singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-        //distinct(): IEnumerable<TOut, TOut>;
+        distinct(): IEnumerable<TOut, TOut>;
 
         aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
         aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;

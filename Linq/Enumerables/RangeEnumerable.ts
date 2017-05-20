@@ -19,8 +19,7 @@ namespace Linq
             super(source);
             this._start = start;
             this._count = count;
-
-            this.reset();
+            this._current = -1;
         }
 
         public clone(): IEnumerable<TElement, TElement>
