@@ -298,12 +298,12 @@ namespace Linq
 
         public skip(amount: number): IEnumerable<TOut, TOut>
         {
-            return new Enumerable<TOut>(new RangeIterator<TOut>(this.clone(), amount, undefined));
+            return new RangeEnumerable<TOut>(this.clone(), amount, undefined);
         }
 
         public take(amount: number): IEnumerable<TOut, TOut>
         {
-            return new Enumerable<TOut>(new RangeIterator<TOut>(this.clone(), undefined, amount));
+            return new RangeEnumerable<TOut>(this.clone(), undefined, amount);
         }
     }
 }
