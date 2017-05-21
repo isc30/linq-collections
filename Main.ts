@@ -1,3 +1,3 @@
-﻿import { UnitTests } from "./Linq/Linq"
+﻿import { UnitTests } from "./Linq/Tests"
 
 UnitTests.run();
