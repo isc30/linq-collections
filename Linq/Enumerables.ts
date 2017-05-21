@@ -19,7 +19,7 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     all(predicate: Predicate<TOut>): boolean;
 
-    //reverse(): IEnumerable<TOut, TOut>;
+    reverse(): IEnumerable<TOut, TOut>;
 
     contains(element: TOut): boolean;
 
@@ -69,7 +69,7 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
 abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, TOut>
 {
-    protected readonly source: IIterator<TElement>;
+    protected readonly source: IIterator<TElement> | IEnumerable<TElement, TElement>;
 
     public abstract clone(): IEnumerable<TElement, TOut>;
     public abstract value(): TOut;
@@ -151,6 +151,11 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         }
 
         return true;
+    }
+
+    public reverse(): IEnumerable<TOut, TOut>
+    {
+        return new ReverseEnumerable<TOut>(this.clone());
     }
 
     public contains(element: TOut): boolean
@@ -393,12 +398,12 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return new Enumerable<TElement>(source);
     }
 
-    public static empty<TElement>(): Enumerable<TElement>
+    public static empty<TElement>(): IEnumerable<TElement, TElement>
     {
         return new Enumerable<TElement>(new ArrayIterator<TElement>([]));
     }
 
-    public static range(start: number, count: number): Enumerable<number>
+    public static range(start: number, count: number): IEnumerable<number, number>
     {
         if (count < 0)
         {
@@ -415,7 +420,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return new Enumerable<number>(new ArrayIterator<number>(source));
     }
 
-    public static repeat<TElement>(element: TElement, count: number): Enumerable<TElement>
+    public static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement, TElement>
     {
         if (count < 0)
         {
@@ -447,10 +452,10 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
     {
         if (!this._currentValue.isValid())
         {
-            this._currentValue.setValue(this.source.value());
+            this._currentValue.value = this.source.value();
         }
 
-        return this._currentValue.getValue();
+        return this._currentValue.value;
     }
 
     public reset(): void
@@ -468,9 +473,10 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 
 class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 {
+    protected source: IEnumerable<TElement, TElement>;
     private _predicate: Predicate<TElement>;
 
-    public constructor(source: IIterator<TElement>, predicate: Predicate<TElement>)
+    public constructor(source: IEnumerable<TElement, TElement>, predicate: Predicate<TElement>)
     {
         super(source);
         this._predicate = predicate;
@@ -497,9 +503,10 @@ class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 
 class UniqueEnumerable<TElement> extends Enumerable<TElement>
 {
+    protected source: IEnumerable<TElement, TElement>;
     private _seenElements: Array<TElement>;
 
-    public constructor(source: IIterator<TElement>)
+    public constructor(source: IEnumerable<TElement, TElement>)
     {
         super(source);
         this._seenElements = [];
@@ -543,11 +550,12 @@ class UniqueEnumerable<TElement> extends Enumerable<TElement>
 
 class RangeEnumerable<TElement> extends Enumerable<TElement>
 {
+    protected source: IEnumerable<TElement, TElement>;
     private _start: number | undefined;
     private _count: number | undefined;
-    private _current: number;
+    private _currentIndex: number;
 
-    public constructor(source: IIterator<TElement>, start: number | undefined, count: number | undefined)
+    public constructor(source: IEnumerable<TElement, TElement>, start: number | undefined, count: number | undefined)
     {
         if ((start !== undefined && start < 0) || (count !== undefined && count < 0))
         {
@@ -557,7 +565,7 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
         super(source);
         this._start = start;
         this._count = count;
-        this._current = -1;
+        this._currentIndex = -1;
     }
 
     public clone(): RangeEnumerable<TElement>
@@ -568,7 +576,7 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
     public reset(): void
     {
         super.reset();
-        this._current = -1;
+        this._currentIndex = -1;
     }
 
     private isValidIndex(): boolean
@@ -576,7 +584,7 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
         const start = this._start !== undefined ? this._start : 0;
         const end = this._count !== undefined ? start + this._count : undefined;
 
-        return this._current >= start && (end === undefined || this._current < end);
+        return this._currentIndex >= start && (end === undefined || this._currentIndex < end);
     }
 
     private performSkip(): boolean
@@ -584,10 +592,10 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
         const start = this._start !== undefined ? this._start : 0;
         let hasValue: boolean = true;
 
-        while (hasValue && this._current + 1 < start )
+        while (hasValue && this._currentIndex + 1 < start )
         {
             hasValue = super.next();
-            ++this._current;
+            ++this._currentIndex;
         }
 
         return hasValue;
@@ -595,12 +603,12 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
 
     public next(): boolean
     {
-        if (this._current < 0 && !this.performSkip())
+        if (this._currentIndex < 0 && !this.performSkip())
         {
             return false;
         }
 
-        ++this._current;
+        ++this._currentIndex;
 
         return super.next() && this.isValidIndex();
     }
@@ -618,10 +626,11 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
 
 class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
 {
+    protected source: IEnumerable<TElement, TElement>;
     private _transform: Selector<TElement, TOut>;
     private _currentValue: Cached<TOut>;
 
-    public constructor(source: IIterator<TElement>, transform: Selector<TElement, TOut>)
+    public constructor(source: IEnumerable<TElement, TElement>, transform: Selector<TElement, TOut>)
     {
         super(source);
         this._transform = transform;
@@ -637,10 +646,10 @@ class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
     {
         if (!this._currentValue.isValid())
         {
-            this._currentValue.setValue(this._transform(this.source.value()));
+            this._currentValue.value = this._transform(this.source.value());
         }
 
-        return this._currentValue.getValue();
+        return this._currentValue.value;
     }
 
     public reset(): void
@@ -653,5 +662,52 @@ class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
     {
         this._currentValue.invalidate();
         return super.next();
+    }
+}
+
+class ReverseEnumerable<TElement> extends Enumerable<TElement>
+{
+    protected source: IEnumerable<TElement, TElement>;
+    private _elements: Cached<Array<TElement>>;
+    private _currentIndex: number;
+
+    public constructor(source: IEnumerable<TElement, TElement>)
+    {
+        super(source);
+        this._elements = new Cached<Array<TElement>>();
+        this._currentIndex = -1;
+    }
+
+    public reset(): void
+    {
+        this._elements.invalidate();
+        this._currentIndex = -1;
+    }
+
+    private isValidIndex(): boolean
+    {
+        return this._currentIndex >= 0 && this._currentIndex < this._elements.value.length;
+    }
+
+    public next(): boolean
+    {
+        if (!this._elements.isValid())
+        {
+            this._elements.value = this.source.toArray();
+        }
+
+        ++this._currentIndex;
+
+        return this.isValidIndex();
+    }
+
+    public value(): TElement
+    {
+        if (!this._elements.isValid() || !this.isValidIndex())
+        {
+            throw new Error("Out of bounds");
+        }
+
+        return this._elements.value[(this._elements.value.length - 1) - this._currentIndex];
     }
 }

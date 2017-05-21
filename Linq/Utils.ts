@@ -18,7 +18,7 @@ export class Cached<T>
         return this._isValid;
     }
 
-    public getValue(): T
+    public get value(): T
     {
         if (!this._isValid)
         {
@@ -28,7 +28,7 @@ export class Cached<T>
         return this._value;
     }
 
-    public setValue(value: T): void
+    public set value(value: T)
     {
         this._value = value;
         this._isValid = true;

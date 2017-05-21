@@ -210,13 +210,11 @@ export module UnitTests
 
     function reverse(): void
     {
-        throw new Error("NOPE");
-
-        /*const baseEnumerable = Enumerable.fromSource([1, 2, 3, 4]);
+        const baseEnumerable = Enumerable.fromSource([1, 2, 3, 4]);
         const baseEnumerableReversed = baseEnumerable.reverse();
 
         Assert.check(Assert.isArrayEqual([1, 2, 3, 4], baseEnumerable.toArray()));
-        Assert.check(Assert.isArrayEqual([4, 3, 2, 1], baseEnumerableReversed.toArray()));*/
+        Assert.check(Assert.isArrayEqual([4, 3, 2, 1], baseEnumerableReversed.toArray()));
     }
 
     function concat(): void
