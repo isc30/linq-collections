@@ -5,8 +5,6 @@ export module UnitTests
 {
     export function run(): void
     {
-        //console.log(`<meta http-equiv="refresh" content="1" />`);
-
         Test.run("array iterator", arrayIterator);
         Test.run("enumerable", enumerable);
         Test.run("empty", empty);

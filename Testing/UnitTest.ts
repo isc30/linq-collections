@@ -4,15 +4,24 @@ export class Test
 {
     public static run(name: string, test: TestBody)
     {
+        var color: string;
+        var clearColor: string = "\x1b[30m";
+
+        var start = new Date().getTime();
+
         try
         {
             test(new Test());
-            console.log(`\x1b[32m${name}\x1b[0m`);
+            color = "\x1b[32m";
         }
         catch (exception)
         {
-            console.log(`\x1b[31m${name}\x1b[0m`);
+            color = "\x1b[31m";
         }
+
+        var elapsed = new Date().getTime() - start;
+
+        console.log(color + `[${elapsed}ms] ${name}` + clearColor);
     }
 
     public isTrue(result: boolean): void
@@ -25,7 +34,7 @@ export class Test
 
     public isFalse(result: boolean): void
     {
-        this.isTrue(!result);
+        this.isTrue(result === false);
     }
 
     public equals(first: any, second: any): void
