@@ -2,26 +2,28 @@ type TestBody = (test: Test) => void;
 
 export class Test
 {
-    public static run(name: string, test: TestBody)
+    public static run(name: string, test: TestBody, showOutput: boolean = true): boolean
     {
-        var color: string;
-        var clearColor: string = "\x1b[39m";
-
-        var start = new Date().getTime();
+        let success: boolean;
+        const start = new Date().getTime();
 
         try
         {
             test(new Test());
-            color = "\x1b[32m";
+            success = true;
         }
         catch (exception)
         {
-            color = "\x1b[31m";
+            success = false;
         }
 
-        var elapsed = new Date().getTime() - start;
+        if (showOutput)
+        {
+            const elapsed = new Date().getTime() - start;
+            console.log((success ? "\x1b[32m" : "\x1b[31m") + `[${elapsed}ms] ${name}` + "\x1b[39m");
+        }
 
-        console.log(color + `[${elapsed}ms] ${name}` + clearColor);
+        return success;
     }
 
     private constructor()

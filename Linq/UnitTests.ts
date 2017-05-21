@@ -3,37 +3,42 @@ import { Test } from "../Testing/Test"
 
 export module UnitTests
 {
-    export function run(): void
+    export function run(detailed: boolean = true): void
     {
-        Test.run("array iterator", arrayIterator);
-        Test.run("enumerable", enumerable);
-        Test.run("empty", empty);
-        Test.run("range", range);
-        Test.run("repeat", repeat);
-        Test.run("toArray", toArray);
-        Test.run("reverse", reverse);
-        Test.run("concat", concat);
-        Test.run("aggregate", aggregate);
-        Test.run("count", count);
-        Test.run("any", any);
-        Test.run("all", all);
-        Test.run("contains", contains);
-        Test.run("where", where);
-        Test.run("select", select);
-        Test.run("first", first);
-        Test.run("firstOrDefault", firstOrDefault);
-        Test.run("last", last);
-        Test.run("lastOrDefault", lastOrDefault);
-        Test.run("single", single);
-        Test.run("singleOrDefault", singleOrDefault);
-        Test.run("distinct", distinct);
-        Test.run("min", min);
-        Test.run("max", max);
-        Test.run("average", average);
-        Test.run("sum", sum);
-        Test.run("skip", skip);
-        Test.run("take", take);
-        Test.run("skip + take", skipTake);
+        var success = 0;
+        var fail = 0;
+
+        Test.run("array iterator", arrayIterator, detailed) ? success++ : fail++;
+        Test.run("enumerable", enumerable, detailed) ? success++ : fail++;
+        Test.run("empty", empty, detailed) ? success++ : fail++;
+        Test.run("range", range, detailed) ? success++ : fail++;
+        Test.run("repeat", repeat, detailed) ? success++ : fail++;
+        Test.run("toArray", toArray, detailed) ? success++ : fail++;
+        Test.run("reverse", reverse, detailed) ? success++ : fail++;
+        Test.run("concat", concat, detailed) ? success++ : fail++;
+        Test.run("aggregate", aggregate, detailed) ? success++ : fail++;
+        Test.run("count", count, detailed) ? success++ : fail++;
+        Test.run("any", any, detailed) ? success++ : fail++;
+        Test.run("all", all, detailed) ? success++ : fail++;
+        Test.run("contains", contains, detailed) ? success++ : fail++;
+        Test.run("where", where, detailed) ? success++ : fail++;
+        Test.run("select", select, detailed) ? success++ : fail++;
+        Test.run("first", first, detailed) ? success++ : fail++;
+        Test.run("firstOrDefault", firstOrDefault, detailed) ? success++ : fail++;
+        Test.run("last", last, detailed) ? success++ : fail++;
+        Test.run("lastOrDefault", lastOrDefault, detailed) ? success++ : fail++;
+        Test.run("single", single, detailed) ? success++ : fail++;
+        Test.run("singleOrDefault", singleOrDefault, detailed) ? success++ : fail++;
+        Test.run("distinct", distinct, detailed) ? success++ : fail++;
+        Test.run("min", min, detailed) ? success++ : fail++;
+        Test.run("max", max, detailed) ? success++ : fail++;
+        Test.run("average", average, detailed) ? success++ : fail++;
+        Test.run("sum", sum, detailed) ? success++ : fail++;
+        Test.run("skip", skip, detailed) ? success++ : fail++;
+        Test.run("take", take, detailed) ? success++ : fail++;
+        Test.run("skip + take", skipTake, detailed) ? success++ : fail++;
+
+        console.log(`Tests: ${success}/${success + fail}`);
     }
 
     function empty(t: Test): void
