@@ -393,12 +393,12 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return new Enumerable<TElement>(source);
     }
 
-    public static empty<TElement>(): IEnumerable<TElement, TElement>
+    public static empty<TElement>(): Enumerable<TElement>
     {
         return new Enumerable<TElement>(new ArrayIterator<TElement>([]));
     }
 
-    public static range(start: number, count: number): IEnumerable<number, number>
+    public static range(start: number, count: number): Enumerable<number>
     {
         if (count < 0)
         {
@@ -415,7 +415,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return new Enumerable<number>(new ArrayIterator<number>(source));
     }
 
-    public static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement, TElement>
+    public static repeat<TElement>(element: TElement, count: number): Enumerable<TElement>
     {
         if (count < 0)
         {
@@ -438,7 +438,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         this._currentValue = new Cached<TElement>();
     }
 
-    public clone(): IEnumerable<TElement, TElement>
+    public clone(): Enumerable<TElement>
     {
         return new Enumerable<TElement>(this.source.clone());
     }
@@ -476,7 +476,7 @@ class ConditionalEnumerable<TElement> extends Enumerable<TElement>
         this._predicate = predicate;
     }
 
-    public clone(): IEnumerable<TElement, TElement>
+    public clone(): ConditionalEnumerable<TElement>
     {
         return new ConditionalEnumerable<TElement>(this.source.clone(), this._predicate);
     }
@@ -505,7 +505,7 @@ class UniqueEnumerable<TElement> extends Enumerable<TElement>
         this._seenElements = [];
     }
 
-    public clone(): IEnumerable<TElement, TElement>
+    public clone(): UniqueEnumerable<TElement>
     {
         return new UniqueEnumerable<TElement>(this.source.clone());
     }
@@ -560,7 +560,7 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
         this._current = -1;
     }
 
-    public clone(): IEnumerable<TElement, TElement>
+    public clone(): RangeEnumerable<TElement>
     {
         return new RangeEnumerable<TElement>(this.source.clone(), this._start, this._count);
     }
@@ -628,7 +628,7 @@ class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
         this._currentValue = new Cached<TOut>();
     }
 
-    public clone(): IEnumerable<TElement, TOut>
+    public clone(): TransformEnumerable<TElement, TOut>
     {
         return new TransformEnumerable<TElement, TOut>(this.source.clone(), this._transform);
     }
