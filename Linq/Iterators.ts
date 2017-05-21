@@ -8,10 +8,10 @@
 
     export class ArrayIterator<TElement> implements IIterator<TElement>
     {
-        protected readonly source: Array<TElement>;
+        protected readonly source: TElement[];
         private _index: number;
 
-        public constructor(source: Array<TElement>)
+        public constructor(source: TElement[])
         {
             this.source = source;
 

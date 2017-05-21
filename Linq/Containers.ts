@@ -1,4 +1,4 @@
-import { IEnumerable, Enumerable } from "./Enumerables";
+import { Enumerable, IEnumerable } from "./Enumerables";
 
 export interface IList<TElement>
 {
@@ -10,17 +10,17 @@ export interface IList<TElement>
     contains(element: TElement): boolean;
     indexOf(element: TElement): number | undefined;
     insert(index: number, element: TElement): void;
-    toArray(): Array<TElement>;
+    toArray(): TElement[];
     asEnumerable(): IEnumerable<TElement, TElement>;
 }
 
 export class List<TElement> implements IList<TElement>
 {
-    protected source: Array<TElement>;
+    protected source: TElement[];
 
     public constructor()
-    public constructor(source: Array<TElement>)
-    public constructor(source: Array<TElement> = [])
+    public constructor(source: TElement[])
+    public constructor(source: TElement[] = [])
     {
         this.source = source;
     }
@@ -38,11 +38,6 @@ export class List<TElement> implements IList<TElement>
     public clear(): void
     {
         this.source = [];
-    }
-
-    protected isValidIndex(index: number): boolean
-    {
-        return index >= 0 && index < this.source.length;
     }
 
     public at(index: number): TElement
@@ -73,13 +68,13 @@ export class List<TElement> implements IList<TElement>
             ? index
             : undefined;
     }
-    
+
     public insert(index: number, element: TElement): void
     {
         throw new Error("Method not implemented.");
     }
 
-    public toArray(): Array<TElement>
+    public toArray(): TElement[]
     {
         return this.source.slice(); // Copy memory
     }
@@ -87,5 +82,10 @@ export class List<TElement> implements IList<TElement>
     public asEnumerable(): IEnumerable<TElement, TElement>
     {
         return Enumerable.fromSource(this.source);
+    }
+
+    protected isValidIndex(index: number): boolean
+    {
+        return index >= 0 && index < this.source.length;
     }
 }

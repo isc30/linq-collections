@@ -1,12 +1,12 @@
-import { ArrayIterator, StringIterator, Enumerable, List } from "./Linq";
-import { Test } from "../Testing/Test"
+import { Test } from "../Testing/Test";
+import { ArrayIterator, Enumerable, List, StringIterator } from "./Linq";
 
-export module UnitTests
+export namespace UnitTests
 {
     export function run(detailed: boolean = true): void
     {
-        var success = 0;
-        var fail = 0;
+        let success = 0;
+        let fail = 0;
 
         Test.run("array iterator", arrayIterator, detailed) ? success++ : fail++;
         Test.run("enumerable", enumerable, detailed) ? success++ : fail++;
@@ -44,7 +44,7 @@ export module UnitTests
     function empty(t: Test): void
     {
         const base = Enumerable.empty<number>();
-        t.isArrayEqual(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as number[]);
     }
 
     function range(t: Test): void
@@ -53,10 +53,10 @@ export module UnitTests
         t.throwsException(() => Enumerable.range(5, -666));
 
         let base = Enumerable.range(0, 0);
-        t.isArrayEqual(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as number[]);
 
         base = Enumerable.range(4, 0);
-        t.isArrayEqual(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as number[]);
 
         base = Enumerable.range(2, 3);
         t.isArrayEqual(base.toArray(), [2, 3, 4]);
@@ -75,13 +75,13 @@ export module UnitTests
         t.throwsException(() => Enumerable.repeat(-5, -1));
 
         let base = Enumerable.repeat(3, 0);
-        t.isArrayEqual(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as number[]);
 
         base = Enumerable.repeat(3, 4);
         t.isArrayEqual(base.toArray(), [3, 3, 3, 3]);
 
         let baseString = Enumerable.repeat("a", 0);
-        t.isArrayEqual(baseString.toArray(), [] as Array<string>);
+        t.isArrayEqual(baseString.toArray(), [] as string[]);
 
         baseString = Enumerable.repeat("a", 2);
         t.isArrayEqual(baseString.toArray(), ["a", "a"]);
@@ -146,7 +146,7 @@ export module UnitTests
         base.push(5);
         t.isArrayEqual([1, 2, 3, 4], baseArray);
 
-        let source: Array<number> = [];
+        let source: number[] = [];
         let i = Enumerable.fromSource(new ArrayIterator(source));
         t.isArrayEqual(i.toArray(), source);
 
@@ -154,12 +154,12 @@ export module UnitTests
         i = Enumerable.fromSource(new ArrayIterator(source));
         t.isArrayEqual(i.toArray(), source);
 
-        let strSource = ["asd", "asdaa"];
-        let strI = Enumerable.fromSource(new ArrayIterator(strSource));
+        const strSource = ["asd", "asdaa"];
+        const strI = Enumerable.fromSource(new ArrayIterator(strSource));
         t.isArrayEqual(strI.toArray(), strSource);
 
-        let str = "asdasdsad";
-        let strI2 = Enumerable.fromSource(new StringIterator(str));
+        const str = "asdasdsad";
+        const strI2 = Enumerable.fromSource(new StringIterator(str));
         t.isArrayEqual(strI2.toArray(), str.split(""));
     }
 
@@ -185,7 +185,7 @@ export module UnitTests
 
     function aggregate(t: Test): void
     {
-        let base = Enumerable.fromSource([] as Array<string>);
+        let base = Enumerable.fromSource([] as string[]);
         t.throwsException(() => base.aggregate((p, c) => c));
 
         base = Enumerable.fromSource(["a", "b", "a", "a"]);
@@ -199,7 +199,7 @@ export module UnitTests
 
     function count(t: Test): void
     {
-        let source: Array<number> = [];
+        let source: number[] = [];
         let i = Enumerable.fromSource(new ArrayIterator(source));
         t.isEqual(i.count(), source.length);
 
@@ -207,15 +207,15 @@ export module UnitTests
         i = Enumerable.fromSource(new ArrayIterator(source));
         t.isEqual(i.count(), source.length);
 
-        let strSource = ["asd", "asdaa"];
-        let strI = Enumerable.fromSource(new ArrayIterator(strSource));
+        const strSource = ["asd", "asdaa"];
+        const strI = Enumerable.fromSource(new ArrayIterator(strSource));
         t.isEqual(strI.count(), strSource.length);
 
-        let str = "asdasdsad";
-        let strI2 = Enumerable.fromSource(new StringIterator(str));
+        const str = "asdasdsad";
+        const strI2 = Enumerable.fromSource(new StringIterator(str));
         t.isEqual(strI2.count(), str.split("").length);
 
-        let base = Enumerable.fromSource([1, 2, 41, 668, 7]);
+        const base = Enumerable.fromSource([1, 2, 41, 668, 7]);
         t.isEqual(base.count(e => e % 2 !== 0), 3);
         t.isEqual(base.count(e => e % 2 === 0), 2);
         t.isEqual(base.count((e) => e > 50), 1);
@@ -312,8 +312,8 @@ export module UnitTests
 
         t.isArrayEqual(lengths.toArray(), [5, 4, 7, 3]);
 
-        let i = Enumerable.fromSource([1, 2, 3]);
-        let names = i.select(e => "name" + e);
+        const i = Enumerable.fromSource([1, 2, 3]);
+        const names = i.select(e => "name" + e);
         t.isTrue(names.next());
         t.isEqual(names.value(), "name1");
         t.isTrue(names.next());
@@ -427,7 +427,7 @@ export module UnitTests
         base = Enumerable.fromSource([3, 4, -8, 77, 1]);
         t.isEqual(base.min(), -8);
 
-        let strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
+        const strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
         t.isEqual(strbase.min(), "are");
         t.isEqual(strbase.min(e => e[0]), "a");
         t.isEqual(strbase.min(e => e[1]), "e");
@@ -444,7 +444,7 @@ export module UnitTests
         base = Enumerable.fromSource([3, 4, -8, 77, 1]);
         t.isEqual(base.max(), 77);
 
-        let strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
+        const strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
         t.isEqual(strbase.max(), "you");
         t.isEqual(strbase.max(e => e[0]), "y");
         t.isEqual(strbase.max(e => e[1]), "v");
@@ -461,7 +461,7 @@ export module UnitTests
         base = Enumerable.fromSource([3, 4, -2, 79, 1]);
         t.isEqual(base.average(e => e), 17);
 
-        let strbase = Enumerable.fromSource(["112", "432", "46"]);
+        const strbase = Enumerable.fromSource(["112", "432", "46"]);
         t.isEqual(strbase.average(e => parseInt(e[0])), 3);
     }
 
@@ -476,7 +476,7 @@ export module UnitTests
         base = Enumerable.fromSource([3, 4, -20, 1]);
         t.isEqual(base.sum(), -12);
 
-        let strbase = Enumerable.fromSource(["hello", " ", "ivan"]);
+        const strbase = Enumerable.fromSource(["hello", " ", "ivan"]);
         t.isEqual(strbase.sum(), "hello ivan");
         t.isEqual(strbase.sum(e => e[0]), "h i");
     }
@@ -501,7 +501,7 @@ export module UnitTests
         const base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
         t.throwsException(() => base.take(-666));
 
-        t.isArrayEqual(base.take(0).toArray(), [] as Array<number>);
+        t.isArrayEqual(base.take(0).toArray(), [] as number[]);
         t.isArrayEqual(base.take(1).toArray(), [-2]);
         t.isArrayEqual(base.take(6).toArray(), [-2, 4, 65, 32, 1, 36]);
     }

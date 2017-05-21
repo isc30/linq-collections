@@ -2,26 +2,26 @@
 
 namespace OLinq
 {
-    export type Predicate<TElement, TOut> = (element: TElement, index: number/*, iterator: Array<TIn>*/) => TOut;
-    export type Accumulator<TElement, TValue> = (accumulated: TValue, currentValue: TElement, currentIndex: number/*, iterator: Array<TIn>*/) => TValue;
+    export type Predicate<TElement, TOut> = (element: TElement) => TOut;
+    export type Accumulator<TElement, TValue> = (accumulated: TValue, currentValue: TElement) => TValue;
 
-    export interface IList<TElement> extends IEnumerable<TElement>
+    /*export interface IList<TElement> extends IEnumerable<TElement>
     {
-        /*add(): void;
+        add(): void;
         addRange(): void;
         insert(index: number): void;
         remove(element): void;
-        removeAt(element): void;*/
-    }
+        removeAt(element): void;
+    }*/
 
     export interface IEnumerable<TElement>
     {
         clone(): IEnumerable<TElement>;
 
-        asArray(): Array<TElement>;
-        toArray(): Array<TElement>;
-        //ToDictionary
-        //toList
+        asArray(): TElement[];
+        toArray(): TElement[];
+        // ToDictionary
+        // toList
 
         reverse(): IEnumerable<TElement>;
         concat(other: IEnumerable<TElement>): IEnumerable<TElement>;
@@ -42,7 +42,7 @@ namespace OLinq
         where(predicate: Predicate<TElement, boolean>): IEnumerable<TElement>;
 
         select<TOut>(predicate: Predicate<TElement, TOut>): IEnumerable<TOut>;
-        //SelectMany
+        // SelectMany
 
         elementAt(index: number): TElement;
         elementAtOrDefault(index: number): TElement | undefined;
@@ -69,7 +69,7 @@ namespace OLinq
         singleOrDefault(predicate: Predicate<TElement, boolean>): TElement | undefined;
 
         distinct(): IEnumerable<TElement>;
-        //distinctBy<TValue>(propertySelector: PropertySelector<TElement, TValue>): IEnumerable<TElement>;
+        // distinctBy<TValue>(propertySelector: PropertySelector<TElement, TValue>): IEnumerable<TElement>;
 
         min(): TElement;
         min<TOut>(property: Predicate<TElement, TOut>): TOut;
@@ -98,7 +98,7 @@ namespace OLinq
 
     export class Enumerable<TElement> implements IEnumerable<TElement>
     {
-        private readonly _elements: Array<TElement>;
+        private readonly _elements: TElement[];
 
         public static empty<TElement>(): IEnumerable<TElement>
         {
@@ -112,7 +112,7 @@ namespace OLinq
                 throw new Error("Count must be >= 0");
             }
 
-            const elements = [] as Array<number>;
+            const elements = [] as number[];
 
             for (let i = 0; i < count; ++i)
             {
@@ -129,7 +129,7 @@ namespace OLinq
                 throw new Error("Count must me >= 0");
             }
 
-            const elements = [] as Array<TElement>;
+            const elements = [] as TElement[];
 
             for (let i = 0; i < count; ++i)
             {
@@ -140,8 +140,8 @@ namespace OLinq
         }
 
         public constructor();
-        public constructor(elements: Array<TElement>);
-        public constructor(elements: Array<TElement> = [])
+        public constructor(elements: TElement[]);
+        public constructor(elements: TElement[] = [])
         {
             this._elements = elements;
         }
@@ -151,12 +151,12 @@ namespace OLinq
             return new Enumerable<TElement>(this.toArray());
         }
 
-        public asArray(): Array<TElement>
+        public asArray(): TElement[]
         {
             return this._elements;
         }
 
-        public toArray(): Array<TElement>
+        public toArray(): TElement[]
         {
             return this._elements.slice(); // Copy memory
         }
@@ -202,6 +202,7 @@ namespace OLinq
                 return this.where(predicate).count();
             }
 
+            // tslint:disable-next-line:no-bitwise
             return this._elements.length >>> 0;
         }
 
@@ -380,7 +381,7 @@ namespace OLinq
 
         public distinct(): IEnumerable<TElement>
         {
-            return this.where((e, i) => this.indexOf(e) === i);
+            return this.where((e: TElement) => this.indexOf(e) === 1); // === i
         }
 
         public min(): TElement;

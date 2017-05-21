@@ -1,6 +1,6 @@
-import { IIterator, ArrayIterator, CombinedIterator } from "./Iterators";
-import { Cached } from "./Utils";
 import { List } from "./Containers";
+import { ArrayIterator, CombinedIterator, IIterator } from "./Iterators";
+import { Cached } from "./Utils";
 
 type Selector<TElement, TOut> = (element: TElement) => TOut;
 type Predicate<TElement> = Selector<TElement, boolean>;
@@ -10,7 +10,7 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 {
     clone(): IEnumerable<TElement, TOut>;
 
-    toArray(): Array<TOut>;
+    toArray(): TOut[];
     toList(): List<TOut>;
 
     count(): number;
@@ -62,7 +62,7 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     sum(): TOut;
     sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-    
+
     average(selector: Selector<TOut, number>): number;
 
     skip(amount: number): IEnumerable<TOut, TOut>;
@@ -73,13 +73,13 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
 {
     protected readonly source: IIterator<TElement> | IEnumerable<TElement, TElement>;
 
-    public abstract clone(): IEnumerable<TElement, TOut>;
-    public abstract value(): TOut;
-
     protected constructor(source: IIterator<TElement>)
     {
         this.source = source;
     }
+
+    public abstract clone(): IEnumerable<TElement, TOut>;
+    public abstract value(): TOut;
 
     public reset(): void
     {
@@ -91,9 +91,9 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         return this.source.next();
     }
 
-    public toArray(): Array<TOut>
+    public toArray(): TOut[]
     {
-        let result: Array<TOut> = [];
+        const result: TOut[] = [];
         this.reset();
 
         while (this.next())
@@ -127,6 +127,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
             result++;
         }
 
+        // tslint:disable-next-line:no-bitwise
         return result >>> 0;
     }
 
@@ -260,7 +261,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
             // Don't copy iterators
             return new ConditionalEnumerable<TOut>(this, predicate).lastOrDefault();
         }
-        
+
         const reversed = new ReverseEnumerable<TOut>(this);
         reversed.reset();
 
@@ -344,7 +345,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         {
             value = aggregator(value as TValue, this.value());
         }
-        while (this.next())
+        while (this.next());
 
         return value as TValue;
     }
@@ -397,11 +398,11 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
                     ? previous + current
                     : current);
     }
-    
+
     public average(selector: Selector<TOut, number>): number
     {
         const transformEnumerable = new TransformEnumerable<TOut, number>(this, selector);
-        
+
         transformEnumerable.reset();
 
         if (!transformEnumerable.next())
@@ -417,7 +418,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
             sum += transformEnumerable.value();
             count++;
         }
-        while (transformEnumerable.next())
+        while (transformEnumerable.next());
 
         return sum / count;
     }
@@ -437,9 +438,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 {
     private _currentValue: Cached<TElement>;
 
-    public static fromSource<TElement>(source: Array<TElement>): IEnumerable<TElement, TElement>;
-    public static fromSource<TElement>(source: IIterator<TElement>): IEnumerable<TElement, TElement>;
-    public static fromSource<TElement>(source: Array<TElement> | IIterator<TElement>): IEnumerable<TElement, TElement>
+    public static fromSource<TElement>(source: TElement[] | IIterator<TElement>): IEnumerable<TElement, TElement>
     {
         if (source instanceof Array)
         {
@@ -461,7 +460,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
             throw new Error("Count must be >= 0");
         }
 
-        const source = [] as Array<number>;
+        const source = [] as number[];
 
         for (let i = 0; i < count; ++i)
         {
@@ -478,7 +477,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
             throw new Error("Count must me >= 0");
         }
 
-        const source = [] as Array<TElement>;
+        const source = [] as TElement[];
 
         for (let i = 0; i < count; ++i)
         {
@@ -518,6 +517,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
     public next(): boolean
     {
         this._currentValue.invalidate();
+
         return super.next();
     }
 }
@@ -555,7 +555,7 @@ class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 class UniqueEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement, TElement>;
-    private _seenElements: Array<TElement>;
+    private _seenElements: TElement[];
 
     public constructor(source: IEnumerable<TElement, TElement>)
     {
@@ -579,6 +579,7 @@ class UniqueEnumerable<TElement> extends Enumerable<TElement>
         if (this._seenElements.indexOf(element) < 0)
         {
             this._seenElements.push(element);
+
             return true;
         }
 
@@ -712,6 +713,7 @@ class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
     public next(): boolean
     {
         this._currentValue.invalidate();
+
         return super.next();
     }
 }
@@ -719,13 +721,13 @@ class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
 class ReverseEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement, TElement>;
-    private _elements: Cached<Array<TElement>>;
+    private _elements: Cached<TElement[]>;
     private _currentIndex: number;
 
     public constructor(source: IEnumerable<TElement, TElement>)
     {
         super(source);
-        this._elements = new Cached<Array<TElement>>();
+        this._elements = new Cached<TElement[]>();
         this._currentIndex = -1;
     }
 

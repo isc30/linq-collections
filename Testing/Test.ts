@@ -54,13 +54,13 @@ export class Test
         this.isFalse(first === second);
     }
 
-    public isArrayEqual<T>(left: Array<T>, right: Array<T>): void
+    public isArrayEqual<T>(left: T[], right: T[]): void
     {
         this.isTrue(left.length === right.length
             && left.every((e: T, i: number) => e === right[i]));
     }
 
-    public isArrayNotEqual<T>(left: Array<T>, right: Array<T>): void
+    public isArrayNotEqual<T>(left: T[], right: T[]): void
     {
         this.isFalse(left.length === right.length
             && left.every((e: T, i: number) => e === right[i]));
