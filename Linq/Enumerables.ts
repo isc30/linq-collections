@@ -1,5 +1,6 @@
 import { IIterator, ArrayIterator, CombinedIterator } from "./Iterators";
 import { Cached } from "./Utils";
+import { List } from "./Containers";
 
 type Selector<TElement, TOut> = (element: TElement) => TOut;
 type Predicate<TElement> = Selector<TElement, boolean>;
@@ -10,6 +11,7 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
     clone(): IEnumerable<TElement, TOut>;
 
     toArray(): Array<TOut>;
+    toList(): List<TOut>;
 
     count(): number;
     count(predicate: Predicate<TOut>): number;
@@ -100,6 +102,11 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         }
 
         return result;
+    }
+
+    public toList(): List<TOut>
+    {
+        return new List<TOut>(this.toArray());
     }
 
     public count(): number;

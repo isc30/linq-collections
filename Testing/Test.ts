@@ -24,6 +24,11 @@ export class Test
         console.log(color + `[${elapsed}ms] ${name}` + clearColor);
     }
 
+    private constructor()
+    {
+        // No external instantiation
+    }
+
     public isTrue(result: boolean): void
     {
         if (!result)
@@ -37,23 +42,23 @@ export class Test
         this.isTrue(result === false);
     }
 
-    public equals(first: any, second: any): void
+    public isEqual(first: any, second: any): void
     {
         this.isTrue(first === second);
     }
 
-    public notEquals(first: any, second: any): void
+    public isNotEqual(first: any, second: any): void
     {
         this.isFalse(first === second);
     }
 
-    public arrayEquals<T>(left: Array<T>, right: Array<T>): void
+    public isArrayEqual<T>(left: Array<T>, right: Array<T>): void
     {
         this.isTrue(left.length === right.length
             && left.every((e: T, i: number) => e === right[i]));
     }
 
-    public arrayNotEquals<T>(left: Array<T>, right: Array<T>): void
+    public isArrayNotEqual<T>(left: Array<T>, right: Array<T>): void
     {
         this.isFalse(left.length === right.length
             && left.every((e: T, i: number) => e === right[i]));

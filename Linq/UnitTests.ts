@@ -1,5 +1,5 @@
-import { ArrayIterator, StringIterator, Enumerable } from "./Linq";
-import { Test } from "../Testing/UnitTest"
+import { ArrayIterator, StringIterator, Enumerable, List } from "./Linq";
+import { Test } from "../Testing/Test"
 
 export module UnitTests
 {
@@ -39,7 +39,7 @@ export module UnitTests
     function empty(t: Test): void
     {
         const base = Enumerable.empty<number>();
-        t.arrayEquals(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as Array<number>);
     }
 
     function range(t: Test): void
@@ -48,19 +48,19 @@ export module UnitTests
         t.throwsException(() => Enumerable.range(5, -666));
 
         let base = Enumerable.range(0, 0);
-        t.arrayEquals(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as Array<number>);
 
         base = Enumerable.range(4, 0);
-        t.arrayEquals(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as Array<number>);
 
         base = Enumerable.range(2, 3);
-        t.arrayEquals(base.toArray(), [2, 3, 4]);
+        t.isArrayEqual(base.toArray(), [2, 3, 4]);
 
         base = Enumerable.range(-2, 4);
-        t.arrayEquals(base.toArray(), [-2, -1, 0, 1]);
+        t.isArrayEqual(base.toArray(), [-2, -1, 0, 1]);
 
         base = Enumerable.range(0, 6);
-        t.arrayEquals(base.toArray(), [0, 1, 2, 3, 4, 5]);
+        t.isArrayEqual(base.toArray(), [0, 1, 2, 3, 4, 5]);
     }
 
     function repeat(t: Test): void
@@ -70,16 +70,16 @@ export module UnitTests
         t.throwsException(() => Enumerable.repeat(-5, -1));
 
         let base = Enumerable.repeat(3, 0);
-        t.arrayEquals(base.toArray(), [] as Array<number>);
+        t.isArrayEqual(base.toArray(), [] as Array<number>);
 
         base = Enumerable.repeat(3, 4);
-        t.arrayEquals(base.toArray(), [3, 3, 3, 3]);
+        t.isArrayEqual(base.toArray(), [3, 3, 3, 3]);
 
         let baseString = Enumerable.repeat("a", 0);
-        t.arrayEquals(baseString.toArray(), [] as Array<string>);
+        t.isArrayEqual(baseString.toArray(), [] as Array<string>);
 
         baseString = Enumerable.repeat("a", 2);
-        t.arrayEquals(baseString.toArray(), ["a", "a"]);
+        t.isArrayEqual(baseString.toArray(), ["a", "a"]);
     }
 
     function arrayIterator(t: Test): void
@@ -90,11 +90,11 @@ export module UnitTests
 
         i = new ArrayIterator<number>([2, 4, 6]);
         t.isTrue(i.next());
-        t.equals(i.value(), 2);
+        t.isEqual(i.value(), 2);
         t.isTrue(i.next());
-        t.equals(i.value(), 4);
+        t.isEqual(i.value(), 4);
         t.isTrue(i.next());
-        t.equals(i.value(), 6);
+        t.isEqual(i.value(), 6);
         t.isFalse(i.next());
         t.throwsException(() => i.value());
     }
@@ -107,11 +107,11 @@ export module UnitTests
 
         i = Enumerable.fromSource(new ArrayIterator<number>([2, 4, 6]));
         t.isTrue(i.next());
-        t.equals(i.value(), 2);
+        t.isEqual(i.value(), 2);
         t.isTrue(i.next());
-        t.equals(i.value(), 4);
+        t.isEqual(i.value(), 4);
         t.isTrue(i.next());
-        t.equals(i.value(), 6);
+        t.isEqual(i.value(), 6);
         t.isFalse(i.next());
         t.throwsException(() => i.value());
 
@@ -121,11 +121,11 @@ export module UnitTests
 
         i = Enumerable.fromSource(Enumerable.fromSource([2, 4, 6]));
         t.isTrue(i.next());
-        t.equals(i.value(), 2);
+        t.isEqual(i.value(), 2);
         t.isTrue(i.next());
-        t.equals(i.value(), 4);
+        t.isEqual(i.value(), 4);
         t.isTrue(i.next());
-        t.equals(i.value(), 6);
+        t.isEqual(i.value(), 6);
         t.isFalse(i.next());
         t.throwsException(() => i.value());
     }
@@ -136,26 +136,26 @@ export module UnitTests
         const baseEnumerable = Enumerable.fromSource(base);
         const baseArray = baseEnumerable.toArray(); // Copy of `base`
 
-        t.arrayEquals(base, baseArray);
+        t.isArrayEqual(base, baseArray);
 
         base.push(5);
-        t.arrayEquals([1, 2, 3, 4], baseArray);
+        t.isArrayEqual([1, 2, 3, 4], baseArray);
 
         let source: Array<number> = [];
         let i = Enumerable.fromSource(new ArrayIterator(source));
-        t.arrayEquals(i.toArray(), source);
+        t.isArrayEqual(i.toArray(), source);
 
         source = [1, 2, 3];
         i = Enumerable.fromSource(new ArrayIterator(source));
-        t.arrayEquals(i.toArray(), source);
+        t.isArrayEqual(i.toArray(), source);
 
         let strSource = ["asd", "asdaa"];
         let strI = Enumerable.fromSource(new ArrayIterator(strSource));
-        t.arrayEquals(strI.toArray(), strSource);
+        t.isArrayEqual(strI.toArray(), strSource);
 
         let str = "asdasdsad";
         let strI2 = Enumerable.fromSource(new StringIterator(str));
-        t.arrayEquals(strI2.toArray(), str.split(""));
+        t.isArrayEqual(strI2.toArray(), str.split(""));
     }
 
     function reverse(t: Test): void
@@ -163,8 +163,8 @@ export module UnitTests
         const baseEnumerable = Enumerable.fromSource([1, 2, 3, 4]);
         const baseEnumerableReversed = baseEnumerable.reverse();
 
-        t.arrayEquals([1, 2, 3, 4], baseEnumerable.toArray());
-        t.arrayEquals([4, 3, 2, 1], baseEnumerableReversed.toArray());
+        t.isArrayEqual([1, 2, 3, 4], baseEnumerable.toArray());
+        t.isArrayEqual([4, 3, 2, 1], baseEnumerableReversed.toArray());
     }
 
     function concat(t: Test): void
@@ -173,9 +173,9 @@ export module UnitTests
         const base1 = Enumerable.fromSource([3, 4]);
         const result = base0.concat(base1);
 
-        t.arrayEquals([1, 2], base0.toArray());
-        t.arrayEquals([3, 4], base1.toArray());
-        t.arrayEquals([1, 2, 3, 4], result.toArray());
+        t.isArrayEqual([1, 2], base0.toArray());
+        t.isArrayEqual([3, 4], base1.toArray());
+        t.isArrayEqual([1, 2, 3, 4], result.toArray());
     }
 
     function aggregate(t: Test): void
@@ -184,8 +184,8 @@ export module UnitTests
         t.throwsException(() => base.aggregate((p, c) => c));
 
         base = Enumerable.fromSource(["a", "b", "a", "a"]);
-        t.equals(base.aggregate((p, c) => p === "b" ? p : c), "b");
-        t.equals(base.aggregate((p, c) => 33, 2), 33);
+        t.isEqual(base.aggregate((p, c) => p === "b" ? p : c), "b");
+        t.isEqual(base.aggregate((p, c) => 33, 2), 33);
         t.isTrue(base.aggregate<boolean>((p, c) => p || c === "b", false));
         t.isTrue(base.aggregate<boolean>((p, c) => p || c === "a", false));
         t.isFalse(base.aggregate<boolean>((p, c) => p || c === "x", false));
@@ -196,24 +196,24 @@ export module UnitTests
     {
         let source: Array<number> = [];
         let i = Enumerable.fromSource(new ArrayIterator(source));
-        t.equals(i.count(), source.length);
+        t.isEqual(i.count(), source.length);
 
         source = [1, 2, 3];
         i = Enumerable.fromSource(new ArrayIterator(source));
-        t.equals(i.count(), source.length);
+        t.isEqual(i.count(), source.length);
 
         let strSource = ["asd", "asdaa"];
         let strI = Enumerable.fromSource(new ArrayIterator(strSource));
-        t.equals(strI.count(), strSource.length);
+        t.isEqual(strI.count(), strSource.length);
 
         let str = "asdasdsad";
         let strI2 = Enumerable.fromSource(new StringIterator(str));
-        t.equals(strI2.count(), str.split("").length);
+        t.isEqual(strI2.count(), str.split("").length);
 
         let base = Enumerable.fromSource([1, 2, 41, 668, 7]);
-        t.equals(base.count(e => e % 2 !== 0), 3);
-        t.equals(base.count(e => e % 2 === 0), 2);
-        t.equals(base.count((e) => e > 50), 1);
+        t.isEqual(base.count(e => e % 2 !== 0), 3);
+        t.isEqual(base.count(e => e % 2 === 0), 2);
+        t.isEqual(base.count((e) => e > 50), 1);
     }
 
     function any(t: Test): void
@@ -270,22 +270,22 @@ export module UnitTests
         const base = Enumerable.fromSource([39, 21, 66, 20]);
 
         const onlyYoung = base.where(e => e < 30);
-        t.equals(onlyYoung.count(), 2);
-        t.arrayEquals(onlyYoung.toArray(), [21, 20]);
+        t.isEqual(onlyYoung.count(), 2);
+        t.isArrayEqual(onlyYoung.toArray(), [21, 20]);
 
         const sooooOld = base.where(e => e > 90);
-        t.equals(sooooOld.count(), 0);
+        t.isEqual(sooooOld.count(), 0);
 
         let i = Enumerable.fromSource([1, 2, 3, 4, 5, 6, 7, 8]);
         i = i.where(e => e % 2 === 0);
         t.isTrue(i.next());
-        t.equals(i.value(), 2);
+        t.isEqual(i.value(), 2);
         t.isTrue(i.next());
-        t.equals(i.value(), 4);
+        t.isEqual(i.value(), 4);
         t.isTrue(i.next());
-        t.equals(i.value(), 6);
+        t.isEqual(i.value(), 6);
         t.isTrue(i.next());
-        t.equals(i.value(), 8);
+        t.isEqual(i.value(), 8);
         t.isFalse(i.next());
         t.throwsException(() => i.value());
 
@@ -293,9 +293,9 @@ export module UnitTests
         i = i.where(e => e % 2 === 0);
         i = i.where(e => e < 5);
         t.isTrue(i.next());
-        t.equals(i.value(), 2);
+        t.isEqual(i.value(), 2);
         t.isTrue(i.next());
-        t.equals(i.value(), 4);
+        t.isEqual(i.value(), 4);
         t.isFalse(i.next());
         t.throwsException(() => i.value());
     }
@@ -305,19 +305,19 @@ export module UnitTests
         const base = Enumerable.fromSource(["pepin", "sanz", "macheta", "cea"]);
         const lengths = base.select(e => e.length);
 
-        t.arrayEquals(lengths.toArray(), [5, 4, 7, 3]);
+        t.isArrayEqual(lengths.toArray(), [5, 4, 7, 3]);
 
         let i = Enumerable.fromSource([1, 2, 3]);
         let names = i.select(e => "name" + e);
         t.isTrue(names.next());
-        t.equals(names.value(), "name1");
+        t.isEqual(names.value(), "name1");
         t.isTrue(names.next());
-        t.equals(names.value(), "name2");
+        t.isEqual(names.value(), "name2");
         i.next();
         i.next();
         i.next();
         t.isTrue(names.next());
-        t.equals(names.value(), "name3");
+        t.isEqual(names.value(), "name3");
         t.isFalse(names.next());
         t.throwsException(() => names.value());
     }
@@ -328,22 +328,22 @@ export module UnitTests
         t.throwsException(() => base.first());
 
         base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        t.equals(base.first(), -2);
-        t.equals(base.first(e => e > 5), 65);
-        t.equals(base.first(e => e % 6 === 0), 42);
+        t.isEqual(base.first(), -2);
+        t.isEqual(base.first(e => e > 5), 65);
+        t.isEqual(base.first(e => e % 6 === 0), 42);
         t.throwsException(() => base.first(e => e === 11811));
     }
 
     function firstOrDefault(t: Test): void
     {
         let base = Enumerable.empty<number>();
-        t.equals(base.firstOrDefault(), undefined);
+        t.isEqual(base.firstOrDefault(), undefined);
 
         base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        t.equals(base.firstOrDefault(), -2);
-        t.equals(base.firstOrDefault(e => e > 5), 65);
-        t.equals(base.firstOrDefault(e => e % 6 === 0), 42);
-        t.equals(base.firstOrDefault(e => e === 11811), undefined);
+        t.isEqual(base.firstOrDefault(), -2);
+        t.isEqual(base.firstOrDefault(e => e > 5), 65);
+        t.isEqual(base.firstOrDefault(e => e % 6 === 0), 42);
+        t.isEqual(base.firstOrDefault(e => e === 11811), undefined);
     }
 
     function last(t: Test): void
@@ -352,22 +352,22 @@ export module UnitTests
         t.throwsException(() => base.last());
 
         base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        t.equals(base.last(), 2);
-        t.equals(base.last(e => e > 5), 7);
-        t.equals(base.last(e => e % 6 === 0), 36);
+        t.isEqual(base.last(), 2);
+        t.isEqual(base.last(e => e > 5), 7);
+        t.isEqual(base.last(e => e % 6 === 0), 36);
         t.throwsException(() => base.last(e => e === 11811));
     }
 
     function lastOrDefault(t: Test): void
     {
         let base = Enumerable.empty<number>();
-        t.equals(base.lastOrDefault(), undefined);
+        t.isEqual(base.lastOrDefault(), undefined);
 
         base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        t.equals(base.lastOrDefault(), 2);
-        t.equals(base.lastOrDefault(e => e > 5), 7);
-        t.equals(base.lastOrDefault(e => e % 6 === 0), 36);
-        t.equals(base.lastOrDefault(e => e === 11811), undefined);
+        t.isEqual(base.lastOrDefault(), 2);
+        t.isEqual(base.lastOrDefault(e => e > 5), 7);
+        t.isEqual(base.lastOrDefault(e => e % 6 === 0), 36);
+        t.isEqual(base.lastOrDefault(e => e === 11811), undefined);
     }
 
     function single(t: Test): void
@@ -376,39 +376,39 @@ export module UnitTests
         t.throwsException(() => base.single());
 
         base = Enumerable.fromSource([33]);
-        t.equals(base.single(), 33);
+        t.isEqual(base.single(), 33);
 
         base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
         t.throwsException(() => base.single());
         t.throwsException(() => base.single(e => e > 5));
-        t.equals(base.single(e => e > 60), 65);
-        t.equals(base.single(e => e % 6 === 0), 36);
+        t.isEqual(base.single(e => e > 60), 65);
+        t.isEqual(base.single(e => e % 6 === 0), 36);
         t.throwsException(() => base.single(e => e === 11811));
     }
 
     function singleOrDefault(t: Test): void
     {
         let base = Enumerable.empty<number>();
-        t.equals(base.singleOrDefault(), undefined);
+        t.isEqual(base.singleOrDefault(), undefined);
 
         base = Enumerable.fromSource([33]);
-        t.equals(base.singleOrDefault(), 33);
+        t.isEqual(base.singleOrDefault(), 33);
 
         base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
         t.throwsException(() => base.singleOrDefault());
         t.throwsException(() => base.singleOrDefault(e => e > 5));
-        t.equals(base.singleOrDefault(e => e > 60), 65);
-        t.equals(base.singleOrDefault(e => e % 6 === 0), 36);
-        t.equals(base.singleOrDefault(e => e === 11811), undefined);
+        t.isEqual(base.singleOrDefault(e => e > 60), 65);
+        t.isEqual(base.singleOrDefault(e => e % 6 === 0), 36);
+        t.isEqual(base.singleOrDefault(e => e === 11811), undefined);
     }
 
     function distinct(t: Test): void
     {
         let base = Enumerable.empty<number>();
-        t.arrayEquals(base.distinct().toArray(), []);
+        t.isArrayEqual(base.distinct().toArray(), []);
 
         base = Enumerable.fromSource([-5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0]);
-        t.arrayEquals(base.distinct().toArray(), [-5, 6, 2, 99, 0, 7]);
+        t.isArrayEqual(base.distinct().toArray(), [-5, 6, 2, 99, 0, 7]);
     }
 
     function min(t: Test): void
@@ -417,15 +417,15 @@ export module UnitTests
         t.throwsException(() => base.min());
 
         base = Enumerable.fromSource([2]);
-        t.equals(base.min(), 2);
+        t.isEqual(base.min(), 2);
 
         base = Enumerable.fromSource([3, 4, -8, 77, 1]);
-        t.equals(base.min(), -8);
+        t.isEqual(base.min(), -8);
 
         let strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
-        t.equals(strbase.min(), "are");
-        t.equals(strbase.min(e => e[0]), "a");
-        t.equals(strbase.min(e => e[1]), "e");
+        t.isEqual(strbase.min(), "are");
+        t.isEqual(strbase.min(e => e[0]), "a");
+        t.isEqual(strbase.min(e => e[1]), "e");
     }
 
     function max(t: Test): void
@@ -434,15 +434,15 @@ export module UnitTests
         t.throwsException(() => base.max());
 
         base = Enumerable.fromSource([2]);
-        t.equals(base.max(), 2);
+        t.isEqual(base.max(), 2);
 
         base = Enumerable.fromSource([3, 4, -8, 77, 1]);
-        t.equals(base.max(), 77);
+        t.isEqual(base.max(), 77);
 
         let strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
-        t.equals(strbase.max(), "you");
-        t.equals(strbase.max(e => e[0]), "y");
-        t.equals(strbase.max(e => e[1]), "v");
+        t.isEqual(strbase.max(), "you");
+        t.isEqual(strbase.max(e => e[0]), "y");
+        t.isEqual(strbase.max(e => e[1]), "v");
     }
 
     function average(t: Test): void
@@ -451,13 +451,13 @@ export module UnitTests
         t.throwsException(() => base.average(e => e));
 
         base = Enumerable.fromSource([2]);
-        t.equals(base.average(e => e), 2);
+        t.isEqual(base.average(e => e), 2);
 
         base = Enumerable.fromSource([3, 4, -2, 79, 1]);
-        t.equals(base.average(e => e), 17);
+        t.isEqual(base.average(e => e), 17);
 
         let strbase = Enumerable.fromSource(["112", "432", "46"]);
-        t.equals(strbase.average(e => parseInt(e[0])), 3);
+        t.isEqual(strbase.average(e => parseInt(e[0])), 3);
     }
 
     function sum(t: Test): void
@@ -466,14 +466,14 @@ export module UnitTests
         t.throwsException(() => base.sum());
 
         base = Enumerable.fromSource([2]);
-        t.equals(base.sum(), 2);
+        t.isEqual(base.sum(), 2);
 
         base = Enumerable.fromSource([3, 4, -20, 1]);
-        t.equals(base.sum(), -12);
+        t.isEqual(base.sum(), -12);
 
         let strbase = Enumerable.fromSource(["hello", " ", "ivan"]);
-        t.equals(strbase.sum(), "hello ivan");
-        t.equals(strbase.sum(e => e[0]), "h i");
+        t.isEqual(strbase.sum(), "hello ivan");
+        t.isEqual(strbase.sum(e => e[0]), "h i");
     }
 
     function skip(t: Test): void
@@ -483,12 +483,12 @@ export module UnitTests
 
         const y = base.skip(0).toArray();
 
-        t.arrayEquals(base.skip(0).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
+        t.isArrayEqual(base.skip(0).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
 
         const x = base.skip(1).toArray();
 
-        t.arrayEquals(x, [4, 65, 32, 1, 36, 7, 2]);
-        t.arrayEquals(base.skip(6).toArray(), [7, 2]);
+        t.isArrayEqual(x, [4, 65, 32, 1, 36, 7, 2]);
+        t.isArrayEqual(base.skip(6).toArray(), [7, 2]);
     }
 
     function take(t: Test): void
@@ -496,16 +496,16 @@ export module UnitTests
         const base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
         t.throwsException(() => base.take(-666));
 
-        t.arrayEquals(base.take(0).toArray(), [] as Array<number>);
-        t.arrayEquals(base.take(1).toArray(), [-2]);
-        t.arrayEquals(base.take(6).toArray(), [-2, 4, 65, 32, 1, 36]);
+        t.isArrayEqual(base.take(0).toArray(), [] as Array<number>);
+        t.isArrayEqual(base.take(1).toArray(), [-2]);
+        t.isArrayEqual(base.take(6).toArray(), [-2, 4, 65, 32, 1, 36]);
     }
 
     function skipTake(t: Test): void
     {
         const base = Enumerable.fromSource([-2, 4, 65, 32, 1, 36, 7, 2]);
 
-        t.arrayEquals(base.skip(2).take(2).toArray(), [65, 32]);
-        t.arrayEquals(base.skip(7).take(5).toArray(), [2]);
+        t.isArrayEqual(base.skip(2).take(2).toArray(), [65, 32]);
+        t.isArrayEqual(base.skip(7).take(5).toArray(), [2]);
     }
 }

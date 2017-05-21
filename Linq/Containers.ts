@@ -1,7 +1,8 @@
-import { IEnumerable, Enumerable, ArrayIterator } from "../Linq/Linq";
+import { IEnumerable, Enumerable } from "./Enumerables";
 
 export interface IList<TElement>
 {
+    clone(): IList<TElement>;
     count(): number;
     clear(): void;
     at(index: number): TElement;
@@ -22,6 +23,11 @@ export class List<TElement> implements IList<TElement>
     public constructor(source: Array<TElement> = [])
     {
         this.source = source;
+    }
+
+    public clone(): List<TElement>
+    {
+        return new List<TElement>(this.toArray());
     }
 
     public count(): number
