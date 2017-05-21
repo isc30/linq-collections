@@ -398,9 +398,6 @@ export module UnitTests
 
     function last(): void
     {
-        throw new Error("NOPE");
-
-        /*
         let base = Enumerable.empty<number>();
         Assert.throwsException(() => base.last());
 
@@ -408,14 +405,11 @@ export module UnitTests
         Assert.check(Assert.isEqual(base.last(), 2));
         Assert.check(Assert.isEqual(base.last(e => e > 5), 7));
         Assert.check(Assert.isEqual(base.last(e => e % 6 === 0), 36));
-        Assert.throwsException(() => base.last(e => e === 11811));*/
+        Assert.throwsException(() => base.last(e => e === 11811));
     }
 
     function lastOrDefault(): void
     {
-        throw new Error("NOPE");
-
-        /*
         let base = Enumerable.empty<number>();
         Assert.check(Assert.isEqual(base.lastOrDefault(), undefined));
 
@@ -423,7 +417,7 @@ export module UnitTests
         Assert.check(Assert.isEqual(base.lastOrDefault(), 2));
         Assert.check(Assert.isEqual(base.lastOrDefault(e => e > 5), 7));
         Assert.check(Assert.isEqual(base.lastOrDefault(e => e % 6 === 0), 36));
-        Assert.check(Assert.isEqual(base.lastOrDefault(e => e === 11811), undefined));*/
+        Assert.check(Assert.isEqual(base.lastOrDefault(e => e === 11811), undefined));
     }
 
     function single(): void

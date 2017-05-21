@@ -35,11 +35,11 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
     firstOrDefault(): TOut | undefined;
     firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-    //last(): TOut;
-    //last(predicate: Predicate<TOut>): TOut;
+    last(): TOut;
+    last(predicate: Predicate<TOut>): TOut;
 
-    //lastOrDefault(): TOut | undefined;
-    //lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+    lastOrDefault(): TOut | undefined;
+    lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
     single(): TOut;
     single(predicate: Predicate<TOut>): TOut;
@@ -219,6 +219,50 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         }
 
         return this.value();
+    }
+
+    public last(): TOut;
+    public last(predicate: Predicate<TOut>): TOut;
+    public last(predicate?: Predicate<TOut>): TOut
+    {
+        let element: TOut | undefined;
+
+        if (predicate !== undefined)
+        {
+            element = this.lastOrDefault(predicate);
+        }
+        else
+        {
+            element = this.lastOrDefault();
+        }
+
+        if (element === undefined)
+        {
+            throw new Error("Sequence contains no elements");
+        }
+
+        return element;
+    }
+
+    public lastOrDefault(): TOut | undefined;
+    public lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+    public lastOrDefault(predicate?: Predicate<TOut>): TOut | undefined
+    {
+        if (predicate !== undefined)
+        {
+            // Don't copy iterators
+            return new ConditionalEnumerable<TOut>(this, predicate).lastOrDefault();
+        }
+        
+        const reversed = new ReverseEnumerable<TOut>(this);
+        reversed.reset();
+
+        if (!reversed.next())
+        {
+            return undefined;
+        }
+
+        return reversed.value();
     }
 
     public single(): TOut;
