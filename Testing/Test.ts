@@ -5,7 +5,7 @@ export class Test
     public static run(name: string, test: TestBody)
     {
         var color: string;
-        var clearColor: string = "\x1b[30m";
+        var clearColor: string = "\x1b[39m";
 
         var start = new Date().getTime();
 
