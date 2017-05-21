@@ -8,19 +8,19 @@
 
     export class ArrayIterator<TElement> implements IIterator<TElement>
     {
-        private readonly _source: Array<TElement>;
+        protected readonly source: Array<TElement>;
         private _index: number;
 
         public constructor(source: Array<TElement>)
         {
-            this._source = source;
+            this.source = source;
 
             this.reset();
         }
 
         public clone(): IIterator<TElement>
         {
-            return new ArrayIterator<TElement>(this._source);
+            return new ArrayIterator<TElement>(this.source);
         }
 
         public reset(): void
@@ -30,7 +30,7 @@
 
         private isValidIndex(): boolean
         {
-            return this._index >= 0 && this._index < this._source.length;
+            return this._index >= 0 && this._index < this.source.length;
         }
 
         public next(): boolean
@@ -47,31 +47,31 @@
                 throw new Error("Out of bounds");
             }
 
-            return this._source[this._index];
+            return this.source[this._index];
         }
     }
 
     export class StringIterator implements IIterator<string>
     {
-        private readonly _source: string;
+        protected readonly source: string;
         private _currentValue: string;
         private _currentSource: string;
 
         public constructor(source: string)
         {
-            this._source = source;
+            this.source = source;
 
             this.reset();
         }
 
         public clone(): IIterator<string>
         {
-            return new StringIterator(this._source);
+            return new StringIterator(this.source);
         }
 
         public reset(): void
         {
-            this._currentSource = this._source;
+            this._currentSource = this.source;
             this._currentValue = "";
         }
 
