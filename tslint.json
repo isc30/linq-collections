@@ -87,6 +87,7 @@
 			false
 		],
 		"radix": false,
-		"no-bitwise": false
+		"no-bitwise": false,
+        "no-reference": false
 	}
 }
