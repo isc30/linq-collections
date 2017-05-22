@@ -1,9 +1,9 @@
-# Linq for TypeScript
+# TsLinq: Linq for TypeScript
 Best performance and 100% strongly typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
 
 # How to run tests
-* Call `Linq.UnitTests.run();`
-* Run in browser
+* Call `UnitTests.run();`
+* Run in browser (console) or nodejs
 
 # Features
 
