@@ -1,13 +1,13 @@
 # TsLinq: Linq for TypeScript
 Best performance and 100% strongly typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
 
-# How to run tests
+## How to run tests
 * Call `UnitTests.run();`
 * Run in browser (console) or nodejs
 
-# Features
+## Features
 
-## Enumerable
+#### Enumerable
 Provides an internal iterator for the real collection
 ```typescript
 static empty<TElement>(): IEnumerable<TElement>;
