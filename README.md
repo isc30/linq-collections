@@ -17,6 +17,7 @@ static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement,
 clone(): IEnumerable<TElement, TOut>;
 
 toArray(): Array<TOut>;
+toList(): List<TOut>;
 
 count(): number;
 count(predicate: Predicate<TOut>): number;
