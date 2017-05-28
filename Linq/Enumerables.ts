@@ -1,5 +1,5 @@
 import { List } from "./Containers";
-import { ArrayIterator, CombinedIterator, IIterator } from "./Iterators";
+import { ArrayIterator, IIterator } from "./Iterators";
 import { Cached } from "./Utils";
 
 type Selector<TElement, TOut> = (element: TElement) => TOut;
@@ -183,7 +183,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
 
     public concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>
     {
-        return new Enumerable<TOut>(new CombinedIterator(this.clone(), other.clone()));
+        return new ConcatEnumerable<TOut>(this.clone(), other.clone());
     }
 
     public first(): TOut;
@@ -436,7 +436,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
 
 export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 {
-    private _currentValue: Cached<TElement>;
+    protected currentValue: Cached<TElement>;
 
     public static fromSource<TElement>(source: TElement[] | IIterator<TElement>): IEnumerable<TElement, TElement>
     {
@@ -490,7 +490,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
     public constructor(source: IIterator<TElement>)
     {
         super(source);
-        this._currentValue = new Cached<TElement>();
+        this.currentValue = new Cached<TElement>();
     }
 
     public clone(): Enumerable<TElement>
@@ -500,23 +500,23 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 
     public value(): TElement
     {
-        if (!this._currentValue.isValid())
+        if (!this.currentValue.isValid())
         {
-            this._currentValue.value = this.source.value();
+            this.currentValue.value = this.source.value();
         }
 
-        return this._currentValue.value;
+        return this.currentValue.value;
     }
 
     public reset(): void
     {
         super.reset();
-        this._currentValue.invalidate();
+        this.currentValue.invalidate();
     }
 
     public next(): boolean
     {
-        this._currentValue.invalidate();
+        this.currentValue.invalidate();
 
         return super.next();
     }
@@ -549,6 +549,61 @@ class ConditionalEnumerable<TElement> extends Enumerable<TElement>
         while (hasValue && !this._predicate(this.value()));
 
         return hasValue;
+    }
+}
+
+class ConcatEnumerable<TElement> extends Enumerable<TElement>
+{
+    private _otherSource: IIterator<TElement>;
+    private _isFirstSourceFinished: boolean;
+
+    public constructor(left: IIterator<TElement>, right: IIterator<TElement>)
+    {
+        super(left);
+        this._otherSource = right;
+        this._isFirstSourceFinished = false;
+    }
+
+    public clone(): ConcatEnumerable<TElement>
+    {
+        return new ConcatEnumerable<TElement>(this.source.clone(), this._otherSource.clone());
+    }
+
+    public reset(): void
+    {
+        this.source.reset();
+        this._otherSource.reset();
+        this.currentValue.invalidate();
+    }
+
+    public next(): boolean
+    {
+        this.currentValue.invalidate();
+
+        const hasValue = !this._isFirstSourceFinished
+            ? this.source.next()
+            : this._otherSource.next();
+
+        if (!hasValue && !this._isFirstSourceFinished)
+        {
+            this._isFirstSourceFinished = true;
+
+            return this.next();
+        }
+
+        return hasValue;
+    }
+
+    public value(): TElement
+    {
+        if (!this.currentValue.isValid())
+        {
+            this.currentValue.value = !this._isFirstSourceFinished
+                ? this.source.value()
+                : this._otherSource.value();
+        }
+
+        return this.currentValue.value;
     }
 }
 
