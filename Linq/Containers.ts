@@ -1,43 +1,38 @@
 import { Enumerable, IEnumerable } from "./Enumerables";
+import { ArrayIterator } from "./Iterators";
 
 export interface IList<TElement>
 {
     clone(): IList<TElement>;
-    count(): number;
     clear(): void;
     at(index: number): TElement;
     add(element: TElement): void;
-    contains(element: TElement): boolean;
     indexOf(element: TElement): number | undefined;
     insert(index: number, element: TElement): void;
-    toArray(): TElement[];
-    asEnumerable(): IEnumerable<TElement, TElement>;
 }
 
-export class List<TElement> implements IList<TElement>
+export class List<TElement> extends Array<TElement> implements IList<TElement>
 {
-    protected source: TElement[];
+    protected _index: number;
 
-    public constructor()
-    public constructor(source: TElement[])
-    public constructor(source: TElement[] = [])
+    public toArray(): TElement[]
     {
-        this.source = source;
+        return this;
     }
 
     public clone(): List<TElement>
     {
-        return new List<TElement>(this.toArray());
+        return new List<TElement>(...this.slice());
     }
 
     public count(): number
     {
-        return this.source.length;
+        return this.length;
     }
 
     public clear(): void
     {
-        this.source = [];
+        this.clear();
     }
 
     public at(index: number): TElement
@@ -47,12 +42,12 @@ export class List<TElement> implements IList<TElement>
             throw new Error("Out of bounds");
         }
 
-        return this.source[index];
+        return this[index];
     }
 
-    public add(element: TElement): void
+    public add(...elements: TElement[]): void
     {
-        this.source.push(element);
+        this.push(...elements);
     }
 
     public contains(element: TElement): boolean
@@ -60,32 +55,18 @@ export class List<TElement> implements IList<TElement>
         return this.indexOf(element) !== undefined;
     }
 
-    public indexOf(element: TElement): number | undefined
-    {
-        const index = this.source.indexOf(element);
-
-        return index >= 0
-            ? index
-            : undefined;
-    }
-
     public insert(index: number, element: TElement): void
     {
-        throw new Error("Method not implemented.");
-    }
-
-    public toArray(): TElement[]
-    {
-        return this.source.slice(); // Copy memory
+        this.splice(index, 0, element);
     }
 
     public asEnumerable(): IEnumerable<TElement, TElement>
     {
-        return Enumerable.fromSource(this.source);
+        return Enumerable.fromSource<TElement>(this as TElement[]);
     }
 
     protected isValidIndex(index: number): boolean
     {
-        return index >= 0 && index < this.source.length;
+        return index >= 0 && index < this.length;
     }
 }

@@ -2,9 +2,9 @@ import { List } from "./Containers";
 import { ArrayIterator, IIterator } from "./Iterators";
 import { Cached } from "./Utils";
 
-type Selector<TElement, TOut> = (element: TElement) => TOut;
-type Predicate<TElement> = Selector<TElement, boolean>;
-type Aggregator<TElement, TValue> = (previous: TValue, current: TElement) => TValue;
+export type Selector<TElement, TOut> = (element: TElement) => TOut;
+export type Predicate<TElement> = Selector<TElement, boolean>;
+export type Aggregator<TElement, TValue> = (previous: TValue, current: TElement) => TValue;
 
 export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 {
@@ -106,7 +106,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
 
     public toList(): List<TOut>
     {
-        return new List<TOut>(this.toArray());
+        return new List<TOut>(...this.toArray());
     }
 
     public count(): number;
