@@ -37,6 +37,7 @@ export namespace UnitTests
         Test.run("skip", skip, detailed) ? success++ : fail++;
         Test.run("take", take, detailed) ? success++ : fail++;
         Test.run("skip + take", skipTake, detailed) ? success++ : fail++;
+        Test.run("forEach", forEach, detailed) ? success++ : fail++;
 
         console.log(`Tests: ${success}/${success + fail}`);
     }
@@ -512,5 +513,40 @@ export namespace UnitTests
 
         t.isArrayEqual(base.skip(2).take(2).toArray(), [65, 32]);
         t.isArrayEqual(base.skip(7).take(5).toArray(), [2]);
+    }
+
+    function forEach(t: Test): void
+    {
+        const base = Enumerable.fromSource([1, 2, 3]);
+        const iterated: number[] = [];
+
+        base.forEach(e =>
+        {
+            iterated.push(e);
+        });
+
+        t.isArrayEqual(base.toArray(), iterated);
+
+        // Check inmutablility
+
+        const original = base.toArray();
+
+        base.forEach(e =>
+        {
+            e = e + 1;
+        });
+
+        t.isArrayEqual(base.toArray(), original);
+
+        // With indices
+
+        const indices: number[] = [];
+
+        base.forEach((e, i) =>
+        {
+            indices.push(e + i);
+        });
+
+        t.isArrayEqual(indices, [1, 3, 5]);
     }
 }

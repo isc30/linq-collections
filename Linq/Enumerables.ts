@@ -5,6 +5,7 @@ import { Cached } from "./Utils";
 export type Selector<TElement, TOut> = (element: TElement) => TOut;
 export type Predicate<TElement> = Selector<TElement, boolean>;
 export type Aggregator<TElement, TValue> = (previous: TValue, current: TElement) => TValue;
+export type Action<TElement> = (element: TElement, index: number) => void;
 
 export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 {
@@ -51,6 +52,8 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     firstOrDefault(): TOut | undefined;
     firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+
+    forEach(action: Action<TOut>): void;
 
     // groupBy
 
@@ -271,6 +274,16 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         }
 
         return this.value();
+    }
+
+    public forEach(action: Action<TOut>): void
+    {
+        this.reset();
+
+        for (let i = 0; this.next(); i++)
+        {
+            action(this.value(), i);
+        }
     }
 
     public last(): TOut;

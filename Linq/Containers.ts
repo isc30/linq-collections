@@ -3,6 +3,7 @@ import { ArrayIterator } from "./Iterators";
 
 export interface IList<TElement>
 {
+    asEnumerable(): IEnumerable<TElement, TElement>;
     clone(): IList<TElement>;
     clear(): void;
     at(index: number): TElement;
@@ -14,6 +15,11 @@ export interface IList<TElement>
 export class List<TElement> extends Array<TElement> implements IList<TElement>
 {
     protected _index: number;
+
+    public asEnumerable(): IEnumerable<TElement, TElement>
+    {
+        return Enumerable.fromSource<TElement>(this as TElement[]);
+    }
 
     public toArray(): TElement[]
     {
@@ -58,11 +64,6 @@ export class List<TElement> extends Array<TElement> implements IList<TElement>
     public insert(index: number, element: TElement): void
     {
         this.splice(index, 0, element);
-    }
-
-    public asEnumerable(): IEnumerable<TElement, TElement>
-    {
-        return Enumerable.fromSource<TElement>(this as TElement[]);
     }
 
     protected isValidIndex(index: number): boolean
