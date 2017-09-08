@@ -12,24 +12,39 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     toArray(): TOut[];
     toList(): List<TOut>;
+    // toDictionary
+    // toLookup
 
-    count(): number;
-    count(predicate: Predicate<TOut>): number;
+    aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
+    aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
+
+    all(predicate: Predicate<TOut>): boolean;
 
     any(): boolean;
     any(predicate: Predicate<TOut>): boolean;
 
-    all(predicate: Predicate<TOut>): boolean;
+    average(selector: Selector<TOut, number>): number;
 
-    reverse(): IEnumerable<TOut, TOut>;
+    // cast<TOut> : IEnumerable<TOut>
+
+    concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>;
 
     contains(element: TOut): boolean;
 
-    where(predicate: Predicate<TOut>): IEnumerable<TOut, TOut>;
+    count(): number;
+    count(predicate: Predicate<TOut>): number;
 
-    select<TPredicateOut>(selector: Selector<TOut, TPredicateOut>): IEnumerable<TOut, TPredicateOut>;
+    // defaultIfEmpty
 
-    concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>;
+    distinct(): IEnumerable<TOut, TOut>;
+
+    // distinctBy
+
+    // elementAt
+
+    // elementAtOrDefault
+
+    // except
 
     first(): TOut;
     first(predicate: Predicate<TOut>): TOut;
@@ -37,11 +52,41 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
     firstOrDefault(): TOut | undefined;
     firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
+    // groupBy
+
+    // groupJoin
+
+    // intersect
+
+    // join
+
     last(): TOut;
     last(predicate: Predicate<TOut>): TOut;
 
     lastOrDefault(): TOut | undefined;
     lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+
+    // longCount
+
+    max(): TOut;
+    max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+
+    min(): TOut;
+    min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+
+    // ofType
+
+    // orderBy
+
+    // orderByDescending
+
+    reverse(): IEnumerable<TOut, TOut>;
+
+    select<TPredicateOut>(selector: Selector<TOut, TPredicateOut>): IEnumerable<TOut, TPredicateOut>;
+
+    // selectMany
+
+    // sequenceEqual
 
     single(): TOut;
     single(predicate: Predicate<TOut>): TOut;
@@ -49,24 +94,23 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
     singleOrDefault(): TOut | undefined;
     singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-    distinct(): IEnumerable<TOut, TOut>;
+    skip(amount: number): IEnumerable<TOut, TOut>;
 
-    aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
-    aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
-
-    min(): TOut;
-    min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-
-    max(): TOut;
-    max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    // skipWhile
 
     sum(): TOut;
     sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-    average(selector: Selector<TOut, number>): number;
-
-    skip(amount: number): IEnumerable<TOut, TOut>;
     take(amount: number): IEnumerable<TOut, TOut>;
+
+    // takeWhile
+
+    /////// thenBy
+    /////// thenByDescending
+
+    // union
+
+    where(predicate: Predicate<TOut>): IEnumerable<TOut, TOut>;
 }
 
 abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, TOut>
@@ -794,7 +838,83 @@ class ReverseEnumerable<TElement> extends Enumerable<TElement>
 
     private isValidIndex(): boolean
     {
-        return this._currentIndex >= 0 && this._currentIndex < this._elements.value.length;
+        return this._currentIndex >= 0
+            && this._currentIndex < this._elements.value.length;
+    }
+
+    public all(predicate: Predicate<TElement>): boolean
+    {
+        return this.source.all(predicate);
+    }
+
+    public any(): boolean;
+    public any(predicate: Predicate<TElement>): boolean;
+    public any(predicate?: Predicate<TElement>): boolean
+    {
+        if (predicate !== undefined)
+        {
+            return this.source.any(predicate);
+        }
+
+        return this.source.any();
+    }
+
+    public average(selector: Selector<TElement, number>): number
+    {
+        return this.source.average(selector);
+    }
+
+    public count(): number;
+    public count(predicate: Predicate<TElement>): number;
+    public count(predicate?: Predicate<TElement>): number
+    {
+        if (predicate !== undefined)
+        {
+            return this.source.count(predicate);
+        }
+
+        return this.source.count();
+    }
+
+    public max(): TElement;
+    public max<TSelectorOut>(selector: Selector<TElement, TSelectorOut>): TSelectorOut;
+    public max<TSelectorOut>(selector?: Selector<TElement, TSelectorOut>): TElement | TSelectorOut
+    {
+        if (selector !== undefined)
+        {
+            return this.source.max(selector);
+        }
+
+        return this.source.max();
+    }
+
+    public min(): TElement;
+    public min<TSelectorOut>(selector: Selector<TElement, TSelectorOut>): TSelectorOut;
+    public min<TSelectorOut>(selector?: Selector<TElement, TSelectorOut>): TElement | TSelectorOut
+    {
+        if (selector !== undefined)
+        {
+            return this.source.min(selector);
+        }
+
+        return this.source.min();
+    }
+
+    public reverse(): IEnumerable<TElement, TElement>
+    {
+        return this.source.clone(); // haha so smart
+    }
+
+    public sum(): TElement;
+    public sum<TSelectorOut>(selector: Selector<TElement, TSelectorOut>): TSelectorOut;
+    public sum<TSelectorOut>(selector?: Selector<TElement, TSelectorOut>): TElement | TSelectorOut
+    {
+        if (selector !== undefined)
+        {
+            return this.source.sum(selector);
+        }
+
+        return this.source.sum();
     }
 
     public next(): boolean
