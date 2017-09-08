@@ -26,8 +26,6 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     average(selector: Selector<TOut, number>): number;
 
-    // cast<TOut> : IEnumerable<TOut>
-
     concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>;
 
     contains(element: TOut): boolean;
@@ -41,9 +39,9 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     // distinctBy
 
-    // elementAt
+    elementAt(index: number): TOut;
 
-    // elementAtOrDefault
+    elementAtOrDefault(index: number): TOut | undefined;
 
     // except
 
@@ -76,8 +74,6 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     min(): TOut;
     min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-
-    // ofType
 
     // orderBy
 
@@ -231,6 +227,47 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
     public concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>
     {
         return new ConcatEnumerable<TOut>(this.clone(), other.clone());
+    }
+
+    public elementAt(index: number): TOut
+    {
+        const element = this.elementAtOrDefault(index);
+
+        if (element === undefined)
+        {
+            throw new Error("Out of bounds");
+        }
+
+        return element;
+    }
+
+    public elementAtOrDefault(index: number): TOut | undefined
+    {
+        if (index < 0)
+        {
+            throw new Error("Negative index is forbiden");
+        }
+
+        let currentIndex = -1;
+
+        this.reset();
+
+        while (this.next())
+        {
+            currentIndex++;
+
+            if (currentIndex === index)
+            {
+                break;
+            }
+        }
+
+        if (currentIndex !== index)
+        {
+            return undefined;
+        }
+
+        return this.value();
     }
 
     public first(): TOut;

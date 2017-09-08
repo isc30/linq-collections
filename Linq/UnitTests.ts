@@ -38,6 +38,8 @@ export namespace UnitTests
         Test.run("take", take, detailed) ? success++ : fail++;
         Test.run("skip + take", skipTake, detailed) ? success++ : fail++;
         Test.run("forEach", forEach, detailed) ? success++ : fail++;
+        Test.run("elementAt", elementAt, detailed) ? success++ : fail++;
+        Test.run("elementAtOrDefault", elementAtOrDefault, detailed) ? success++ : fail++;
 
         console.log(`Tests: ${success}/${success + fail}`);
     }
@@ -548,5 +550,47 @@ export namespace UnitTests
         });
 
         t.isArrayEqual(indices, [1, 3, 5]);
+    }
+
+    function elementAt(t: Test): void
+    {
+        const base = Enumerable.fromSource([1, 2, 3, 4]);
+
+        t.throwsException(() =>
+        {
+            const e = base.elementAt(-2);
+        });
+
+        t.isEqual(base.elementAt(0), 1);
+        t.isEqual(base.elementAt(1), 2);
+        t.isEqual(base.elementAt(2), 3);
+        t.isEqual(base.elementAt(3), 4);
+
+        t.throwsException(() =>
+        {
+            const e = base.elementAt(4);
+        });
+
+        t.throwsException(() =>
+        {
+            const e = base.elementAt(5);
+        });
+    }
+
+    function elementAtOrDefault(t: Test): void
+    {
+        const base = Enumerable.fromSource([1, 2, 3, 4]);
+
+        t.throwsException(() =>
+        {
+            const e = base.elementAtOrDefault(-2);
+        });
+
+        t.isEqual(base.elementAtOrDefault(0), 1);
+        t.isEqual(base.elementAtOrDefault(1), 2);
+        t.isEqual(base.elementAtOrDefault(2), 3);
+        t.isEqual(base.elementAtOrDefault(3), 4);
+        t.isEqual(base.elementAtOrDefault(4), undefined);
+        t.isEqual(base.elementAtOrDefault(5), undefined);
     }
 }
