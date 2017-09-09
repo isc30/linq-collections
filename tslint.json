@@ -1,8 +1,8 @@
 {
-	"extends": [
-		"tslint:latest"
-	],
-	"rules": {
+    "extends": [
+        "tslint:latest"
+    ],
+    "rules": {
         "class-name": true,
         "comment-format": [true,
             "check-space"
@@ -31,7 +31,7 @@
         "typedef-whitespace": [
             true,
             {
-                "call-signature": "nospace",
+                //"call-signature": "nospace",
                 "index-signature": "nospace",
                 "parameter": "nospace",
                 "property-declaration": "nospace",
@@ -50,9 +50,9 @@
             "check-else",
             "check-open-brace"
         ],
-		"newline-before-return": true,
-		"no-parameter-properties": true,
-		"no-unused-variable": true,
+        "newline-before-return": true,
+        "no-parameter-properties": true,
+        "no-unused-variable": true,
         "no-internal-module": true,
         "no-trailing-whitespace": true,
         "no-null-keyword": true,
@@ -66,28 +66,28 @@
         "no-switch-case-fall-through": true,
         "triple-equals": true,
         "jsdoc-format": true,
-		"no-unused-expression": true,
-		"no-unused-new": true,
-		"no-unreachable": true,
-		"arrow-parens": false,
-		"max-classes-per-file": [
-			false
-		],
-		"variable-name": [
-			"allow-leading-underscore"
-		],
-		"member-ordering": [
-			false
-		],
-		"no-namespace": [
-			false
-		],
-		"no-any": false,
-		"no-console": [
-			false
-		],
-		"radix": false,
-		"no-bitwise": false,
+        "no-unused-expression": true,
+        "no-unused-new": true,
+        "no-unreachable": true,
+        "arrow-parens": false,
+        "max-classes-per-file": [
+            false
+        ],
+        "variable-name": [
+            "allow-leading-underscore"
+        ],
+        "member-ordering": [
+            false
+        ],
+        "no-namespace": [
+            false
+        ],
+        "no-any": false,
+        "no-console": [
+            false
+        ],
+        "radix": false,
+        "no-bitwise": false,
         "no-reference": false
-	}
+    }
 }

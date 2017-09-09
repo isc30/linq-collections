@@ -81,9 +81,11 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     reverse(): IEnumerable<TOut, TOut>;
 
-    select<TPredicateOut>(selector: Selector<TOut, TPredicateOut>): IEnumerable<TOut, TPredicateOut>;
+    select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TOut, TSelectorOut>;
 
-    // selectMany
+    selectMany<TSelectorOut>(
+        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut, TSelectorOut>>):
+        IEnumerable<TOut, TSelectorOut>;
 
     // sequenceEqual
 
@@ -219,9 +221,25 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         return new ConditionalEnumerable<TOut>(this.clone(), predicate);
     }
 
-    public select<TPredicateOut>(selector: Selector<TOut, TPredicateOut>): IEnumerable<TOut, TPredicateOut>
+    public select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TOut, TSelectorOut>
     {
-        return new TransformEnumerable<TOut, TPredicateOut>(this.clone(), selector);
+        return new TransformEnumerable<TOut, TSelectorOut>(this.clone(), selector);
+    }
+
+    public selectMany<TSelectorOut>(
+        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut, TSelectorOut>>)
+        : IEnumerable<TOut, TSelectorOut>
+    {
+        return this
+            .select(selector)
+            .select(
+                e => Array.isArray(e)
+                    ? Enumerable.fromSource(e)
+                    : e)
+            .aggregate(
+                (p, c) => p !== undefined
+                    ? p.concat(c)
+                    : c);
     }
 
     public concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>
@@ -534,7 +552,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 
     public static fromSource<TElement>(source: TElement[] | IIterator<TElement>): IEnumerable<TElement, TElement>
     {
-        if (source instanceof Array)
+        if (Array.isArray(source))
         {
             return new Enumerable<TElement>(new ArrayIterator<TElement>(source));
         }

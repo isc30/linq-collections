@@ -1,5 +1,5 @@
 import { Test } from "../Testing/Test";
-import { ArrayIterator, Enumerable, List, StringIterator } from "./Linq";
+import { ArrayIterator, Enumerable, IEnumerable, List, StringIterator } from "./Linq";
 
 export namespace UnitTests
 {
@@ -23,6 +23,7 @@ export namespace UnitTests
         Test.run("contains", contains, detailed) ? success++ : fail++;
         Test.run("where", where, detailed) ? success++ : fail++;
         Test.run("select", select, detailed) ? success++ : fail++;
+        Test.run("selectMany", selectMany, detailed) ? success++ : fail++;
         Test.run("first", first, detailed) ? success++ : fail++;
         Test.run("firstOrDefault", firstOrDefault, detailed) ? success++ : fail++;
         Test.run("last", last, detailed) ? success++ : fail++;
@@ -284,7 +285,7 @@ export namespace UnitTests
         const sooooOld = base.where(e => e > 90);
         t.isEqual(sooooOld.count(), 0);
 
-        let i = Enumerable.fromSource([1, 2, 3, 4, 5, 6, 7, 8]);
+        let i: IEnumerable<number, number> = Enumerable.fromSource([1, 2, 3, 4, 5, 6, 7, 8]);
         i = i.where(e => e % 2 === 0);
         t.isTrue(i.next());
         t.isEqual(i.value(), 2);
@@ -328,6 +329,46 @@ export namespace UnitTests
         t.isEqual(names.value(), "name3");
         t.isFalse(names.next());
         t.throwsException(() => names.value());
+    }
+
+    class SelectManyTestClass {
+        public numberArray: number[];
+        public numberEnumerable: IEnumerable<number, number>;
+        public x: string;
+
+        public constructor(numbers: number[])
+        {
+            this.numberArray = numbers;
+            this.numberEnumerable = Enumerable.fromSource(this.numberArray);
+        }
+    }
+
+    function selectMany(t: Test): void
+    {
+        let base = Enumerable.fromSource([
+            new SelectManyTestClass([1, 2, 3]),
+        ]);
+
+        base = base.where(x => true);
+
+        t.isArrayEqual(base.selectMany(e => e.numberArray).toArray(), [1, 2, 3]);
+        t.isArrayEqual(base.selectMany(e => e.numberEnumerable).toArray(), [1, 2, 3]);
+
+        base = Enumerable.fromSource([
+            new SelectManyTestClass([1, 2, 3]),
+            new SelectManyTestClass([4, 5]),
+            new SelectManyTestClass([]),
+            new SelectManyTestClass([6]),
+            new SelectManyTestClass([7, 8]),
+        ]);
+
+        t.isArrayEqual(base.selectMany(e => e.numberArray).toArray(), [1, 2, 3, 4, 5, 6, 7, 8]);
+        t.isArrayEqual(base.selectMany(e => e.numberEnumerable).toArray(), [1, 2, 3, 4, 5, 6, 7, 8]);
+
+        base = Enumerable.fromSource([new SelectManyTestClass([])]);
+
+        t.isArrayEqual(base.selectMany(e => e.numberArray).toArray(), []);
+        t.isArrayEqual(base.selectMany(e => e.numberEnumerable).toArray(), []);
     }
 
     function first(t: Test): void
