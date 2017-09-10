@@ -23,10 +23,6 @@ type Action<TElement> = (element: TElement, index: number) => void;
 ```typescript
 interface IEnumerable<TOut>
 {
-    static empty<TOut>(): IEnumerable<TOut>;
-    static range(start: number, count: number): IEnumerable<number>;
-    static repeat<TOut>(element: TOut, count: number): IEnumerable<TOut>;
-
     clone(): IEnumerable<TOut>;
 
     toArray(): TOut[];
@@ -98,5 +94,12 @@ interface IEnumerable<TOut>
     take(amount: number): IEnumerable<TOut>;
 
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
+}
+
+class Enumerable<TOut> implements IEnumerable<TOut>
+{
+    static empty<TOut>(): IEnumerable<TOut>;
+    static range(start: number, count: number): IEnumerable<number>;
+    static repeat<TOut>(element: TOut, count: number): IEnumerable<TOut>;
 }
 ```
