@@ -95,7 +95,9 @@ interface IEnumerable<TOut>
 
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 }
+```
 
+```typescript
 class Enumerable<TOut> implements IEnumerable<TOut>
 {
     static empty<TOut>(): IEnumerable<TOut>;
