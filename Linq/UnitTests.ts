@@ -285,7 +285,7 @@ export namespace UnitTests
         const sooooOld = base.where(e => e > 90);
         t.isEqual(sooooOld.count(), 0);
 
-        let i: IEnumerable<number, number> = Enumerable.fromSource([1, 2, 3, 4, 5, 6, 7, 8]);
+        let i = Enumerable.fromSource([1, 2, 3, 4, 5, 6, 7, 8]);
         i = i.where(e => e % 2 === 0);
         t.isTrue(i.next());
         t.isEqual(i.value(), 2);
@@ -333,7 +333,7 @@ export namespace UnitTests
 
     class SelectManyTestClass {
         public numberArray: number[];
-        public numberEnumerable: IEnumerable<number, number>;
+        public numberEnumerable: IEnumerable<number>;
         public x: string;
 
         public constructor(numbers: number[])

@@ -3,7 +3,7 @@ import { ArrayIterator } from "./Iterators";
 
 export interface IList<TElement>
 {
-    asEnumerable(): IEnumerable<TElement, TElement>;
+    asEnumerable(): IEnumerable<TElement>;
     clone(): IList<TElement>;
     clear(): void;
     at(index: number): TElement;
@@ -16,7 +16,7 @@ export class List<TElement> extends Array<TElement> implements IList<TElement>
 {
     protected _index: number;
 
-    public asEnumerable(): IEnumerable<TElement, TElement>
+    public asEnumerable(): IEnumerable<TElement>
     {
         return Enumerable.fromSource<TElement>(this as TElement[]);
     }

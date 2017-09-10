@@ -7,9 +7,9 @@ export type Predicate<TElement> = Selector<TElement, boolean>;
 export type Aggregator<TElement, TValue> = (previous: TValue, current: TElement) => TValue;
 export type Action<TElement> = (element: TElement, index: number) => void;
 
-export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
+export interface IEnumerable<TOut> extends IIterator<TOut>
 {
-    clone(): IEnumerable<TElement, TOut>;
+    clone(): IEnumerable<TOut>;
 
     toArray(): TOut[];
     toList(): List<TOut>;
@@ -26,7 +26,7 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     average(selector: Selector<TOut, number>): number;
 
-    concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>;
+    concat(other: IEnumerable<TOut>): IEnumerable<TOut>;
 
     contains(element: TOut): boolean;
 
@@ -35,7 +35,7 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     // defaultIfEmpty
 
-    distinct(): IEnumerable<TOut, TOut>;
+    distinct(): IEnumerable<TOut>;
 
     // distinctBy
 
@@ -79,13 +79,13 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
 
     // orderByDescending
 
-    reverse(): IEnumerable<TOut, TOut>;
+    reverse(): IEnumerable<TOut>;
 
-    select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TOut, TSelectorOut>;
+    select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>;
 
     selectMany<TSelectorOut>(
-        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut, TSelectorOut>>):
-        IEnumerable<TOut, TSelectorOut>;
+        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>):
+        IEnumerable<TSelectorOut>;
 
     // sequenceEqual
 
@@ -95,35 +95,33 @@ export interface IEnumerable<TElement, TOut> extends IIterator<TOut>
     singleOrDefault(): TOut | undefined;
     singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-    skip(amount: number): IEnumerable<TOut, TOut>;
+    skip(amount: number): IEnumerable<TOut>;
 
     // skipWhile
 
     sum(): TOut;
     sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-    take(amount: number): IEnumerable<TOut, TOut>;
-
-    // takeWhile
+    take(amount: number): IEnumerable<TOut>;
 
     /////// thenBy
     /////// thenByDescending
 
     // union
 
-    where(predicate: Predicate<TOut>): IEnumerable<TOut, TOut>;
+    where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 }
 
-abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, TOut>
+abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
-    protected readonly source: IIterator<TElement> | IEnumerable<TElement, TElement>;
+    protected readonly source: IIterator<TElement> | IEnumerable<TElement>;
 
     protected constructor(source: IIterator<TElement>)
     {
         this.source = source;
     }
 
-    public abstract clone(): IEnumerable<TElement, TOut>;
+    public abstract clone(): IEnumerable<TOut>;
     public abstract value(): TOut;
 
     public reset(): void
@@ -206,7 +204,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         return true;
     }
 
-    public reverse(): IEnumerable<TOut, TOut>
+    public reverse(): IEnumerable<TOut>
     {
         return new ReverseEnumerable<TOut>(this.clone());
     }
@@ -216,19 +214,19 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         return this.any(e => e === element);
     }
 
-    public where(predicate: Predicate<TOut>): IEnumerable<TOut, TOut>
+    public where(predicate: Predicate<TOut>): IEnumerable<TOut>
     {
         return new ConditionalEnumerable<TOut>(this.clone(), predicate);
     }
 
-    public select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TOut, TSelectorOut>
+    public select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>
     {
         return new TransformEnumerable<TOut, TSelectorOut>(this.clone(), selector);
     }
 
     public selectMany<TSelectorOut>(
-        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut, TSelectorOut>>)
-        : IEnumerable<TOut, TSelectorOut>
+        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>)
+        : IEnumerable<TSelectorOut>
     {
         return this
             .select(selector)
@@ -242,7 +240,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
                     : c);
     }
 
-    public concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>
+    public concat(other: IEnumerable<TOut>): IEnumerable<TOut>
     {
         return new ConcatEnumerable<TOut>(this.clone(), other.clone());
     }
@@ -435,7 +433,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         return element;
     }
 
-    public distinct(): IEnumerable<TOut, TOut>
+    public distinct(): IEnumerable<TOut>
     {
         return new UniqueEnumerable<TOut>(this.clone());
     }
@@ -535,12 +533,12 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TElement, T
         return sum / count;
     }
 
-    public skip(amount: number): IEnumerable<TOut, TOut>
+    public skip(amount: number): IEnumerable<TOut>
     {
         return new RangeEnumerable<TOut>(this.clone(), amount, undefined);
     }
 
-    public take(amount: number): IEnumerable<TOut, TOut>
+    public take(amount: number): IEnumerable<TOut>
     {
         return new RangeEnumerable<TOut>(this.clone(), undefined, amount);
     }
@@ -550,7 +548,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 {
     protected currentValue: Cached<TElement>;
 
-    public static fromSource<TElement>(source: TElement[] | IIterator<TElement>): IEnumerable<TElement, TElement>
+    public static fromSource<TElement>(source: TElement[] | IIterator<TElement>): IEnumerable<TElement>
     {
         if (Array.isArray(source))
         {
@@ -560,12 +558,12 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return new Enumerable<TElement>(source);
     }
 
-    public static empty<TElement>(): IEnumerable<TElement, TElement>
+    public static empty<TElement>(): IEnumerable<TElement>
     {
         return new Enumerable<TElement>(new ArrayIterator<TElement>([]));
     }
 
-    public static range(start: number, count: number): IEnumerable<number, number>
+    public static range(start: number, count: number): IEnumerable<number>
     {
         if (count < 0)
         {
@@ -582,7 +580,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return new Enumerable<number>(new ArrayIterator<number>(source));
     }
 
-    public static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement, TElement>
+    public static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement>
     {
         if (count < 0)
         {
@@ -636,10 +634,10 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 
 class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement, TElement>;
+    protected source: IEnumerable<TElement>;
     private _predicate: Predicate<TElement>;
 
-    public constructor(source: IEnumerable<TElement, TElement>, predicate: Predicate<TElement>)
+    public constructor(source: IEnumerable<TElement>, predicate: Predicate<TElement>)
     {
         super(source);
         this._predicate = predicate;
@@ -721,10 +719,10 @@ class ConcatEnumerable<TElement> extends Enumerable<TElement>
 
 class UniqueEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement, TElement>;
+    protected source: IEnumerable<TElement>;
     private _seenElements: TElement[];
 
-    public constructor(source: IEnumerable<TElement, TElement>)
+    public constructor(source: IEnumerable<TElement>)
     {
         super(source);
         this._seenElements = [];
@@ -769,12 +767,12 @@ class UniqueEnumerable<TElement> extends Enumerable<TElement>
 
 class RangeEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement, TElement>;
+    protected source: IEnumerable<TElement>;
     private _start: number | undefined;
     private _count: number | undefined;
     private _currentIndex: number;
 
-    public constructor(source: IEnumerable<TElement, TElement>, start: number | undefined, count: number | undefined)
+    public constructor(source: IEnumerable<TElement>, start: number | undefined, count: number | undefined)
     {
         if ((start !== undefined && start < 0) || (count !== undefined && count < 0))
         {
@@ -845,11 +843,11 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
 
 class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
 {
-    protected source: IEnumerable<TElement, TElement>;
+    protected source: IEnumerable<TElement>;
     private _transform: Selector<TElement, TOut>;
     private _currentValue: Cached<TOut>;
 
-    public constructor(source: IEnumerable<TElement, TElement>, transform: Selector<TElement, TOut>)
+    public constructor(source: IEnumerable<TElement>, transform: Selector<TElement, TOut>)
     {
         super(source);
         this._transform = transform;
@@ -887,11 +885,11 @@ class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
 
 class ReverseEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement, TElement>;
+    protected source: IEnumerable<TElement>;
     private _elements: Cached<TElement[]>;
     private _currentIndex: number;
 
-    public constructor(source: IEnumerable<TElement, TElement>)
+    public constructor(source: IEnumerable<TElement>)
     {
         super(source);
         this._elements = new Cached<TElement[]>();
@@ -968,7 +966,7 @@ class ReverseEnumerable<TElement> extends Enumerable<TElement>
         return this.source.min();
     }
 
-    public reverse(): IEnumerable<TElement, TElement>
+    public reverse(): IEnumerable<TElement>
     {
         return this.source.clone(); // haha so smart
     }
