@@ -10,8 +10,8 @@ https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/c
 
 ## Features
 
-#### Enumerable
-Provides an internal iterator for the real collection
+#### Enumerable / IEnumerable
+Provides an inmutable iterator for the real collection
 
 ```typescript
 type Selector<TElement, TOut> = (element: TElement) => TOut;
