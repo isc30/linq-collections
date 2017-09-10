@@ -1,5 +1,5 @@
 # TsLinq: Linq for TypeScript
-Best performance and 100% strongly typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
+Best performance and 100% strongly and statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
 
 #### Strictly following original documentation
 https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution
@@ -17,28 +17,34 @@ static empty<TElement>(): IEnumerable<TElement>;
 static range(start: number, count: number): IEnumerable<number, number>;
 static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement, TElement>;
 
-clone(): IEnumerable<TElement, TOut>;
+clone(): IEnumerable<TOut>;
 
-toArray(): Array<TOut>;
+toArray(): TOut[];
 toList(): List<TOut>;
 
-count(): number;
-count(predicate: Predicate<TOut>): number;
+aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
+aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
+
+all(predicate: Predicate<TOut>): boolean;
 
 any(): boolean;
 any(predicate: Predicate<TOut>): boolean;
 
-all(predicate: Predicate<TOut>): boolean;
+average(selector: Selector<TOut, number>): number;
 
-reverse(): IEnumerable<TOut, TOut>;
+concat(other: IEnumerable<TOut>): IEnumerable<TOut>;
 
 contains(element: TOut): boolean;
 
-where(predicate: Predicate<TOut>): IEnumerable<TOut, TOut>;
+count(): number;
+count(predicate: Predicate<TOut>): number;
 
-select<TPredicateOut>(selector: Selector<TOut, TPredicateOut>): IEnumerable<TOut, TPredicateOut>;
+distinct(): IEnumerable<TOut>;
+distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
 
-concat(other: IEnumerable<TElement, TOut>): IEnumerable<TOut, TOut>;
+elementAt(index: number): TOut;
+
+elementAtOrDefault(index: number): TOut | undefined;
 
 first(): TOut;
 first(predicate: Predicate<TOut>): TOut;
@@ -46,11 +52,27 @@ first(predicate: Predicate<TOut>): TOut;
 firstOrDefault(): TOut | undefined;
 firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
+forEach(action: Action<TOut>): void;
+
 last(): TOut;
 last(predicate: Predicate<TOut>): TOut;
 
 lastOrDefault(): TOut | undefined;
 lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+
+max(): TOut;
+max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+
+min(): TOut;
+min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+
+reverse(): IEnumerable<TOut>;
+
+select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>;
+
+selectMany<TSelectorOut>(
+    selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>):
+    IEnumerable<TSelectorOut>;
 
 single(): TOut;
 single(predicate: Predicate<TOut>): TOut;
@@ -58,22 +80,12 @@ single(predicate: Predicate<TOut>): TOut;
 singleOrDefault(): TOut | undefined;
 singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-distinct(): IEnumerable<TOut, TOut>;
-
-aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
-aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
-
-min(): TOut;
-min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-
-max(): TOut;
-max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+skip(amount: number): IEnumerable<TOut>;
 
 sum(): TOut;
 sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-average(selector: Selector<TOut, number>): number;
+take(amount: number): IEnumerable<TOut>;
 
-skip(amount: number): IEnumerable<TOut, TOut>;
-take(amount: number): IEnumerable<TOut, TOut>;
+where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 ```
