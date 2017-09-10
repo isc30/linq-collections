@@ -21,79 +21,82 @@ type Action<TElement> = (element: TElement, index: number) => void;
 ```
 
 ```typescript
-static empty<TElement>(): IEnumerable<TElement>;
-static range(start: number, count: number): IEnumerable<number, number>;
-static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement, TElement>;
+interface IEnumerable<TOut>
+{
+    static empty<TOut>(): IEnumerable<TOut>;
+    static range(start: number, count: number): IEnumerable<number>;
+    static repeat<TOut>(element: TOut, count: number): IEnumerable<TOut>;
 
-clone(): IEnumerable<TOut>;
+    clone(): IEnumerable<TOut>;
 
-toArray(): TOut[];
-toList(): List<TOut>;
+    toArray(): TOut[];
+    toList(): List<TOut>;
 
-aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
-aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
+    aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
+    aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
 
-all(predicate: Predicate<TOut>): boolean;
+    all(predicate: Predicate<TOut>): boolean;
 
-any(): boolean;
-any(predicate: Predicate<TOut>): boolean;
+    any(): boolean;
+    any(predicate: Predicate<TOut>): boolean;
 
-average(selector: Selector<TOut, number>): number;
+    average(selector: Selector<TOut, number>): number;
 
-concat(other: IEnumerable<TOut>): IEnumerable<TOut>;
+    concat(other: IEnumerable<TOut>): IEnumerable<TOut>;
 
-contains(element: TOut): boolean;
+    contains(element: TOut): boolean;
 
-count(): number;
-count(predicate: Predicate<TOut>): number;
+    count(): number;
+    count(predicate: Predicate<TOut>): number;
 
-distinct(): IEnumerable<TOut>;
-distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    distinct(): IEnumerable<TOut>;
+    distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
 
-elementAt(index: number): TOut;
+    elementAt(index: number): TOut;
 
-elementAtOrDefault(index: number): TOut | undefined;
+    elementAtOrDefault(index: number): TOut | undefined;
 
-first(): TOut;
-first(predicate: Predicate<TOut>): TOut;
+    first(): TOut;
+    first(predicate: Predicate<TOut>): TOut;
 
-firstOrDefault(): TOut | undefined;
-firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+    firstOrDefault(): TOut | undefined;
+    firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-forEach(action: Action<TOut>): void;
+    forEach(action: Action<TOut>): void;
 
-last(): TOut;
-last(predicate: Predicate<TOut>): TOut;
+    last(): TOut;
+    last(predicate: Predicate<TOut>): TOut;
 
-lastOrDefault(): TOut | undefined;
-lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+    lastOrDefault(): TOut | undefined;
+    lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-max(): TOut;
-max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    max(): TOut;
+    max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-min(): TOut;
-min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    min(): TOut;
+    min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-reverse(): IEnumerable<TOut>;
+    reverse(): IEnumerable<TOut>;
 
-select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>;
+    select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>;
 
-selectMany<TSelectorOut>(
-    selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>):
-    IEnumerable<TSelectorOut>;
+    selectMany<TSelectorOut>(
+        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>):
+        IEnumerable<TSelectorOut>;
 
-single(): TOut;
-single(predicate: Predicate<TOut>): TOut;
+    single(): TOut;
+    single(predicate: Predicate<TOut>): TOut;
 
-singleOrDefault(): TOut | undefined;
-singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+    singleOrDefault(): TOut | undefined;
+    singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
 
-skip(amount: number): IEnumerable<TOut>;
+    skip(amount: number): IEnumerable<TOut>;
 
-sum(): TOut;
-sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    sum(): TOut;
+    sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-take(amount: number): IEnumerable<TOut>;
+    take(amount: number): IEnumerable<TOut>;
 
-where(predicate: Predicate<TOut>): IEnumerable<TOut>;
+    where(predicate: Predicate<TOut>): IEnumerable<TOut>;
+}
 ```
