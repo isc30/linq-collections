@@ -12,6 +12,14 @@ https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/c
 
 #### Enumerable
 Provides an internal iterator for the real collection
+
+```typescript
+type Selector<TElement, TOut> = (element: TElement) => TOut;
+type Predicate<TElement> = Selector<TElement, boolean>;
+type Aggregator<TElement, TValue> = (previous: TValue, current: TElement) => TValue;
+type Action<TElement> = (element: TElement, index: number) => void;
+```
+
 ```typescript
 static empty<TElement>(): IEnumerable<TElement>;
 static range(start: number, count: number): IEnumerable<number, number>;
