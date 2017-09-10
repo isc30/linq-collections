@@ -98,7 +98,7 @@ interface IEnumerable<TOut>
 ```
 
 ```typescript
-class Enumerable<TOut> implements IEnumerable<TOut>
+abstract class Enumerable<TOut> implements IEnumerable<TOut>
 {
     static empty<TOut>(): IEnumerable<TOut>;
     static range(start: number, count: number): IEnumerable<number>;
