@@ -36,8 +36,7 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
     // defaultIfEmpty
 
     distinct(): IEnumerable<TOut>;
-
-    // distinctBy
+    distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
 
     elementAt(index: number): TOut;
 
@@ -433,9 +432,16 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
         return element;
     }
 
-    public distinct(): IEnumerable<TOut>
+    public distinct(): IEnumerable<TOut>;
+    public distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    public distinct<TKey>(keySelector?: Selector<TOut, TKey>): IEnumerable<TOut>
     {
-        return new UniqueEnumerable<TOut>(this.clone());
+        if (keySelector !== undefined)
+        {
+            return new UniqueEnumerable<TOut, TKey>(this.clone(), keySelector);
+        }
+
+        return new UniqueEnumerable<TOut, TOut>(this.clone(), e => e);
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -717,33 +723,37 @@ class ConcatEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class UniqueEnumerable<TElement> extends Enumerable<TElement>
+class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
-    private _seenElements: TElement[];
+    private _seenKeys: TKey[];
+    private _keySelector: Selector<TElement, TKey>;
 
-    public constructor(source: IEnumerable<TElement>)
+    public constructor(source: IEnumerable<TElement>, keySelector: Selector<TElement, TKey>)
     {
         super(source);
-        this._seenElements = [];
+        this._seenKeys = [];
+        this._keySelector = keySelector;
     }
 
-    public clone(): UniqueEnumerable<TElement>
+    public clone(): UniqueEnumerable<TElement, TKey>
     {
-        return new UniqueEnumerable<TElement>(this.source.clone());
+        return new UniqueEnumerable<TElement, TKey>(this.source.clone(), this._keySelector);
     }
 
     public reset(): void
     {
         super.reset();
-        this._seenElements = [];
+        this._seenKeys = [];
     }
 
     private isUnique(element: TElement): boolean
     {
-        if (this._seenElements.indexOf(element) < 0)
+        const key = this._keySelector(element);
+
+        if (this._seenKeys.indexOf(key) < 0)
         {
-            this._seenElements.push(element);
+            this._seenKeys.push(key);
 
             return true;
         }
