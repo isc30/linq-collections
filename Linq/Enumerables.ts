@@ -106,7 +106,7 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
     /////// thenBy
     /////// thenByDescending
 
-    // union
+    union(other: IEnumerable<TOut>): IEnumerable<TOut>;
 
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 }
@@ -547,6 +547,11 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
     public take(amount: number): IEnumerable<TOut>
     {
         return new RangeEnumerable<TOut>(this.clone(), undefined, amount);
+    }
+
+    public union(other: IEnumerable<TOut>): IEnumerable<TOut>
+    {
+        return new UniqueEnumerable<TOut, TOut>(this.concat(other), e => e);
     }
 }
 
