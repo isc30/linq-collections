@@ -41,6 +41,7 @@ export namespace UnitTests
         Test.run("forEach", forEach, detailed) ? success++ : fail++;
         Test.run("elementAt", elementAt, detailed) ? success++ : fail++;
         Test.run("elementAtOrDefault", elementAtOrDefault, detailed) ? success++ : fail++;
+        Test.run("union", union, detailed) ? success++ : fail++;
 
         console.log(`Tests: ${success}/${success + fail}`);
     }
@@ -639,5 +640,18 @@ export namespace UnitTests
         t.isEqual(base.elementAtOrDefault(3), 4);
         t.isEqual(base.elementAtOrDefault(4), undefined);
         t.isEqual(base.elementAtOrDefault(5), undefined);
+    }
+
+    function union(t: Test): void
+    {
+        let base = Enumerable.fromSource([1, 2, 3, 4]);
+        let base2 = Enumerable.fromSource([2, 5, 1, 7]);
+        t.isArrayEqual(base.union(base2).toArray(), [1, 2, 3, 4, 5, 7]);
+
+        base2 = Enumerable.fromSource([]);
+        t.isArrayEqual(base.union(base2).toArray(), [1, 2, 3, 4]);
+
+        base = Enumerable.fromSource([]);
+        t.isArrayEqual(base.union(base2).toArray(), []);
     }
 }
