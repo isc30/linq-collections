@@ -458,6 +458,12 @@ export namespace UnitTests
 
         base = Enumerable.fromSource([-5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0]);
         t.isArrayEqual(base.distinct().toArray(), [-5, 6, 2, 99, 0, 7]);
+
+        let withKey = Enumerable.empty<string>();
+        t.isArrayEqual(withKey.distinct(x => x).toArray(), []);
+
+        withKey = Enumerable.fromSource(["a", "b", "aba", "ce", "wea", "baba", "era", "eaa"]);
+        t.isArrayEqual(withKey.distinct(e => e[0]).toArray(), ["a", "b", "ce", "wea", "era"]);
     }
 
     function min(t: Test): void
