@@ -42,6 +42,7 @@ export namespace UnitTests
         Test.run("elementAt", elementAt, detailed) ? success++ : fail++;
         Test.run("elementAtOrDefault", elementAtOrDefault, detailed) ? success++ : fail++;
         Test.run("union", union, detailed) ? success++ : fail++;
+        Test.run("except", except, detailed) ? success++ : fail++;
 
         console.log(`Tests: ${success}/${success + fail}`);
     }
@@ -653,5 +654,21 @@ export namespace UnitTests
 
         base = Enumerable.fromSource([]);
         t.isArrayEqual(base.union(base2).toArray(), []);
+    }
+
+    function except(t: Test): void
+    {
+        let base = Enumerable.fromSource([1, 2, 3, 4]);
+        let base2 = Enumerable.fromSource([2, 5, 1, 7]);
+        t.isArrayEqual(base.except(base2).toArray(), [3, 4]);
+
+        base2 = Enumerable.fromSource([3, 6, 88]);
+        t.isArrayEqual(base.except(base2).toArray(), [1, 2, 4]);
+
+        base2 = Enumerable.fromSource([]);
+        t.isArrayEqual(base.except(base2).toArray(), [1, 2, 3, 4]);
+
+        base = Enumerable.fromSource([]);
+        t.isArrayEqual(base.except(base2).toArray(), []);
     }
 }

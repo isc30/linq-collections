@@ -42,7 +42,7 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
 
     elementAtOrDefault(index: number): TOut | undefined;
 
-    // except
+    except(other: IEnumerable<TOut>): IEnumerable<TOut>;
 
     first(): TOut;
     first(predicate: Predicate<TOut>): TOut;
@@ -283,6 +283,11 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
         }
 
         return this.value();
+    }
+
+    public except(other: IEnumerable<TOut>): IEnumerable<TOut>
+    {
+        return this.where(e => !other.contains(e));
     }
 
     public first(): TOut;
