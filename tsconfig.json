@@ -1,0 +1,21 @@
+{
+    "compileOnSave": true,
+    "compilerOptions":
+    {
+        "alwaysStrict": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es5",
+        "module": "commonjs",
+        "removeComments": true,
+        "sourceMap": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "allowUnreachableCode": false,
+        "types": [ "jasmine" ]
+    },
+    "exclude": [
+        "node_modules",
+        "!node_modules/@types"
+    ]
+}

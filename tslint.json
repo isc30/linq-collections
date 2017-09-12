@@ -4,7 +4,7 @@
     ],
     "rules": {
         "class-name": true,
-        "comment-format": [true,
+            "comment-format": [true,
             "check-space"
         ],
         "indent": [true,
@@ -73,9 +73,7 @@
         "max-classes-per-file": [
             false
         ],
-        "variable-name": [
-            "allow-leading-underscore"
-        ],
+        "variable-name": [ true, "allow-leading-underscore" ],
         "member-ordering": [
             false
         ],
@@ -88,6 +86,7 @@
         ],
         "radix": false,
         "no-bitwise": false,
-        "no-reference": false
+        "no-reference": false,
+        "ordered-imports": false
     }
 }
