@@ -1,8 +1,8 @@
 {
   "devDependencies": {
-    "@types/node": "^7.0.12",
-	"@types/jasmine": "^7.0.12",
-    "mocha": "^3.2.0",
-    "typescript": "^2.4.1"
+    "@types/node",
+	"@types/jasmine",
+    "mocha",
+    "typescript"
   }
 }
