@@ -7,9 +7,9 @@
 		"prepare": "tsc",
 		
 		"pretest": "tsc",
-		"test": "mocha",
+		"test": "nyc mocha",
 
-		"cover": "nyc --reporter=text-lcov npm t",
+		"cover": "nyc --reporter=lcov npm t",
 		"report-coverage": "nyc report --reporter=text-lcov | coveralls",
 		
 		"check-coverage": "nyc check-coverage --lines 10",
