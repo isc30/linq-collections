@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/isc30/TsLinq.svg?branch=master)](https://travis-ci.org/isc30/TsLinq)
+[![Coverage Status](https://coveralls.io/repos/github/isc30/TsLinq/badge.svg?branch=master)](https://coveralls.io/github/isc30/TsLinq?branch=master)
+
 # TsLinq: Linq for TypeScript
 Best performance and 100% strongly and statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
 
