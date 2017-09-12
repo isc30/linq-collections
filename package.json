@@ -25,5 +25,10 @@
 	},
 	"directories": {
 		"test": "test"
+	},
+	"config": {
+		"ghooks": {
+		  "pre-commit": "npm run validate"
+		}
 	}
 }
