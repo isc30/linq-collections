@@ -1,18 +1,23 @@
 {
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/isc30/TsLinq"
+	},
 	"scripts": {
-		"pretest": "tsc",
 		"prepare": "tsc",
-		"posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
-		"check-coverage": "nyc check-coverage --lines 0",
-		"cover": "nyc --reporter=lcov npm t",
-		"validate": "npm run cover && npm run check-coverage"
+		
+		"pretest": "tsc",
+		"test": "nyc mocha",
+		"posttest": "nyc report --reporter=text-lcov --all | coveralls",
+		
+		"check-coverage": "nyc check-coverage --lines 10"
 	},
 	"devDependencies": {
 		"@types/node": "*",
 		"@types/jasmine": "*",
 		"mocha": "*",
 		"typescript": "*",
-		"codecov": "*",
+		"coveralls": "*",
 		"nyc": "*"
 	},
 	"directories": {

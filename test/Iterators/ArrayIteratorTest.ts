@@ -6,7 +6,7 @@ export namespace ArrayIteratorTests
     export function run(): void
     {
         it("Reset, Next, Value", general);
-        it("Clone", clone);
+        // it("Clone", clone);
     }
 
     function general(): void
