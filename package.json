@@ -21,7 +21,8 @@
 		"mocha": "*",
 		"typescript": "*",
 		"coveralls": "*",
-		"nyc": "*"
+		"nyc": "*",
+		"ghooks": "*"
 	},
 	"directories": {
 		"test": "test"
