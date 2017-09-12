@@ -1,9 +1,8 @@
 {
 	"scripts": {
 		"pretest": "tsc",
-		"test": "nyc mocha",
 		"prepare": "tsc",
-		
+		"posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
 		"check-coverage": "nyc check-coverage --lines 0",
 		"cover": "nyc --reporter=lcov npm t",
 		"validate": "npm run cover && npm run check-coverage"
