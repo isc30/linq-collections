@@ -227,15 +227,20 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
         selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>
     {
+        const selectToEnumerable = (e: TOut) =>
+        {
+            const ie = selector(e);
+
+            return Array.isArray(ie)
+                ? Enumerable.fromSource(ie)
+                : ie;
+        };
+
         return this
-            .select(selector)
-            .select(
-                e => Array.isArray(e)
-                    ? Enumerable.fromSource(e)
-                    : e)
+            .select(selectToEnumerable)
             .aggregate(
                 (p, c) => p !== undefined
-                    ? p.concat(c)
+                    ? new ConcatEnumerable(p, c)
                     : c);
     }
 
