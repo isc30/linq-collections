@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/isc30/TsLinq/badge.svg?branch=master)](https://coveralls.io/github/isc30/TsLinq?branch=master) <- Please I need test contributors :D
 
 # TsLinq: Linq for TypeScript
-Best performance and 100% strongly and statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
+Best performance and 100% strongly/statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
 
 #### Strictly following original documentation
 https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution
