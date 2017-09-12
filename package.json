@@ -9,7 +9,7 @@
 		"pretest": "tsc",
 		"test": "mocha",
 
-		"cover": "nyc --reporter=lcov npm t",
+		"cover": "nyc --reporter=text-lcov npm t",
 		"report-coverage": "nyc report --reporter=text-lcov | coveralls",
 		
 		"check-coverage": "nyc check-coverage --lines 10",
