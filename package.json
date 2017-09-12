@@ -1,13 +1,19 @@
 {
 	"scripts": {
 		"pretest": "tsc",
-		"test": "mocha",
-		"prepare": "tsc"
+		"test": "nyc mocha",
+		"prepare": "tsc",
+		"posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
 	},
 	"devDependencies": {
 		"@types/node": "*",
 		"@types/jasmine": "*",
 		"mocha": "*",
-		"typescript": "*"
+		"typescript": "*",
+		"codecov": "*",
+		"nyc": "*"
+	},
+	"directories": {
+		"test": "test"
 	}
 }
