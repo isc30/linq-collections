@@ -1,8 +1,13 @@
 {
-  "devDependencies": {
-    "@types/node": "*",
-	"@types/jasmine": "*",
-    "mocha": "*",
-    "typescript": "*"
-  }
+	"scripts": {
+		"pretest": "tsc",
+		"test": "mocha",
+		"prepare": "tsc"
+	},
+	"devDependencies": {
+		"@types/node": "*",
+		"@types/jasmine": "*",
+		"mocha": "*",
+		"typescript": "*"
+	}
 }
