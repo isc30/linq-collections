@@ -296,3 +296,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 coverage/coverage-final.json
+.nyc_output/

@@ -6,7 +6,7 @@ export namespace ArrayIteratorTests
     export function run(): void
     {
         it("Reset, Next, Value", general);
-        // it("Clone", clone);
+        it("Clone", clone);
     }
 
     function general(): void
@@ -28,6 +28,15 @@ export namespace ArrayIteratorTests
 
     function clone(): void
     {
-        throw new Error("Not implemented");
+        const i = new ArrayIterator<number>([2, 4, 6]);
+        Test.isTrue(i.next());
+        Test.isEqual(i.value(), 2);
+
+        const x = i.clone();
+        Test.isTrue(i.next());
+        Test.isEqual(i.value(), 4);
+
+        Test.isTrue(x.next());
+        Test.isEqual(x.value(), 2);
     }
 }

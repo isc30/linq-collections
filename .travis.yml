@@ -3,8 +3,6 @@ sudo: false
 node_js:
   - "node"
 install:
-  - npm install --only=dev
+  - npm install
 script:
   - npm test
-after_success:
-  - npm run report-coverage
