@@ -7,8 +7,7 @@
 		"prepare": "tsc",
 		"pretest": "tsc",
 		"test": "nyc mocha",
-		"posttest": "nyc report --reporter=text-lcov | coveralls",
-		"check-coverage": "nyc check-coverage --lines 10"
+        "report-coverage": "nyc report --reporter=text-lcov | coveralls"
 	},
 	"devDependencies": {
 		"@types/node": "*",
@@ -16,8 +15,7 @@
 		"mocha": "*",
 		"typescript": "*",
 		"coveralls": "*",
-		"nyc": "*",
-		"ghooks": "*"
+		"nyc": "*"
 	},
 	"directories": {
 		"test": "test"
