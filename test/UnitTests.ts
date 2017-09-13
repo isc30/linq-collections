@@ -1,7 +1,10 @@
-import {ArrayIteratorTests} from "./Iterators/ArrayIteratorTest";
-import {StringIteratorTests} from "./Iterators/StringIteratorTest";
-import {EnumerableTests} from "./Linq/EnumerableTests";
-import {IEnumerableTests} from "./Linq/IEnumerableTests";
+import { ArrayIteratorTests } from "./Iterators/ArrayIteratorTest";
+import { StringIteratorTests } from "./Iterators/StringIteratorTest";
+import { EnumerableTests } from "./Linq/EnumerableTests";
+import { IEnumerableTests } from "./Linq/IEnumerableTests";
+import { UtilsTests } from "./UtilsTest";
+
+describe("Utils", UtilsTests.run);
 
 describe("Iterators", () =>
 {

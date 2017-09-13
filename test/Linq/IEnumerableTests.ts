@@ -1,6 +1,6 @@
-import {Enumerable} from "../../Linq/Enumerables";
-import {ArrayIterator, StringIterator} from "../../Linq/Iterators";
-import {Test} from "../Test";
+import { Enumerable } from "../../src/Enumerables";
+import { ArrayIterator, StringIterator } from "../../src/Iterators";
+import { Test } from "../Test";
 
 export namespace IEnumerableTests
 {

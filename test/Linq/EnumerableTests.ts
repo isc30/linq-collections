@@ -1,6 +1,6 @@
-import {Enumerable} from "../../Linq/Enumerables";
-import {ArrayIterator} from "../../Linq/Iterators";
-import {Test} from "../Test";
+import { Enumerable } from "../../src/Enumerables";
+import { ArrayIterator } from "../../src/Iterators";
+import { Test } from "../Test";
 
 export namespace EnumerableTests
 {
@@ -14,33 +14,33 @@ export namespace EnumerableTests
 
     function fromSource(): void
     {
-        let i = Enumerable.fromSource(new ArrayIterator<number>([]));
-        Test.isFalse(i.next());
-        Test.throwsException(() => i.value());
+        let e = Enumerable.fromSource(new ArrayIterator<number>([]));
+        Test.isFalse(e.next());
+        Test.throwsException(() => e.value());
 
-        i = Enumerable.fromSource(new ArrayIterator<number>([2, 4, 6]));
-        Test.isTrue(i.next());
-        Test.isEqual(i.value(), 2);
-        Test.isTrue(i.next());
-        Test.isEqual(i.value(), 4);
-        Test.isTrue(i.next());
-        Test.isEqual(i.value(), 6);
-        Test.isFalse(i.next());
-        Test.throwsException(() => i.value());
+        e = Enumerable.fromSource(new ArrayIterator<number>([2, 4, 6]));
+        Test.isTrue(e.next());
+        Test.isEqual(e.value(), 2);
+        Test.isTrue(e.next());
+        Test.isEqual(e.value(), 4);
+        Test.isTrue(e.next());
+        Test.isEqual(e.value(), 6);
+        Test.isFalse(e.next());
+        Test.throwsException(() => e.value());
 
-        i = Enumerable.fromSource(Enumerable.fromSource(new ArrayIterator<number>([])));
-        Test.isFalse(i.next());
-        Test.throwsException(() => i.value());
+        e = Enumerable.fromSource(Enumerable.fromSource(new ArrayIterator<number>([])));
+        Test.isFalse(e.next());
+        Test.throwsException(() => e.value());
 
-        i = Enumerable.fromSource(Enumerable.fromSource([2, 4, 6]));
-        Test.isTrue(i.next());
-        Test.isEqual(i.value(), 2);
-        Test.isTrue(i.next());
-        Test.isEqual(i.value(), 4);
-        Test.isTrue(i.next());
-        Test.isEqual(i.value(), 6);
-        Test.isFalse(i.next());
-        Test.throwsException(() => i.value());
+        e = Enumerable.fromSource(Enumerable.fromSource([2, 4, 6]));
+        Test.isTrue(e.next());
+        Test.isEqual(e.value(), 2);
+        Test.isTrue(e.next());
+        Test.isEqual(e.value(), 4);
+        Test.isTrue(e.next());
+        Test.isEqual(e.value(), 6);
+        Test.isFalse(e.next());
+        Test.throwsException(() => e.value());
     }
 
     function empty(): void

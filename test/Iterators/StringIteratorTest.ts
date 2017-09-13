@@ -1,5 +1,5 @@
-import {Test} from "../Test";
-import {StringIterator} from "../../Linq/Iterators";
+import { Test } from "../Test";
+import { StringIterator } from "../../src/Iterators";
 
 export namespace StringIteratorTests
 {
