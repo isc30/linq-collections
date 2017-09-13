@@ -6,7 +6,7 @@ import {IEnumerableTests} from "./Linq/IEnumerableTests";
 describe("Iterators", () =>
 {
     describe("ArrayIterator", ArrayIteratorTests.run);
-    // describe("StringIterator", StringIteratorTests.run);
+    describe("StringIterator", StringIteratorTests.run);
 });
 
 describe("Linq", () =>

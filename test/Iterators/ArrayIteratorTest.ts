@@ -104,9 +104,7 @@ export namespace ArrayIteratorTests
 
             Test.isTrue(it.next()); Test.isEqual(it.value(), 2);
             Test.isTrue(it.next()); Test.isEqual(it.value(), 4);
-            Test.isFalse(it.next());
-
-            Test.throwsException(() => it.value());
+            Test.isFalse(it.next()); Test.throwsException(() => it.value());
         });
     }
 
