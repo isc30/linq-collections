@@ -26,7 +26,7 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
 
     average(selector: Selector<TOut, number>): number;
 
-    concat(other: IEnumerable<TOut>): IEnumerable<TOut>;
+    concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>;
 
     contains(element: TOut): boolean;
 
@@ -244,9 +244,18 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
                     : c);
     }
 
-    public concat(other: IEnumerable<TOut>): IEnumerable<TOut>
+    public concat(
+        other: IEnumerable<TOut>,
+        ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>
     {
-        return new ConcatEnumerable<TOut>(this.clone(), other.clone());
+        let result = new ConcatEnumerable<TOut>(this.clone(), other.clone());
+
+        for (const next of others)
+        {
+            result = new ConcatEnumerable<TOut>(result, next.clone());
+        }
+
+        return result;
     }
 
     public elementAt(index: number): TOut

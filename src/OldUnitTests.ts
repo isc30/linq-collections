@@ -97,34 +97,6 @@ export namespace UnitTests
         Test.throwsException(() => i.value());
     }
 
-    function toArray(): void
-    {
-        const base = [1, 2, 3, 4];
-        const baseEnumerable = Enumerable.fromSource(base);
-        const baseArray = baseEnumerable.toArray(); // Copy of `base`
-
-        Test.isArrayEqual(base, baseArray);
-
-        base.push(5);
-        Test.isArrayEqual([1, 2, 3, 4], baseArray);
-
-        let source: number[] = [];
-        let i = Enumerable.fromSource(new ArrayIterator(source));
-        Test.isArrayEqual(i.toArray(), source);
-
-        source = [1, 2, 3];
-        i = Enumerable.fromSource(new ArrayIterator(source));
-        Test.isArrayEqual(i.toArray(), source);
-
-        const strSource = ["asd", "asdaa"];
-        const strI = Enumerable.fromSource(new ArrayIterator(strSource));
-        Test.isArrayEqual(strI.toArray(), strSource);
-
-        const str = "asdasdsad";
-        const strI2 = Enumerable.fromSource(new StringIterator(str));
-        Test.isArrayEqual(strI2.toArray(), str.split(""));
-    }
-
     function reverse(): void
     {
         const baseEnumerable = Enumerable.fromSource([1, 2, 3, 4]);
@@ -132,31 +104,6 @@ export namespace UnitTests
 
         Test.isArrayEqual([1, 2, 3, 4], baseEnumerable.toArray());
         Test.isArrayEqual([4, 3, 2, 1], baseEnumerableReversed.toArray());
-    }
-
-    function concat(): void
-    {
-        const base0 = Enumerable.fromSource([1, 2]);
-        const base1 = Enumerable.fromSource([3, 4]);
-        const result = base0.concat(base1);
-
-        Test.isArrayEqual([1, 2], base0.toArray());
-        Test.isArrayEqual([3, 4], base1.toArray());
-        Test.isArrayEqual([1, 2, 3, 4], result.toArray());
-    }
-
-    function aggregate(): void
-    {
-        let base = Enumerable.fromSource([] as string[]);
-        Test.throwsException(() => base.aggregate((p, c) => c));
-
-        base = Enumerable.fromSource(["a", "b", "a", "a"]);
-        Test.isEqual(base.aggregate((p, c) => p === "b" ? p : c), "b");
-        Test.isEqual(base.aggregate((p, c) => 33, 2), 33);
-        Test.isTrue(base.aggregate<boolean>((p, c) => p || c === "b", false));
-        Test.isTrue(base.aggregate<boolean>((p, c) => p || c === "a", false));
-        Test.isFalse(base.aggregate<boolean>((p, c) => p || c === "x", false));
-        Test.isTrue(base.aggregate<boolean>((p, c) => p || c === "x", true));
     }
 
     function count(): void
@@ -181,44 +128,6 @@ export namespace UnitTests
         Test.isEqual(base.count(e => e % 2 !== 0), 3);
         Test.isEqual(base.count(e => e % 2 === 0), 2);
         Test.isEqual(base.count((e) => e > 50), 1);
-    }
-
-    function any(): void
-    {
-        let base = Enumerable.empty<string>();
-        Test.isTrue(!base.any());
-
-        base = Enumerable.fromSource(["lol"]);
-        Test.isTrue(base.any());
-
-        // With predicate
-        base = Enumerable.fromSource(["a", "av", "abc", "x"]);
-
-        Test.isTrue(base.any(e => e.length > 2));
-        Test.isTrue(base.any(e => e[0] === "a"));
-        Test.isTrue(!base.any(e => e[0] === "b"));
-        Test.isTrue(!base.any(e => e.length > 5));
-        Test.isTrue(!base.any(e => e.length === 0));
-        Test.isTrue(base.any(e => e.length === 1));
-    }
-
-    function all(): void
-    {
-        let base = Enumerable.empty<string>();
-        Test.isTrue(base.all(e => true));
-
-        base = Enumerable.fromSource(["lol"]);
-        Test.isTrue(base.all(e => e[0] === "l"));
-
-        base = Enumerable.fromSource(["a", "av", "abc"]);
-        Test.isTrue(base.all(e => e.length > 0));
-        Test.isTrue(base.all(e => e[0] === "a"));
-
-        base = Enumerable.fromSource(["a", "av", "abc", "xd"]);
-        Test.isTrue(!base.all(e => e[0] === "a"));
-
-        base = Enumerable.fromSource(["a", "av", "abc", "xd", ""]);
-        Test.isTrue(!base.all(e => e.length > 0));
     }
 
     function contains(): void
@@ -456,21 +365,6 @@ export namespace UnitTests
         Test.isEqual(strbase.max(), "you");
         Test.isEqual(strbase.max(e => e[0]), "y");
         Test.isEqual(strbase.max(e => e[1]), "v");
-    }
-
-    function average(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.throwsException(() => base.average(e => e));
-
-        base = Enumerable.fromSource([2]);
-        Test.isEqual(base.average(e => e), 2);
-
-        base = Enumerable.fromSource([3, 4, -2, 79, 1]);
-        Test.isEqual(base.average(e => e), 17);
-
-        const strbase = Enumerable.fromSource(["112", "432", "46"]);
-        Test.isEqual(strbase.average(e => parseInt(e[0])), 3);
     }
 
     function sum(): void
