@@ -2,7 +2,7 @@ import { ArrayIteratorTests } from "./Iterators/ArrayIteratorTest";
 import { StringIteratorTests } from "./Iterators/StringIteratorTest";
 import { EnumerableTests } from "./Linq/EnumerableTests";
 import { IEnumerableTests } from "./Linq/IEnumerableTests";
-import { UtilsTests } from "./UtilsTest";
+import { UtilsTests } from "./Utils/UtilsTest";
 
 describe("Utils", UtilsTests.run);
 

@@ -106,41 +106,6 @@ export namespace UnitTests
         Test.isArrayEqual([4, 3, 2, 1], baseEnumerableReversed.toArray());
     }
 
-    function count(): void
-    {
-        let source: number[] = [];
-        let i = Enumerable.fromSource(new ArrayIterator(source));
-        Test.isEqual(i.count(), source.length);
-
-        source = [1, 2, 3];
-        i = Enumerable.fromSource(new ArrayIterator(source));
-        Test.isEqual(i.count(), source.length);
-
-        const strSource = ["asd", "asdaa"];
-        const strI = Enumerable.fromSource(new ArrayIterator(strSource));
-        Test.isEqual(strI.count(), strSource.length);
-
-        const str = "asdasdsad";
-        const strI2 = Enumerable.fromSource(new StringIterator(str));
-        Test.isEqual(strI2.count(), str.split("").length);
-
-        const base = Enumerable.fromSource([1, 2, 41, 668, 7]);
-        Test.isEqual(base.count(e => e % 2 !== 0), 3);
-        Test.isEqual(base.count(e => e % 2 === 0), 2);
-        Test.isEqual(base.count((e) => e > 50), 1);
-    }
-
-    function contains(): void
-    {
-        const base = Enumerable.fromSource([1, 2, 4]);
-
-        Test.isTrue(base.contains(1));
-        Test.isTrue(base.contains(2));
-        Test.isTrue(!base.contains(3));
-        Test.isTrue(base.contains(4));
-        Test.isTrue(!base.contains(7));
-    }
-
     function where(): void
     {
         const base = Enumerable.fromSource([39, 21, 66, 20]);

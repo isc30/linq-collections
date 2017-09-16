@@ -1,5 +1,5 @@
-import { Cached } from "../src/Utils";
-import { Test } from "./Test";
+import { Cached } from "../../src/Utils";
+import { Test } from "./../Test";
 
 export namespace UtilsTests
 {

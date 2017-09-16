@@ -12,9 +12,9 @@ export namespace IEnumerableTests
         describe("Any", any);
         describe("Average", average);
         describe("Concat", concat);
-        /*describe("Contains", aggregate);
-        describe("Count", aggregate);
-        describe("Distinct", aggregate);
+        describe("Contains", contains);
+        describe("Count", count);
+        /*describe("Distinct", aggregate);
         describe("ElementAt", aggregate);
         describe("ElementAtOrDefault", aggregate);
         describe("Except", aggregate);
@@ -173,6 +173,20 @@ export namespace IEnumerableTests
             Test.isFalse(base.any(e => e.length > 5));
             Test.isFalse(base.any(e => e.length === 0));
         });
+
+        it("Stop as soon as the result can be determined", () =>
+        {
+            const base = Enumerable.fromSource([
+                () => 3,
+                () => 4,
+                () => { throw new Error("stop"); },
+                () => 5,
+            ]);
+
+            Test.isTrue(base.any(e => e() === 3));
+            Test.isTrue(base.any(e => e() === 4));
+            Test.throwsException(() => base.any(e => e() === 5));
+        });
     }
 
     function average(): void
@@ -303,6 +317,73 @@ export namespace IEnumerableTests
             Test.isArrayEqual(empty.concat(range, empty).toArray(), [1, 2, 3]);
             Test.isArrayEqual(range.concat(range, empty).toArray(), [1, 2, 3, 1, 2, 3]);
             Test.isArrayEqual(range.concat(empty, range).toArray(), [1, 2, 3, 1, 2, 3]);
+        });
+    }
+
+    function contains(): void
+    {
+        it("Empty returns false", () =>
+        {
+            const empty = Enumerable.empty<number>();
+
+            Test.isFalse(empty.contains(999));
+            Test.isFalse(empty.contains(0));
+            Test.isFalse(empty.contains(-999));
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 4]);
+
+            Test.isTrue(base.contains(1));
+            Test.isTrue(base.contains(2));
+            Test.isTrue(base.contains(4));
+            Test.isFalse(base.contains(3));
+            Test.isFalse(base.contains(7));
+        });
+    }
+
+    function count(): void
+    {
+        it("Empty returns Zero (no predicate)", () =>
+        {
+            const empty = Enumerable.empty<number>();
+            Test.isEqual(empty.count(), 0);
+        });
+
+        it("Empty returns Zero (with predicate)", () =>
+        {
+            const empty = Enumerable.empty<number>();
+            Test.isEqual(empty.count(e => e === 13), 0);
+        });
+
+        it("Value is correct (no predicate)", () =>
+        {
+            let base = Enumerable.fromSource<number>([1]);
+            Test.isEqual(base.count(), 1);
+
+            base = Enumerable.fromSource<number>([1, 2, 3]);
+            Test.isEqual(base.count(), 3);
+
+            base = Enumerable.range(1, 66);
+            Test.isEqual(base.count(), 66);
+        });
+
+        it("Value is correct (with predicate)", () =>
+        {
+            let base = Enumerable.fromSource<number>([1]);
+            Test.isEqual(base.count(e => e < 4), 1);
+            Test.isEqual(base.count(e => e > 4), 0);
+
+            base = Enumerable.fromSource<number>([1, 2, 3]);
+            Test.isEqual(base.count(e => e % 2 !== 0), 2);
+            Test.isEqual(base.count(e => e > 0), 3);
+            Test.isEqual(base.count(e => e <= 1), 1);
+
+            base = Enumerable.range(1, 66);
+            Test.isEqual(base.count(e => e < 1), 0);
+            Test.isEqual(base.count(e => e > 20), 46);
+            Test.isEqual(base.count(e => e < 100), 66);
         });
     }
 }
