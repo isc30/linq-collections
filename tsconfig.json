@@ -12,7 +12,7 @@
         "noImplicitAny": true,
         "strictNullChecks": true,
         "allowUnreachableCode": false,
-        "types": [ "jasmine" ]
+        "types": [ "mocha" ]
     },
     "exclude": [
         "node_modules",

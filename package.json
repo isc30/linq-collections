@@ -11,7 +11,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "*",
-		"@types/jasmine": "*",
+		"@types/mocha": "*",
 		"mocha": "*",
 		"typescript": "*",
 		"coveralls": "*",
