@@ -1,0 +1,33 @@
+{
+    "editor.renderWhitespace": "all",
+    "editor.wordWrap": "on",
+    "editor.renderControlCharacters": true,
+    "typescript.format.placeOpenBraceOnNewLineForFunctions": true,
+    "typescript.format.placeOpenBraceOnNewLineForControlBlocks": true,
+    "javascript.format.placeOpenBraceOnNewLineForFunctions": true,
+    "typescript.implementationsCodeLens.enabled": true,
+    "editor.quickSuggestionsDelay": 0,
+    "typescript.referencesCodeLens.enabled": true,
+    "files.exclude": {
+        ".gitignore": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/*.js": true,
+        "**/*.map": true,
+        "**/node_modules": true,
+        "**/.nyc_output": true,
+        "**/coverage": true
+    },
+    "files.insertFinalNewline": true,
+    "window.zoomLevel": 0,
+    "emeraldwalk.runonsave": {
+        "autoClearConsole": true,
+        "commands": [
+            {
+                "match": "\\.ts$",
+                "cmd": "tsc -p ${workspaceRoot}"
+            }
+        ]
+    }
+}

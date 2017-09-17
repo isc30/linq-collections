@@ -1,0 +1,27 @@
+{
+    "version": "0.1.0",
+    "tasks":[
+        {
+            "taskName": "build",
+            "suppressTaskName": true,
+            "isBuildCommand": true,
+            "isShellCommand": true,
+            "command": "tsc",
+            "args": ["-p", "."], // -w
+            "problemMatcher": "$tsc",
+            "showOutput": "always",
+            "echoCommand": true
+            //"isBackground": true,
+        },
+        {
+            "taskName": "test",
+            "suppressTaskName": true,
+            "isShellCommand": true,
+            "showOutput": "always",
+            "echoCommand": true,
+            "command": "nyc",
+            "isTestCommand": true,
+            "args": ["mocha"]
+        }
+    ]
+}
