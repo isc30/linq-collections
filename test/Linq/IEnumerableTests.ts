@@ -14,8 +14,8 @@ export namespace IEnumerableTests
         describe("Concat", concat);
         describe("Contains", contains);
         describe("Count", count);
-        /*describe("Distinct", aggregate);
-        describe("ElementAt", aggregate);
+        describe("Distinct", distinct);
+        /*describe("ElementAt", aggregate);
         describe("ElementAtOrDefault", aggregate);
         describe("Except", aggregate);
         describe("First", aggregate);
@@ -384,6 +384,43 @@ export namespace IEnumerableTests
             Test.isEqual(base.count(e => e < 1), 0);
             Test.isEqual(base.count(e => e > 20), 46);
             Test.isEqual(base.count(e => e < 100), 66);
+        });
+    }
+
+    function distinct(): void
+    {
+        it("Return empty if empty (no predicate)", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.isArrayEqual(base.distinct().toArray(), []);
+        });
+
+        it("Value is correct (no predicate)", () =>
+        {
+            const base = Enumerable.fromSource([
+                -5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0,
+            ]);
+
+            Test.isArrayEqual(
+                base.distinct().toArray(),
+                [-5, 6, 2, 99, 0, 7]);
+        });
+
+        it("Return empty if empty (with predicate)", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.isArrayEqual(base.distinct(x => x).toArray(), []);
+        });
+
+        it("Value is correct (with predicate)", () =>
+        {
+            const base = Enumerable.fromSource([
+                "a", "b", "aba", "ce", "wea", "baba", "era", "eaa",
+            ]);
+
+            Test.isArrayEqual(
+                base.distinct(e => e[0]).toArray(),
+                ["a", "b", "ce", "wea", "era"]);
         });
     }
 }
