@@ -283,21 +283,6 @@ export namespace UnitTests
         Test.isEqual(base.singleOrDefault(e => e === 11811), undefined);
     }
 
-    function distinct(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.isArrayEqual(base.distinct().toArray(), []);
-
-        base = Enumerable.fromSource([-5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0]);
-        Test.isArrayEqual(base.distinct().toArray(), [-5, 6, 2, 99, 0, 7]);
-
-        let withKey = Enumerable.empty<string>();
-        Test.isArrayEqual(withKey.distinct(x => x).toArray(), []);
-
-        withKey = Enumerable.fromSource(["a", "b", "aba", "ce", "wea", "baba", "era", "eaa"]);
-        Test.isArrayEqual(withKey.distinct(e => e[0]).toArray(), ["a", "b", "ce", "wea", "era"]);
-    }
-
     function min(): void
     {
         let base = Enumerable.empty<number>();
