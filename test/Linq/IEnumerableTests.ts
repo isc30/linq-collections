@@ -445,6 +445,12 @@ export namespace IEnumerableTests
             const base = Enumerable.fromSource(["Ivan", "Uxue", "Manolo", "Antonio"]);
             Test.isArrayEqual(base.orderBy(e => e[1]).toArray(), ["Manolo", "Antonio", "Ivan", "Uxue"]);
         });
+
+        it("Million numbers", () =>
+        {
+            const base = Enumerable.range(0, 1000000);
+            Test.isArrayEqual(base.orderBy(e => e).take(1).toArray(), [0]);
+        });
     }
 
     function orderByDescending(): void
@@ -467,14 +473,9 @@ export namespace IEnumerableTests
             Test.isArrayEqual(base.orderByDescending(e => e[1]).toArray(), ["Uxue", "Ivan", "Antonio", "Manolo"]);
         });
 
-        it("Million numbers :D", () =>
+        it("Million numbers", () =>
         {
             const base = Enumerable.range(0, 1000000);
-            // console.log("start");
-            // const ordered = base.orderByDescending(e => e);
-            // console.log("end");
-            // const result = ordered.toArray();
-
             Test.isArrayEqual(base.orderByDescending(e => e).take(1).toArray(), [999999]);
         });
     }
