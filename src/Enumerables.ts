@@ -1,11 +1,8 @@
+import { Selector, Predicate, Aggregator, Action } from "./Types";
 import { List } from "./Containers";
-import { ArrayIterator, IIterator } from "./Iterators";
+import { IIterator, ArrayIterator } from "./Iterators";
+import { Comparer, KeyComparer  } from "./Comparers";
 import { Cached } from "./Utils";
-
-export type Selector<TElement, TOut> = (element: TElement) => TOut;
-export type Predicate<TElement> = Selector<TElement, boolean>;
-export type Aggregator<TElement, TValue> = (previous: TValue, current: TElement) => TValue;
-export type Action<TElement> = (element: TElement, index: number) => void;
 
 export interface IEnumerable<TOut> extends IIterator<TOut>
 {
@@ -74,9 +71,9 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
     min(): TOut;
     min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-    // orderBy
+    orderBy<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>;
 
-    // orderByDescending
+    orderByDescending<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>;
 
     reverse(): IEnumerable<TOut>;
 
@@ -111,9 +108,25 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 }
 
+export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
+{
+    /*thenBy<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    thenBy<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>,
+        comparer: Comparer<TSelectorOut>): TSelectorOut;
+
+    thenByDescending<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    thenByDescending<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>,
+        comparer: Comparer<TSelectorOut>): TSelectorOut;*/
+}
+
 abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
     protected readonly source: IIterator<TElement> | IEnumerable<TElement>;
+    protected _isValid: boolean;
 
     protected constructor(source: IIterator<TElement>)
     {
@@ -244,9 +257,7 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
                     : c);
     }
 
-    public concat(
-        other: IEnumerable<TOut>,
-        ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>
+    public concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>
     {
         let result = new ConcatEnumerable<TOut>(this.clone(), other.clone());
 
@@ -499,6 +510,16 @@ abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
             (previous !== undefined && previous < current)
                 ? previous
                 : current);
+    }
+
+    public orderBy<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>
+    {
+        return new OrderedEnumerable(this.clone(), new KeyComparer(keySelector, true));
+    }
+
+    public orderByDescending<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>
+    {
+        return new OrderedEnumerable(this.clone(), new KeyComparer(keySelector, false));
     }
 
     public max(): TOut;
@@ -1037,5 +1058,88 @@ class ReverseEnumerable<TElement> extends Enumerable<TElement>
         }
 
         return this._elements.value[(this._elements.value.length - 1) - this._currentIndex];
+    }
+}
+
+class OrderedEnumerable<TOut, TKey> extends EnumerableBase<TOut, TOut> implements IOrderedEnumerable<TOut>
+{
+    protected source: IEnumerable<TOut>;
+    private _comparer: Comparer<TOut>;
+    private _elements: Cached<TOut[]>;
+    private _currentIndex: number;
+
+    public constructor(source: IEnumerable<TOut>, comparer: Comparer<TOut>)
+    {
+        super(source);
+
+        this._comparer = comparer;
+        this._elements = new Cached<TOut[]>();
+        this._currentIndex = -1;
+    }
+
+    private isValidIndex(): boolean
+    {
+        return this._currentIndex >= 0
+            && this._currentIndex < this._elements.value.length;
+    }
+
+    /*public thenBy<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>): IOrderedEnumerable<TOut>;
+    public thenBy<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>, comparer: Comparer<TOut>): IOrderedEnumerable<TOut>;
+    public thenBy<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>,
+        comparer: Comparer<TOut> = new Comparer()): IOrderedEnumerable<TOut>
+    {
+        const chainedComparer = this._comparer.then(comparer);
+    }
+
+    public thenByDescending<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    public thenByDescending<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>, comparer: Comparer<TSelectorOut>): TSelectorOut;
+    public thenByDescending<TSelectorOut>(
+        keySelector: Selector<TOut, TSelectorOut>,
+        comparer: Comparer<TSelectorOut> = new Comparer()): TSelectorOut
+    {
+        throw new Error("Method not implemented.");
+    }*/
+
+    public reset(): void
+    {
+        this._elements.invalidate();
+        this._currentIndex = -1;
+    }
+
+    public clone(): IEnumerable<TOut>
+    {
+        return new OrderedEnumerable(this.source.clone(), this._comparer);
+    }
+
+    public value(): TOut
+    {
+        if (!this._elements.isValid() || !this.isValidIndex())
+        {
+            throw new Error("Out of bounds");
+        }
+
+        return this._elements.value[(this._elements.value.length - 1) - this._currentIndex];
+    }
+
+    public next(): boolean
+    {
+        if (!this._elements.isValid())
+        {
+            this._elements.value = this.orderElements(this.source.toArray());
+        }
+
+        this._currentIndex++;
+
+        return this.isValidIndex();
+    }
+
+    private orderElements(elements: TOut[]): TOut[]
+    {
+        return elements.sort(this._comparer.compare.bind(this._comparer));
     }
 }

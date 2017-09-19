@@ -6,7 +6,7 @@
 	"scripts": {
 		"prepare": "tsc",
 		"pretest": "tsc",
-		"test": "nyc mocha",
+		"test": "nyc mocha --slow 0",
         "report-coverage": "nyc report --reporter=text-lcov | coveralls"
 	},
 	"devDependencies": {

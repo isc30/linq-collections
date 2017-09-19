@@ -68,6 +68,9 @@ export namespace EnumerableTests
 
         base = Enumerable.range(0, 6);
         Test.isArrayEqual(base.toArray(), [0, 1, 2, 3, 4, 5]);
+
+        base = Enumerable.range(0, 1000000);
+        Test.isArrayEqual(base.toArray(), base.toArray());
     }
 
     function repeat(): void

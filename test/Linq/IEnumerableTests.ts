@@ -15,25 +15,27 @@ export namespace IEnumerableTests
         describe("Contains", contains);
         describe("Count", count);
         describe("Distinct", distinct);
-        /*describe("ElementAt", aggregate);
-        describe("ElementAtOrDefault", aggregate);
-        describe("Except", aggregate);
-        describe("First", aggregate);
-        describe("FirstOrDefault", aggregate);
-        describe("ForEach", aggregate);
-        describe("Last", aggregate);
-        describe("LastOrDefault", aggregate);
-        describe("Max", aggregate);
-        describe("Min", aggregate);
-        describe("Select", aggregate);
-        describe("SelectMany", aggregate);
-        describe("Single", aggregate);
-        describe("SingleOrDefault", aggregate);
-        describe("Skip", aggregate);
-        describe("Sum", aggregate);
-        describe("Take", aggregate);
-        describe("Union", aggregate);
-        describe("Where", aggregate);*/
+        // describe("ElementAt", aggregate);
+        // describe("ElementAtOrDefault", aggregate);
+        // describe("Except", aggregate);
+        // describe("First", aggregate);
+        // describe("FirstOrDefault", aggregate);
+        // describe("ForEach", aggregate);
+        // describe("Last", aggregate);
+        // describe("LastOrDefault", aggregate);
+        // describe("Max", aggregate);
+        // describe("Min", aggregate);
+        describe("OrderBy", orderBy);
+        describe("OrderByDescending", orderByDescending);
+        // describe("Select", aggregate);
+        // describe("SelectMany", aggregate);
+        // describe("Single", aggregate);
+        // describe("SingleOrDefault", aggregate);
+        // describe("Skip", aggregate);
+        // describe("Sum", aggregate);
+        // describe("Take", aggregate);
+        // describe("Union", aggregate);
+        // describe("Where", aggregate);
     }
 
     function toArray(): void
@@ -421,6 +423,59 @@ export namespace IEnumerableTests
             Test.isArrayEqual(
                 base.distinct(e => e[0]).toArray(),
                 ["a", "b", "ce", "wea", "era"]);
+        });
+    }
+
+    function orderBy(): void
+    {
+        it("Return empty if empty source", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.isArrayEqual(base.orderBy(e => e).toArray(), []);
+        });
+
+        it("Simple order", () =>
+        {
+            const base = Enumerable.fromSource([2, 6, 3, 7, 1]);
+            Test.isArrayEqual(base.orderBy(e => e).toArray(), [1, 2, 3, 6, 7]);
+        });
+
+        it("Simple order (key)", () =>
+        {
+            const base = Enumerable.fromSource(["Ivan", "Uxue", "Manolo", "Antonio"]);
+            Test.isArrayEqual(base.orderBy(e => e[1]).toArray(), ["Manolo", "Antonio", "Ivan", "Uxue"]);
+        });
+    }
+
+    function orderByDescending(): void
+    {
+        it("Return empty if empty source", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.isArrayEqual(base.orderByDescending(e => e).toArray(), []);
+        });
+
+        it("Simple order", () =>
+        {
+            const base = Enumerable.fromSource([2, 6, 3, 7, 1]);
+            Test.isArrayEqual(base.orderByDescending(e => e).toArray(), [7, 6, 3, 2, 1]);
+        });
+
+        it("Simple order (key)", () =>
+        {
+            const base = Enumerable.fromSource(["Ivan", "Uxue", "Manolo", "Antonio"]);
+            Test.isArrayEqual(base.orderByDescending(e => e[1]).toArray(), ["Uxue", "Ivan", "Antonio", "Manolo"]);
+        });
+
+        it("Million numbers :D", () =>
+        {
+            const base = Enumerable.range(0, 1000000);
+            // console.log("start");
+            // const ordered = base.orderByDescending(e => e);
+            // console.log("end");
+            // const result = ordered.toArray();
+
+            Test.isArrayEqual(base.orderByDescending(e => e).take(1).toArray(), [999999]);
         });
     }
 }

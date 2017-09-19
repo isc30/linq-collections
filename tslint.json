@@ -50,6 +50,8 @@
             "check-else",
             "check-open-brace"
         ],
+        "no-empty-interface": false,
+        "unified-signatures": false,
         "newline-before-return": true,
         "no-parameter-properties": true,
         "no-unused-variable": true,

@@ -14,7 +14,6 @@ export class ArrayIterator<TElement> implements IIterator<TElement>
     public constructor(source: TElement[])
     {
         this.source = source;
-
         this.reset();
     }
 
@@ -60,7 +59,6 @@ export class StringIterator implements IIterator<string>
     public constructor(source: string)
     {
         this.source = source;
-
         this.reset();
     }
 
@@ -75,17 +73,22 @@ export class StringIterator implements IIterator<string>
         this._currentValue = "";
     }
 
+    private isValid(): boolean
+    {
+        return this._currentValue !== "";
+    }
+
     public next(): boolean
     {
         this._currentValue = this._currentSource.charAt(0);
         this._currentSource = this._currentSource.substring(1);
 
-        return this._currentValue !== "";
+        return this.isValid();
     }
 
     public value(): string
     {
-        if (this._currentValue === "")
+        if (!this.isValid())
         {
             throw new Error("Out of bounds");
         }
