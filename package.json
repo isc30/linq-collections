@@ -38,8 +38,10 @@
 		"prepublish": "npm run publish-node && npm run publish-web"
 	},
 	"dependencies": {
+		"typescript": "*"
+	},
+	"devDependencies": {
 		"typescript": "*",
-		"@types/node": "*",
 		"@types/mocha": "*",
 		"mocha": "*",
 		"coveralls": "*",
