@@ -2,20 +2,26 @@
     "compileOnSave": true,
     "compilerOptions":
     {
-        "alwaysStrict": true,
-        "allowSyntheticDefaultImports": true,
         "target": "es5",
         "module": "commonjs",
-        "removeComments": true,
+        "declaration": true,
+        "alwaysStrict": true,
+        "allowSyntheticDefaultImports": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "removeComments": false,
         "sourceMap": true,
         "strict": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
         "allowUnreachableCode": false,
-        "types": ["mocha"]
+        "types": ["mocha"],
+        "outDir": "build"
     },
     "exclude": [
         "node_modules",
-        "!node_modules/@types"
+        "!node_modules/@types",
+        "build",
+        "dist"
     ]
 }

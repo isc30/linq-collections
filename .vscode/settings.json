@@ -27,7 +27,7 @@
         "commands": [
             {
                 "match": "\\.ts$",
-                "cmd": "npm run browser-build --prefix ${workspaceRoot}"
+                "cmd": "npm run browser-tests-compile --prefix ${workspaceRoot}"
             }
         ]
     }

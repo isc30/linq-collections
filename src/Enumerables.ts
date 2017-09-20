@@ -123,7 +123,7 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
         comparer: Comparer<TSelectorOut>): TSelectorOut;*/
 }
 
-abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
+export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
     protected readonly source: IIterator<TElement> | IEnumerable<TElement>;
     protected _isValid: boolean;
