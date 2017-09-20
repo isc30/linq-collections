@@ -8,7 +8,6 @@ script:
   - npm test
 after_success:
   - npm run report-coverage
-  - npm run publish
 deploy:
   provider: npm
   email: "ivansanzcarasa@gmail.com"

@@ -18,13 +18,13 @@
 		"url": "https://github.com/isc30"
 	},
 	"bugs": {
-		"url": "https://github.com/isc30/TsLinq/issues"
+		"url": "https://github.com/isc30/linq.ts/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/isc30/TsLinq"
+		"url": "https://github.com/isc30/linq.ts"
 	},
-	"homepage": "https://github.com/isc30/TsLinq#readme",
+	"homepage": "https://github.com/isc30/linq.ts#readme",
 	"scripts": {
 		"node-compile": "tsc",
 		"web-tests-compile": "browserify ./test/UnitTests.ts -p [tsify] > linq-tests.web.js",
