@@ -5,7 +5,7 @@
 	"main": "./build/src/linq.js",
 	"umd:main": "./build/src/linq.web.js",
 	"files": [
-		"./build/src",
+		"./build/src/*",
 		"./readme.md"
 	],
 	"typescript": {

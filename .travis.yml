@@ -12,6 +12,6 @@ deploy:
   skip_cleanup: true
   provider: npm
   email: "ivansanzcarasa@gmail.com"
-  api_key: "NPM_TOKEN"
+  api_key: $NPM_TOKEN
   on:
     branch: master
