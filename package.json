@@ -30,7 +30,7 @@
 		"web-tests-compile": "browserify ./test/UnitTests.ts -p [tsify] > linq-tests.web.js",
 
 		"pretest": "npm run node-compile && npm run web-tests-compile",
-		"test": "nyc mocha --slow 0",
+		"test": "nyc mocha ./build/test/UnitTests.js --slow 0",
 		"report-coverage": "nyc report --reporter=text-lcov | coveralls",
 
 		"publish-node": "npm run node-compile",
@@ -51,5 +51,8 @@
 	},
 	"directories": {
 		"test": "test"
+	},
+	"nyc": {
+		"exclude": ["build/test"]
 	}
 }
