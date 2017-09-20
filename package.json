@@ -1,11 +1,11 @@
 {
 	"name": "linq.ts",
-	"version": "0.0.1-dev",
+	"version": "v0.0.1-dev",
 	"description": "TypeScript: Linq (IEnumerable, ...) + Containers (List, Dictionary, ...)",
 	"main": "./build/src/linq.js",
 	"umd:main": "./build/src/linq.web.js",
 	"files": [
-		"./build/src/*",
+		"./build/src",
 		"./readme.md"
 	],
 	"typescript": {
@@ -35,7 +35,7 @@
 
 		"publish-node": "npm run node-compile",
 		"publish-web": "browserify ./src/Linq.ts -p [tsify] > ./build/src/linq.web.js",
-		"prepublish": "npm run publish-node && npm run publish-web"
+		"prepublish": "npm run publish-node && npm run publish-web && npm version patch"
 	},
 	"dependencies": {
 		"typescript": "*"
