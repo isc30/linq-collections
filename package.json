@@ -4,8 +4,9 @@
 		"url": "https://github.com/isc30/TsLinq"
 	},
 	"scripts": {
-		"prepare": "tsc",
-		"pretest": "tsc",
+		"node-build": "tsc",
+		"browser-build": "browserify test/UnitTests.ts -p [tsify] > bundle.js",
+		"pretest": "npm run node-build",
 		"test": "nyc mocha --slow 0",
         "report-coverage": "nyc report --reporter=text-lcov | coveralls"
 	},
@@ -15,7 +16,9 @@
 		"mocha": "*",
 		"typescript": "*",
 		"coveralls": "*",
-		"nyc": "*"
+		"nyc": "*",
+		"browserify": "*",
+		"tsify": "*"
 	},
 	"directories": {
 		"test": "test"

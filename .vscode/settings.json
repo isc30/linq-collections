@@ -17,7 +17,8 @@
         "**/*.map": true,
         "**/node_modules": true,
         "**/.nyc_output": true,
-        "**/coverage": true
+        "**/coverage": true,
+        "**/etc": true
     },
     "files.insertFinalNewline": true,
     "window.zoomLevel": 0,
@@ -26,7 +27,7 @@
         "commands": [
             {
                 "match": "\\.ts$",
-                "cmd": "tsc -p ${workspaceRoot}"
+                "cmd": "npm run browser-build --prefix ${workspaceRoot}"
             }
         ]
     }
