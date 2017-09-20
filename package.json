@@ -1,58 +1,58 @@
 {
-	"name": "linq.ts",
-	"version": "v0.0.1-dev",
-	"description": "TypeScript: Linq (IEnumerable, ...) + Containers (List, Dictionary, ...)",
-	"main": "./build/src/linq.js",
-	"umd:main": "./build/src/linq.web.js",
-	"files": [
-		"./build/src",
-		"./readme.md"
-	],
-	"typescript": {
-		"definition": "./build/src/*.d.ts"
-	},
-	"typings": "./build/src/*.d.ts",
-	"author": {
-		"name": "Ivan Sanz",
-		"email": "ivansanzcarasa@gmail.com",
-		"url": "https://github.com/isc30"
-	},
-	"bugs": {
-		"url": "https://github.com/isc30/linq.ts/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/isc30/linq.ts"
-	},
-	"homepage": "https://github.com/isc30/linq.ts#readme",
-	"scripts": {
-		"node-compile": "tsc",
-		"web-tests-compile": "browserify ./test/UnitTests.ts -p [tsify] > linq-tests.web.js",
-
-		"pretest": "npm run node-compile && npm run web-tests-compile",
-		"test": "nyc mocha ./build/test/UnitTests.js --slow 0",
-		"report-coverage": "nyc report --reporter=text-lcov | coveralls",
-
-		"publish-node": "npm run node-compile",
-		"publish-web": "browserify ./src/Linq.ts -p [tsify] > ./build/src/linq.web.js",
-		"prepublish": "npm run publish-node && npm run publish-web && npm version patch"
-	},
-	"dependencies": {
-		"typescript": "*"
-	},
-	"devDependencies": {
-		"typescript": "*",
-		"@types/mocha": "*",
-		"mocha": "*",
-		"coveralls": "*",
-		"nyc": "*",
-		"browserify": "*",
-		"tsify": "*"
-	},
-	"directories": {
-		"test": "test"
-	},
-	"nyc": {
-		"exclude": ["build/test"]
-	}
+  "name": "linq.ts",
+  "version": "0.0.10",
+  "description": "TypeScript: Linq (IEnumerable, ...) + Containers (List, Dictionary, ...)",
+  "main": "./build/src/linq.js",
+  "files": [
+    "build/src",
+    "readme.md"
+  ],
+  "typescript": {
+    "definition": "./build/src/*.d.ts"
+  },
+  "typings": "./build/src/*.d.ts",
+  "author": {
+    "name": "Ivan Sanz",
+    "email": "ivansanzcarasa@gmail.com",
+    "url": "https://github.com/isc30"
+  },
+  "bugs": {
+    "url": "https://github.com/isc30/linq.ts/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/isc30/linq.ts"
+  },
+  "homepage": "https://github.com/isc30/linq.ts#readme",
+  "scripts": {
+    "node-compile": "tsc",
+    "web-tests-compile": "browserify ./test/UnitTests.ts -p [tsify] > linq-tests.web.js",
+    "pretest": "npm run node-compile && npm run web-tests-compile",
+    "test": "nyc mocha ./build/test/UnitTests.js --slow 0",
+    "report-coverage": "nyc report --reporter=text-lcov | coveralls",
+    "publish-node": "npm run node-compile",
+    "publish-web": "browserify ./src/Linq.ts -p [tsify] > ./build/src/linq.web.js",
+    "prepublish": "npm run publish-node && npm run publish-web && npm version patch"
+  },
+  "dependencies": {
+    "typescript": "*"
+  },
+  "devDependencies": {
+    "typescript": "*",
+    "@types/mocha": "*",
+    "mocha": "*",
+    "coveralls": "*",
+    "nyc": "*",
+    "browserify": "*",
+    "tsify": "*"
+  },
+  "directories": {
+    "test": "test",
+    "lib": "src"
+  },
+  "nyc": {
+    "exclude": [
+      "build/test"
+    ]
+  }
 }
