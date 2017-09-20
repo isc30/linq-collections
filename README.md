@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/isc30/TsLinq.svg?branch=master)](https://travis-ci.org/isc30/TsLinq)
-[![Coverage Status](https://coveralls.io/repos/github/isc30/TsLinq/badge.svg?branch=master)](https://coveralls.io/github/isc30/TsLinq?branch=master) <- Please I need test contributors :D
+[![Build Status](https://travis-ci.org/isc30/linq.ts.svg?branch=master)](https://travis-ci.org/isc30/linq.ts)
+[![Coverage Status](https://coveralls.io/repos/github/isc30/linq.ts/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq.ts?branch=master) <- Please I need test contributors :D
 
-# TsLinq: Linq for TypeScript
+# Linq.ts: Linq for TypeScript
 Best performance and 100% strongly/statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
 #### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!) ####
 #### Strictly following C# original documentation
