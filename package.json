@@ -1,6 +1,6 @@
 {
   "name": "linq-collections",
-  "version": "0.0.44",
+  "version": "0.0.46",
   "description": "Linq-Collections: Linq (IEnumerable, ...) + Collections (List, Dictionary, ...)",
   "main": "./build/src/linq.js",
   "files": [
@@ -33,7 +33,7 @@
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
     "publish-node": "npm run node-compile",
     "publish-web": "browserify ./src/Linq.ts -p [tsify] > ./build/src/linq.web.js",
-    "prepublish": "npm run publish-node && npm run publish-web && npm version patch"
+    "prepublish": "npm run node-compile"
   },
   "dependencies": {
     "typescript": "*"
