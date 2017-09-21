@@ -1,7 +1,7 @@
 {
   "name": "linq-collections",
-  "version": "0.0.6",
-  "description": "TypeScript: Linq (IEnumerable, ...) + Collections (List, Dictionary, ...)",
+  "version": "0.0.44",
+  "description": "Linq-Collections: Linq (IEnumerable, ...) + Collections (List, Dictionary, ...)",
   "main": "./build/src/linq.js",
   "files": [
     "build/src",
@@ -18,13 +18,13 @@
     "url": "https://github.com/isc30"
   },
   "bugs": {
-    "url": "https://github.com/isc30/linq.ts/issues"
+    "url": "https://github.com/isc30/linq-collections/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/isc30/linq.ts"
+    "url": "https://github.com/isc30/linq-collections"
   },
-  "homepage": "https://github.com/isc30/linq.ts#readme",
+  "homepage": "https://github.com/isc30/linq-collections#readme",
   "scripts": {
     "node-compile": "tsc",
     "web-tests-compile": "browserify ./test/UnitTests.ts -p [tsify] > linq-tests.web.js",

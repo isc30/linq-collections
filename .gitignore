@@ -298,3 +298,4 @@ __pycache__/
 *.xsd.cs
 coverage/coverage-final.json
 .nyc_output/
+boost.bat
