@@ -3,7 +3,7 @@
 
 # Linq-Collections: Linq (IEnumerable, ...) + Collections (List, Dictionary, ...)
 Best performance and 100% strongly/statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
-#### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!) ####
+#### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!!) ####
 #### Strictly following C# original documentation
 https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution
 

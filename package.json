@@ -1,6 +1,6 @@
 {
   "name": "linq-collections",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Linq-Collections: Linq (IEnumerable, ...) + Collections (List, Dictionary, ...)",
   "main": "./build/src/linq.js",
   "files": [
@@ -51,7 +51,6 @@
     "test": "test",
     "lib": "src"
   },
-  "readme": "readme.md",
   "nyc": {
     "exclude": [
       "build/test"
