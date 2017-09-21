@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/isc30/linq.ts.svg?branch=master)](https://travis-ci.org/isc30/linq.ts)
-[![Coverage Status](https://coveralls.io/repos/github/isc30/linq.ts/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq.ts?branch=master) <- Please I need test contributors :D
+[![Build Status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
+[![Coverage Status](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master) <- Please I need test contributors :D
 
 # Linq.ts: Linq for TypeScript
 Best performance and 100% strongly/statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
