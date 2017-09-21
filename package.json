@@ -1,16 +1,17 @@
 {
-  "name": "linq.ts",
-  "version": "0.0.10",
-  "description": "TypeScript: Linq (IEnumerable, ...) + Containers (List, Dictionary, ...)",
+  "name": "linq-collections",
+  "version": "0.0.6",
+  "description": "TypeScript: Linq (IEnumerable, ...) + Collections (List, Dictionary, ...)",
   "main": "./build/src/linq.js",
   "files": [
     "build/src",
     "readme.md"
   ],
   "typescript": {
-    "definition": "./build/src/*.d.ts"
+    "definition": "./build/src/linq.d.ts"
   },
-  "typings": "./build/src/*.d.ts",
+  "typings": "./build/src/linq.d.ts",
+  "types": "./build/src/linq.d.ts",
   "author": {
     "name": "Ivan Sanz",
     "email": "ivansanzcarasa@gmail.com",
