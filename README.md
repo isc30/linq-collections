@@ -2,8 +2,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master) <- Please I need test contributors :D
 
 # Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
-Best performance and 100% strongly/statically typed *Linq* implementation for *TypeScript* (*ECMAScript 5*)
-#### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!!) ####
+Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)
+#### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!!)
 #### Strictly following C# original documentation
 https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution
 
