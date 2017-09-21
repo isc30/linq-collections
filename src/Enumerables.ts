@@ -796,7 +796,7 @@ class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
     {
         const key = this._keySelector(element);
 
-        if (this._seenKeys.indexOf(key) < 0)
+        if (this._seenKeys.indexOf(key) === -1)
         {
             this._seenKeys.push(key);
 

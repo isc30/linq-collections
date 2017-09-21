@@ -15,9 +15,9 @@ export namespace IEnumerableTests
         describe("Contains", contains);
         describe("Count", count);
         describe("Distinct", distinct);
-        // describe("ElementAt", aggregate);
-        // describe("ElementAtOrDefault", aggregate);
-        // describe("Except", aggregate);
+        describe("ElementAt", elementAt);
+        describe("ElementAtOrDefault", elementAtOrDefault);
+        describe("Except", except);
         // describe("First", aggregate);
         // describe("FirstOrDefault", aggregate);
         // describe("ForEach", aggregate);
@@ -465,6 +465,85 @@ export namespace IEnumerableTests
         {
             const base = Enumerable.fromSource(["Ivan", "Uxue", "Manolo", "Antonio"]);
             Test.isArrayEqual(base.orderByDescending(e => e[1]).toArray(), ["Uxue", "Ivan", "Antonio", "Manolo"]);
+        });
+    }
+
+    function elementAt(): void
+    {
+        it("Negative index throws exception", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3, 4]);
+            Test.throwsException(() => base.elementAt(-1));
+            Test.throwsException(() => base.elementAt(-666));
+        });
+
+        it("Out of bounds index throws exception", () =>
+        {
+            const base = Enumerable.fromSource([1, 2]);
+            Test.throwsException(() => base.elementAt(2));
+            Test.throwsException(() => base.elementAt(666));
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3, 4]);
+            Test.throwsException(() => base.elementAt(-1));
+            Test.isEqual(base.elementAt(0), 1);
+            Test.isEqual(base.elementAt(1), 2);
+            Test.isEqual(base.elementAt(2), 3);
+            Test.isEqual(base.elementAt(3), 4);
+            Test.throwsException(() => base.elementAt(4));
+        });
+    }
+
+    function elementAtOrDefault(): void
+    {
+        it("Negative index throws exception", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3, 4]);
+            Test.throwsException(() => base.elementAtOrDefault(-1));
+            Test.throwsException(() => base.elementAtOrDefault(-666));
+        });
+
+        it("Out of bounds index returns undefined", () =>
+        {
+            const base = Enumerable.fromSource([1, 2]);
+            Test.isEqual(base.elementAtOrDefault(2), undefined);
+            Test.isEqual(base.elementAtOrDefault(666), undefined);
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3, 4]);
+            Test.throwsException(() => base.elementAtOrDefault(-1));
+            Test.isEqual(base.elementAtOrDefault(0), 1);
+            Test.isEqual(base.elementAtOrDefault(1), 2);
+            Test.isEqual(base.elementAtOrDefault(2), 3);
+            Test.isEqual(base.elementAtOrDefault(3), 4);
+            Test.isEqual(base.elementAtOrDefault(4), undefined);
+        });
+    }
+
+    function except(): void
+    {
+        it("Value is correct (empty)", () =>
+        {
+            let base = Enumerable.fromSource([1, 2, 3, 4]);
+            const base2 = Enumerable.fromSource([]);
+            Test.isArrayEqual(base.except(base2).toArray(), [1, 2, 3, 4]);
+
+            base = Enumerable.fromSource([]);
+            Test.isArrayEqual(base.except(base2).toArray(), []);
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3, 4]);
+            let base2 = Enumerable.fromSource([2, 5, 1, 7]);
+            Test.isArrayEqual(base.except(base2).toArray(), [3, 4]);
+
+            base2 = Enumerable.fromSource([3, 6, 88]);
+            Test.isArrayEqual(base.except(base2).toArray(), [1, 2, 4]);
         });
     }
 }

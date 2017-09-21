@@ -1,6 +1,6 @@
 {
   "name": "linq-collections",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)",
   "main": "./build/src/Linq.js",
   "files": [
@@ -35,8 +35,7 @@
     "publish-web": "browserify ./src/Linq.ts -p [tsify] > ./build/src/linq.web.js",
     "prepublish": "npm run node-compile"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "typescript": "*",
     "@types/mocha": "*",

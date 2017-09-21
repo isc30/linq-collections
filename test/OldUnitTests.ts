@@ -401,48 +401,6 @@ export namespace UnitTests
         Test.isArrayEqual(indices, [1, 3, 5]);
     }
 
-    function elementAt(): void
-    {
-        const base = Enumerable.fromSource([1, 2, 3, 4]);
-
-        Test.throwsException(() =>
-        {
-            const e = base.elementAt(-2);
-        });
-
-        Test.isEqual(base.elementAt(0), 1);
-        Test.isEqual(base.elementAt(1), 2);
-        Test.isEqual(base.elementAt(2), 3);
-        Test.isEqual(base.elementAt(3), 4);
-
-        Test.throwsException(() =>
-        {
-            const e = base.elementAt(4);
-        });
-
-        Test.throwsException(() =>
-        {
-            const e = base.elementAt(5);
-        });
-    }
-
-    function elementAtOrDefault(): void
-    {
-        const base = Enumerable.fromSource([1, 2, 3, 4]);
-
-        Test.throwsException(() =>
-        {
-            const e = base.elementAtOrDefault(-2);
-        });
-
-        Test.isEqual(base.elementAtOrDefault(0), 1);
-        Test.isEqual(base.elementAtOrDefault(1), 2);
-        Test.isEqual(base.elementAtOrDefault(2), 3);
-        Test.isEqual(base.elementAtOrDefault(3), 4);
-        Test.isEqual(base.elementAtOrDefault(4), undefined);
-        Test.isEqual(base.elementAtOrDefault(5), undefined);
-    }
-
     function union(): void
     {
         let base = Enumerable.fromSource([1, 2, 3, 4]);
@@ -454,21 +412,5 @@ export namespace UnitTests
 
         base = Enumerable.fromSource([]);
         Test.isArrayEqual(base.union(base2).toArray(), []);
-    }
-
-    function except(): void
-    {
-        let base = Enumerable.fromSource([1, 2, 3, 4]);
-        let base2 = Enumerable.fromSource([2, 5, 1, 7]);
-        Test.isArrayEqual(base.except(base2).toArray(), [3, 4]);
-
-        base2 = Enumerable.fromSource([3, 6, 88]);
-        Test.isArrayEqual(base.except(base2).toArray(), [1, 2, 4]);
-
-        base2 = Enumerable.fromSource([]);
-        Test.isArrayEqual(base.except(base2).toArray(), [1, 2, 3, 4]);
-
-        base = Enumerable.fromSource([]);
-        Test.isArrayEqual(base.except(base2).toArray(), []);
     }
 }
