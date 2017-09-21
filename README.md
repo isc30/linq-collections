@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
-[![Coverage Status](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master) <- Please I need test contributors :D
+[![Coverage Status](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master)
 
 # Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)
