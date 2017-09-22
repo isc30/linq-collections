@@ -1,3 +1,5 @@
+# Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
+
 [![npm version](https://img.shields.io/npm/v/linq-collections.svg)](https://npmjs.org/package/linq-collections)
 [![npm downloads](https://img.shields.io/npm/dt/linq-collections.svg)](https://npmjs.org/package/linq-collections)
 [![package dependencies](https://img.shields.io/david/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections)
