@@ -6,13 +6,6 @@
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 # Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)
-#### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!!)
-#### Strictly following C# original documentation
-https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution
-
-## How to run tests
-This library uses `mocha` with custom assertion helper for testing.<br />
-Use `nyc mocha` to run the tests and coverage.
 
 ## Using the package
 Interfaces for this lib are already designed. New versions won't break the old code.
@@ -24,6 +17,10 @@ dependencies {
 ```
 
 ## Features
+
+#### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!!)
+#### Strictly following C# original documentation
+https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution
 
 #### Enumerable / IEnumerable
 Provides an inmutable iterator for the real collection
@@ -120,3 +117,7 @@ class Enumerable<TOut> implements IEnumerable<TOut>
     static repeat<TOut>(element: TOut, count: number): IEnumerable<TOut>;
 }
 ```
+
+## How to run tests
+This library uses `mocha` with custom assertion helper for testing.<br />
+Use `nyc mocha` to run the tests and coverage.
