@@ -5,10 +5,36 @@
 [![coverage](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master)
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 # Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
-Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)
+Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
+Includes collections: List, Dictionary, ...
+
+## Intellisense friendly
+Every single method has **complete** type definitions available.
+If you use TypeScript, its purely is based in **generics**.
+
+[Insert motivational GIF with intellisense in action]
+
+## Browser compatibility: ~100%
+Using **ECMAScript 5**, *Linq-Collections* has **~100% compatibility** with nodejs and all browsers (22/09/2017)
+![compatibility](https://raw.githubusercontent.com/isc30/linq-collections/master/assets/compatibility.jpg)
+
+## Performance
+*Linq-Collections* uses custom **iterators** and **deferred execution** mechanisms that ensure **BLAZING FAST** operations, outperforming any other popular library. Its also optimized to work with **minimal CPU and RAM usage**.
+
+## Why use it?
+If previous reasons aren't enought, here is the full advantages list:
+- **Javascript && TypeScript compatible** - You can use it with JS or TypeScript (contains .d.ts definitions)
+- **No dependencies** - Pure and lightweight
+- **100% browser/nodejs support** - Stop caring about compatibility, it works everywhere!
+- **Strongly typed** - Developed in TypeScript, it uses no 'any' or dirty code. Everything is based in generics and strongly typed
+- **Best performance** - Deferred execution with custom iterators make the difference. Currently the fastest library.
+- **Works out of the box** - *'npm install linq-collections'* is the hardest thing you'll need to do
+- **Collections** - Including many type of collections (list, dictionary, ...) with linq integrated inside. As in C#
+- **Strict standard** - Strictly implementing [microsoft's official linq definition](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution) (you can check it for exceptions, behavior, etc)
+- **Deeply tested** - Each new version is passing tons of quality tests before being released
 
 ## Using the package
-Interfaces for this lib are already designed. New versions won't break the old code.
+Interfaces for this library are already designed. New versions won't break any old code.
 We strongly recommend using `*` for version selector
 ```json
 dependencies {
@@ -16,108 +42,10 @@ dependencies {
 }
 ```
 
-## Features
-
-#### This library uses custom iterators and deferred execution mechanisms that ensure minimal CPU and RAM usage (no infinite array regenerations like other libraries do!!)
-#### Strictly following C# original documentation
-https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution
-
-#### Enumerable / IEnumerable
-Provides an inmutable iterator for the real collection
-
-```typescript
-type Selector<TElement, TOut> = (element: TElement) => TOut;
-type Predicate<TElement> = Selector<TElement, boolean>;
-type Aggregator<TElement, TValue> = (previous: TValue, current: TElement) => TValue;
-type Action<TElement> = (element: TElement, index: number) => void;
-```
-
-```typescript
-interface IEnumerable<TOut>
-{
-    clone(): IEnumerable<TOut>;
-
-    toArray(): TOut[];
-    toList(): List<TOut>;
-
-    aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
-    aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
-
-    all(predicate: Predicate<TOut>): boolean;
-
-    any(): boolean;
-    any(predicate: Predicate<TOut>): boolean;
-
-    average(selector: Selector<TOut, number>): number;
-
-    concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>;
-
-    contains(element: TOut): boolean;
-
-    count(): number;
-    count(predicate: Predicate<TOut>): number;
-
-    distinct(): IEnumerable<TOut>;
-    distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
-
-    elementAt(index: number): TOut;
-
-    elementAtOrDefault(index: number): TOut | undefined;
-
-    first(): TOut;
-    first(predicate: Predicate<TOut>): TOut;
-
-    firstOrDefault(): TOut | undefined;
-    firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
-
-    forEach(action: Action<TOut>): void;
-
-    last(): TOut;
-    last(predicate: Predicate<TOut>): TOut;
-
-    lastOrDefault(): TOut | undefined;
-    lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
-
-    max(): TOut;
-    max<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-
-    min(): TOut;
-    min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-
-    reverse(): IEnumerable<TOut>;
-
-    select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>;
-
-    selectMany<TSelectorOut>(
-        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>):
-        IEnumerable<TSelectorOut>;
-
-    single(): TOut;
-    single(predicate: Predicate<TOut>): TOut;
-
-    singleOrDefault(): TOut | undefined;
-    singleOrDefault(predicate: Predicate<TOut>): TOut | undefined;
-
-    skip(amount: number): IEnumerable<TOut>;
-
-    sum(): TOut;
-    sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-
-    take(amount: number): IEnumerable<TOut>;
-
-    where(predicate: Predicate<TOut>): IEnumerable<TOut>;
-}
-```
-
-```typescript
-class Enumerable<TOut> implements IEnumerable<TOut>
-{
-    static empty<TOut>(): IEnumerable<TOut>;
-    static range(start: number, count: number): IEnumerable<number>;
-    static repeat<TOut>(element: TOut, count: number): IEnumerable<TOut>;
-}
-```
-
 ## How to run tests
 This library uses `mocha` with custom assertion helper for testing.<br />
 Use `nyc mocha` to run the tests and coverage.
+
+#### Under active development
+This project is activelly being developed and improved by Ivan Sanz (isc30)<br />
+https://github.com/isc30/linq-collections
