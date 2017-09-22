@@ -19,9 +19,7 @@ Interfaces for this lib are already designed. New versions won't break the old c
 We strongly recommend using `*` for version selector
 ```json
 dependencies {
-    ...
-    "linq-collections": "*",
-    ...
+    "linq-collections": "*"
 }
 ```
 

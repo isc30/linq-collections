@@ -1,11 +1,28 @@
 {
   "name": "linq-collections",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)",
   "keywords": [
-    "linq", ".net", "dotnet", "collections", "enumerable", "ienumerable",
-    "ts", "typescript", "js", "javascript", "dictionary", "list", "container",
-    "hashset", "objects", "csharp", "map", "iterator", "iterators", "array"
+    "linq",
+    ".net",
+    "dotnet",
+    "collections",
+    "enumerable",
+    "ienumerable",
+    "ts",
+    "typescript",
+    "js",
+    "javascript",
+    "dictionary",
+    "list",
+    "container",
+    "hashset",
+    "objects",
+    "csharp",
+    "map",
+    "iterator",
+    "iterators",
+    "array"
   ],
   "main": "./build/src/Linq.js",
   "files": [
