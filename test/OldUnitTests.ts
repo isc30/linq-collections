@@ -203,54 +203,6 @@ export namespace UnitTests
         Test.isArrayEqual(base.selectMany(e => e.numberEnumerable).toArray(), []);
     }
 
-    function first(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.throwsException(() => base.first());
-
-        base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        Test.isEqual(base.first(), -2);
-        Test.isEqual(base.first(e => e > 5), 65);
-        Test.isEqual(base.first(e => e % 6 === 0), 42);
-        Test.throwsException(() => base.first(e => e === 11811));
-    }
-
-    function firstOrDefault(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.isEqual(base.firstOrDefault(), undefined);
-
-        base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        Test.isEqual(base.firstOrDefault(), -2);
-        Test.isEqual(base.firstOrDefault(e => e > 5), 65);
-        Test.isEqual(base.firstOrDefault(e => e % 6 === 0), 42);
-        Test.isEqual(base.firstOrDefault(e => e === 11811), undefined);
-    }
-
-    function last(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.throwsException(() => base.last());
-
-        base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        Test.isEqual(base.last(), 2);
-        Test.isEqual(base.last(e => e > 5), 7);
-        Test.isEqual(base.last(e => e % 6 === 0), 36);
-        Test.throwsException(() => base.last(e => e === 11811));
-    }
-
-    function lastOrDefault(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.isEqual(base.lastOrDefault(), undefined);
-
-        base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
-        Test.isEqual(base.lastOrDefault(), 2);
-        Test.isEqual(base.lastOrDefault(e => e > 5), 7);
-        Test.isEqual(base.lastOrDefault(e => e % 6 === 0), 36);
-        Test.isEqual(base.lastOrDefault(e => e === 11811), undefined);
-    }
-
     function single(): void
     {
         let base = Enumerable.empty<number>();

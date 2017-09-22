@@ -603,7 +603,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
     {
         if (Array.isArray(source))
         {
-            return new Enumerable<TElement>(new ArrayIterator<TElement>(source));
+            return new ArrayEnumerable<TElement>(source);
         }
 
         return new Enumerable<TElement>(source);
@@ -654,7 +654,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         this.currentValue = new Cached<TElement>();
     }
 
-    public clone(): Enumerable<TElement>
+    public clone(): IEnumerable<TElement>
     {
         return new Enumerable<TElement>(this.source.clone());
     }
@@ -1061,19 +1061,21 @@ class ReverseEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class OrderedEnumerable<TOut, TKey> extends EnumerableBase<TOut, TOut> implements IOrderedEnumerable<TOut>
+class OrderedEnumerable<TElement, TKey>
+    extends EnumerableBase<TElement, TElement>
+    implements IOrderedEnumerable<TElement>
 {
-    protected source: IEnumerable<TOut>;
-    private _comparer: Comparer<TOut>;
-    private _elements: Cached<TOut[]>;
+    protected source: IEnumerable<TElement>;
+    private _comparer: Comparer<TElement>;
+    private _elements: Cached<TElement[]>;
     private _currentIndex: number;
 
-    public constructor(source: IEnumerable<TOut>, comparer: Comparer<TOut>)
+    public constructor(source: IEnumerable<TElement>, comparer: Comparer<TElement>)
     {
         super(source);
 
         this._comparer = comparer;
-        this._elements = new Cached<TOut[]>();
+        this._elements = new Cached<TElement[]>();
         this._currentIndex = -1;
     }
 
@@ -1111,12 +1113,12 @@ class OrderedEnumerable<TOut, TKey> extends EnumerableBase<TOut, TOut> implement
         this._currentIndex = -1;
     }
 
-    public clone(): IEnumerable<TOut>
+    public clone(): IEnumerable<TElement>
     {
         return new OrderedEnumerable(this.source.clone(), this._comparer);
     }
 
-    public value(): TOut
+    public value(): TElement
     {
         if (!this._elements.isValid() || !this.isValidIndex())
         {
@@ -1138,8 +1140,126 @@ class OrderedEnumerable<TOut, TKey> extends EnumerableBase<TOut, TOut> implement
         return this.isValidIndex();
     }
 
-    private orderElements(elements: TOut[]): TOut[]
+    private orderElements(elements: TElement[]): TElement[]
     {
         return elements.sort(this._comparer.compare.bind(this._comparer));
+    }
+}
+
+class ArrayEnumerable<TOut> extends Enumerable<TOut>
+{
+    private _originalSource: TOut[];
+
+    public constructor(source: TOut[])
+    {
+        super(new ArrayIterator(source));
+
+        this._originalSource = source;
+    }
+
+    public toArray(): TOut[]
+    {
+        return [...this._originalSource];
+    }
+
+    public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
+    public aggregate<TValue>(aggregator: Aggregator<TOut, TValue>, initialValue: TValue): TValue;
+    public aggregate<TValue>(
+        aggregator: Aggregator<TOut, TValue | TOut | undefined>,
+        initialValue?: TValue): TValue | TOut
+    {
+        if (initialValue !== undefined)
+        {
+            return this._originalSource.reduce(
+                aggregator as Aggregator<TOut, TValue>,
+                initialValue);
+        }
+
+        return this._originalSource.reduce(aggregator as Aggregator<TOut, TOut>);
+    }
+
+    public any(): boolean;
+    public any(predicate: Predicate<TOut>): boolean;
+    public any(predicate?: Predicate<TOut>): boolean
+    {
+        if (predicate !== undefined)
+        {
+            return this._originalSource.some(predicate);
+        }
+
+        this.reset();
+
+        return this._originalSource.length > 0;
+    }
+
+    public all(predicate: Predicate<TOut>): boolean
+    {
+        return this._originalSource.every(predicate);
+    }
+
+    public average(selector: Selector<TOut, number>): number
+    {
+        let sum = 0;
+
+        for (const v of this._originalSource)
+        {
+            sum += selector(v);
+        }
+
+        return sum / this._originalSource.length;
+    }
+
+    public count(): number;
+    public count(predicate: Predicate<TOut>): number;
+    public count(predicate?: Predicate<TOut>): number
+    {
+        if (predicate !== undefined)
+        {
+            return this._originalSource.filter(predicate).length;
+        }
+
+        // tslint:disable-next-line:no-bitwise
+        return this._originalSource.length >>> 0;
+    }
+
+    public clone(): IEnumerable<TOut>
+    {
+        return new ArrayEnumerable(this._originalSource);
+    }
+
+    public elementAtOrDefault(index: number): TOut | undefined
+    {
+        if (index < 0)
+        {
+            throw new Error("Negative index is forbiden");
+        }
+
+        return this._originalSource[index];
+    }
+
+    public firstOrDefault(): TOut | undefined;
+    public firstOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+    public firstOrDefault(predicate?: Predicate<TOut>): TOut | undefined
+    {
+        if (predicate !== undefined)
+        {
+            return this._originalSource.filter(predicate)[0];
+        }
+
+        return this._originalSource[0];
+    }
+
+    public lastOrDefault(): TOut | undefined;
+    public lastOrDefault(predicate: Predicate<TOut>): TOut | undefined;
+    public lastOrDefault(predicate?: Predicate<TOut>): TOut | undefined
+    {
+        if (predicate !== undefined)
+        {
+            const records = this._originalSource.filter(predicate);
+
+            return records[records.length - 1];
+        }
+
+        return this._originalSource[this._originalSource.length - 1];
     }
 }

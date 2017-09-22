@@ -1,10 +1,9 @@
 [![npm version](https://img.shields.io/npm/v/linq-collections.svg)](https://npmjs.org/package/linq-collections)
-[![package dependencies](https://img.shields.io/david/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections)
 [![npm downloads](https://img.shields.io/npm/dt/linq-collections.svg)](https://npmjs.org/package/linq-collections)
-
-[![Build Status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
-[![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections)
-[![Coverage Status](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master)
+[![package dependencies](https://img.shields.io/david/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections)
+[![build status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
+<!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
+[![coverage](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master)
 
 # Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)
@@ -15,6 +14,17 @@ https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/c
 ## How to run tests
 This library uses `mocha` with custom assertion helper for testing.<br />
 Use `nyc mocha` to run the tests and coverage.
+
+## Using the package
+Interfaces for this lib are already designed. New versions won't break the old code.
+We strongly recommend using `*` for version selector
+```json
+dependencies {
+    ...
+    "linq-collections": "*",
+    ...
+}
+```
 
 ## Features
 

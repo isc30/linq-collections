@@ -18,11 +18,11 @@ export namespace IEnumerableTests
         describe("ElementAt", elementAt);
         describe("ElementAtOrDefault", elementAtOrDefault);
         describe("Except", except);
-        // describe("First", aggregate);
-        // describe("FirstOrDefault", aggregate);
+        describe("First", first);
+        describe("FirstOrDefault", firstOrDefault);
         // describe("ForEach", aggregate);
-        // describe("Last", aggregate);
-        // describe("LastOrDefault", aggregate);
+        describe("Last", last);
+        describe("LastOrDefault", lastOrDefault);
         // describe("Max", aggregate);
         // describe("Min", aggregate);
         describe("OrderBy", orderBy);
@@ -544,6 +544,98 @@ export namespace IEnumerableTests
 
             base2 = Enumerable.fromSource([3, 6, 88]);
             Test.isArrayEqual(base.except(base2).toArray(), [1, 2, 4]);
+        });
+    }
+
+    function first(): void
+    {
+        it("Exception if empty", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.throwsException(() => base.first());
+        });
+
+        it("Exception if no element found", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.throwsException(() => base.first(e => e === 11811));
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.first(), -2);
+            Test.isEqual(base.first(e => e > 5), 65);
+            Test.isEqual(base.first(e => e % 6 === 0), 42);
+        });
+    }
+
+    function firstOrDefault(): void
+    {
+        it("Undefined if empty", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.isEqual(base.firstOrDefault(), undefined);
+        });
+
+        it("Undefined if no element found", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.firstOrDefault(e => e === 11811), undefined);
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.firstOrDefault(), -2);
+            Test.isEqual(base.firstOrDefault(e => e > 5), 65);
+            Test.isEqual(base.firstOrDefault(e => e % 6 === 0), 42);
+        });
+    }
+
+    function last(): void
+    {
+        it("Exception if empty", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.throwsException(() => base.last());
+        });
+
+        it("Exception if no element found", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.throwsException(() => base.last(e => e === 11811));
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.last(), 2);
+            Test.isEqual(base.last(e => e > 5), 7);
+            Test.isEqual(base.last(e => e % 6 === 0), 36);
+        });
+    }
+
+    function lastOrDefault(): void
+    {
+        it("Exception if empty", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.isEqual(base.lastOrDefault(), undefined);
+        });
+
+        it("Exception if no element found", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.lastOrDefault(e => e === 11811), undefined);
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = Enumerable.fromSource([-2, 4, 65, 42, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.lastOrDefault(), 2);
+            Test.isEqual(base.lastOrDefault(e => e > 5), 7);
+            Test.isEqual(base.lastOrDefault(e => e % 6 === 0), 36);
         });
     }
 }
