@@ -4,7 +4,7 @@
 [![build status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
 [![coverage](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master)
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
-# Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
+
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
 Includes collections: List, Dictionary, ...
 
@@ -14,7 +14,7 @@ If you use TypeScript, its purely is based in **generics**.<br /><br />
 [Insert motivational GIF with intellisense in action]
 
 ## Browser compatibility: ~100%
-Using **ECMAScript 5**, it has **~100% compatibility** with nodejs and all browsers (22/09/2017)<br />
+Using **ECMAScript 5**, it has **~100% compatibility** with nodejs and all browsers (22/09/2017)<br /><br />
 ![compatibility](https://raw.githubusercontent.com/isc30/linq-collections/master/assets/compatibility.jpg)
 
 ## Performance
@@ -45,6 +45,6 @@ dependencies {
 This library uses `mocha` with custom assertion helper for testing.<br />
 Use `nyc mocha` to run the tests and coverage.
 
-#### Under active development
+## Under active development
 This project is activelly being developed and improved by Ivan Sanz (isc30)<br />
 https://github.com/isc30/linq-collections
