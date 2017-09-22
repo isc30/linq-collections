@@ -9,20 +9,19 @@ Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScr
 Includes collections: List, Dictionary, ...
 
 ## Intellisense friendly
-Every single method has **complete** type definitions available.
-If you use TypeScript, its purely is based in **generics**.
-
+Every single method has **complete** type definitions available.<br />
+If you use TypeScript, its purely is based in **generics**.<br /><br />
 [Insert motivational GIF with intellisense in action]
 
 ## Browser compatibility: ~100%
-Using **ECMAScript 5**, *Linq-Collections* has **~100% compatibility** with nodejs and all browsers (22/09/2017)
+Using **ECMAScript 5**, it has **~100% compatibility** with nodejs and all browsers (22/09/2017)<br />
 ![compatibility](https://raw.githubusercontent.com/isc30/linq-collections/master/assets/compatibility.jpg)
 
 ## Performance
 *Linq-Collections* uses custom **iterators** and **deferred execution** mechanisms that ensure **BLAZING FAST** operations, outperforming any other popular library. Its also optimized to work with **minimal CPU and RAM usage**.
 
 ## Why use it?
-If previous reasons aren't enought, here is the full advantages list:
+If previous reasons aren't enought, here are few more:
 - **Javascript && TypeScript compatible** - You can use it with JS or TypeScript (contains .d.ts definitions)
 - **No dependencies** - Pure and lightweight
 - **100% browser/nodejs support** - Stop caring about compatibility, it works everywhere!
