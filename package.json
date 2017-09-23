@@ -1,11 +1,12 @@
 {
   "name": "linq-collections",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)",
   "main": "./build/src/Linq.js",
   "files": [
     "build/src",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "typescript": {
     "definition": "./build/src/Linq.d.ts"

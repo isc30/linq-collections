@@ -1,3 +1,8 @@
+/*
+ * Created by Ivan Sanz (@isc30)
+ * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
+*/
+
 import { Enumerable, IEnumerable } from "./Enumerables";
 import { ArrayIterator } from "./Iterators";
 

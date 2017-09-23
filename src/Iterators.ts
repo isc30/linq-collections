@@ -1,4 +1,9 @@
-﻿export interface IIterator<TElement>
+﻿/*
+ * Created by Ivan Sanz (@isc30)
+ * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
+*/
+
+export interface IIterator<TElement>
 {
     clone(): IIterator<TElement>;
     reset(): void;

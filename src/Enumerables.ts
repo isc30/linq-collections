@@ -1,3 +1,8 @@
+/*
+ * Created by Ivan Sanz (@isc30)
+ * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
+*/
+
 import { Selector, Predicate, Aggregator, Action } from "./Types";
 import { List } from "./Containers";
 import { IIterator, ArrayIterator } from "./Iterators";

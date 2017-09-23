@@ -1,3 +1,8 @@
+/*
+ * Created by Ivan Sanz (@isc30)
+ * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
+*/
+
 export class Cached<T>
 {
     private _isValid: boolean;
