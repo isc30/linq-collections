@@ -1,6 +1,6 @@
 {
   "name": "linq-collections",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)",
   "main": "./build/src/Linq.js",
   "files": [
@@ -49,6 +49,7 @@
     "test": "test",
     "lib": "src"
   },
+  "license": "MIT",
   "keywords": [
     "linq",
     ".net",
