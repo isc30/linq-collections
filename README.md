@@ -15,8 +15,8 @@ Every single method has **complete** type definitions available.<br />
 If you use TypeScript, its purely is based in **generics**.<br /><br />
 [Insert motivational GIF with intellisense in action]
 
-## Browser compatibility: ~100%
-Using **ECMAScript 5**, it has **~100% compatibility** with nodejs and all main browsers
+## Browser compatibility: 100%
+Using **ECMAScript 5**, it has **100% compatibility** with nodejs and all main browsers
 
 ![compatibility](https://raw.githubusercontent.com/isc30/linq-collections/master/assets/compatibility.png)
 

@@ -5,7 +5,7 @@
             "type": "node",
             "request": "launch",
             "name": "Debug Mocha Tests",
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceRoot}/build",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--colors"

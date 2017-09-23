@@ -131,7 +131,6 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
     protected readonly source: IIterator<TElement> | IEnumerable<TElement>;
-    protected _isValid: boolean;
 
     protected constructor(source: IIterator<TElement>)
     {
@@ -266,9 +265,9 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     {
         let result = new ConcatEnumerable<TOut>(this.clone(), other.clone());
 
-        for (const next of others)
+        for (let i = 0, end = others.length; i < end; i++)
         {
-            result = new ConcatEnumerable<TOut>(result, next.clone());
+            result = new ConcatEnumerable<TOut>(result, others[i].clone());
         }
 
         return result;
@@ -293,9 +292,9 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
             throw new Error("Negative index is forbiden");
         }
 
-        let currentIndex = -1;
-
         this.reset();
+
+        let currentIndex = -1;
 
         while (this.next())
         {
@@ -476,7 +475,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
             return new UniqueEnumerable<TOut, TKey>(this.clone(), keySelector);
         }
 
-        return new UniqueEnumerable<TOut, TOut>(this.clone(), e => e);
+        return new UniqueEnumerable<TOut, TOut>(this.clone(), UniqueEnumerable.elementSelector);
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -562,11 +561,9 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public average(selector: Selector<TOut, number>): number
     {
-        const transformEnumerable = new TransformEnumerable<TOut, number>(this, selector);
+        this.reset();
 
-        transformEnumerable.reset();
-
-        if (!transformEnumerable.next())
+        if (!this.next())
         {
             throw new Error("Sequence contains no elements");
         }
@@ -576,10 +573,10 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
         do
         {
-            sum += transformEnumerable.value();
+            sum += selector(this.value());
             count++;
         }
-        while (transformEnumerable.next());
+        while (this.next());
 
         return sum / count;
     }
@@ -596,7 +593,9 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public union(other: IEnumerable<TOut>): IEnumerable<TOut>
     {
-        return new UniqueEnumerable<TOut, TOut>(this.concat(other), e => e);
+        return new UniqueEnumerable<TOut, TOut>(
+            this.concat(other),
+            UniqueEnumerable.elementSelector);
     }
 }
 
@@ -616,7 +615,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 
     public static empty<TElement>(): IEnumerable<TElement>
     {
-        return new Enumerable<TElement>(new ArrayIterator<TElement>([]));
+        return Enumerable.fromSource([]);
     }
 
     public static range(start: number, count: number): IEnumerable<number>
@@ -633,7 +632,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
             source.push(start + i);
         }
 
-        return new Enumerable<number>(new ArrayIterator<number>(source));
+        return new ArrayEnumerable(source);
     }
 
     public static repeat<TElement>(element: TElement, count: number): IEnumerable<TElement>
@@ -650,7 +649,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
             source.push(element);
         }
 
-        return new Enumerable<TElement>(new ArrayIterator<TElement>(source));
+        return new ArrayEnumerable(source);
     }
 
     public constructor(source: IIterator<TElement>)
@@ -775,6 +774,11 @@ class ConcatEnumerable<TElement> extends Enumerable<TElement>
 
 class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 {
+    public static elementSelector<TIn extends TOut, TOut>(e: TIn)
+    {
+        return e as TOut;
+    }
+
     protected source: IEnumerable<TElement>;
     private _seenKeys: TKey[];
     private _keySelector: Selector<TElement, TKey>;
@@ -799,11 +803,13 @@ class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 
     private isUnique(element: TElement): boolean
     {
-        const key = this._keySelector(element);
+        const key = this._keySelector !== UniqueEnumerable.elementSelector
+            ? this._keySelector(element)
+            : element;
 
-        if (this._seenKeys.indexOf(key) === -1)
+        if (this._seenKeys.indexOf(key as TKey) === -1)
         {
-            this._seenKeys.push(key);
+            this._seenKeys.push(key as TKey);
 
             return true;
         }
@@ -822,6 +828,35 @@ class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
         while (hasValue && !this.isUnique(this.value()));
 
         return hasValue;
+    }
+
+    public toArray(): TElement[]
+    {
+        const baseArray = this.source.toArray();
+        const seenElements: TElement[] = [];
+        const seenKeys: Array<TElement | TKey> = [];
+        const hasKeySelector = this._keySelector !== UniqueEnumerable.elementSelector;
+
+        for (let i = 0, end = baseArray.length; i < end; i++)
+        {
+            const key = hasKeySelector
+                ? this._keySelector(baseArray[i])
+                : baseArray[i];
+
+            if (seenKeys.indexOf(key) === -1)
+            {
+                seenKeys.push(key);
+
+                if (hasKeySelector)
+                {
+                    seenElements.push(baseArray[i]);
+                }
+            }
+        }
+
+        return hasKeySelector
+            ? seenElements
+            : seenKeys as TElement[];
     }
 }
 
@@ -1204,6 +1239,11 @@ class ArrayEnumerable<TOut> extends Enumerable<TOut>
 
     public average(selector: Selector<TOut, number>): number
     {
+        if (this.count() === 0)
+        {
+            throw new Error("Sequence contains no elements");
+        }
+
         let sum = 0;
 
         for (const v of this._originalSource)
