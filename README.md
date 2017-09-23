@@ -16,8 +16,9 @@ If you use TypeScript, its purely is based in **generics**.<br /><br />
 [Insert motivational GIF with intellisense in action]
 
 ## Browser compatibility: ~100%
-Using **ECMAScript 5**, it has **~100% compatibility** with nodejs and all browsers (22/09/2017)<br /><br />
-![compatibility](https://raw.githubusercontent.com/isc30/linq-collections/master/assets/compatibility.jpg)
+Using **ECMAScript 5**, it has **~100% compatibility** with nodejs and all browsers
+
+![compatibility](https://raw.githubusercontent.com/isc30/linq-collections/master/assets/compatibility.png)
 
 ## Performance
 *Linq-Collections* uses custom **iterators** and **deferred execution** mechanisms that ensure **BLAZING FAST** operations, outperforming any other popular library. Its also optimized to work with **minimal CPU and RAM usage**.
