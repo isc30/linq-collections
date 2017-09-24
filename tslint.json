@@ -57,6 +57,7 @@
         "no-unused-variable": true,
         "no-internal-module": true,
         "no-trailing-whitespace": true,
+        "object-literal-sort-keys": false,
         "no-null-keyword": true,
         "boolean-trivia": true,
         "type-operator-spacing": true,

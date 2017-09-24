@@ -394,7 +394,7 @@ export namespace IEnumerableTests
         it("Return empty if empty (no predicate)", () =>
         {
             const base = Enumerable.empty<number>();
-            Test.isArrayEqual(base.distinct().toArray(), []);
+            Test.isArrayEqual(base.distinct(e => e).toArray(), []);
         });
 
         it("Value is correct (no predicate)", () =>
@@ -404,7 +404,7 @@ export namespace IEnumerableTests
             ]);
 
             Test.isArrayEqual(
-                base.distinct().toArray(),
+                base.distinct(e => e).toArray(),
                 [-5, 6, 2, 99, 0, 7]);
         });
 
