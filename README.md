@@ -10,6 +10,10 @@
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
 Includes collections: List, Dictionary, ...
 
+## ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) Under active development
+This project is activelly being developed and improved by Ivan Sanz (isc30)<br />Please expect some missing features until is finished.<br/>
+https://github.com/isc30/linq-collections
+
 ## Intellisense friendly
 Every single method has **complete** type definitions available.<br />
 If you use TypeScript, its purely is based in **generics**.<br /><br />
@@ -47,7 +51,3 @@ dependencies {
 ## How to run tests
 This library uses `mocha` with custom assertion helper for testing.<br />
 Use `nyc mocha` to run the tests and coverage.
-
-## Under active development
-This project is activelly being developed and improved by Ivan Sanz (isc30)<br />
-https://github.com/isc30/linq-collections

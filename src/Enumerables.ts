@@ -3,7 +3,7 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-import { Selector, Predicate, Aggregator, Action, Primitive } from "./Types";
+import { Selector, Predicate, Aggregator, Action, Dynamic } from "./Types";
 import { List } from "./Containers";
 import { IIterator, ArrayIterator } from "./Iterators";
 import { Comparer, KeyComparer  } from "./Comparers";
@@ -37,7 +37,8 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
 
     // defaultIfEmpty
 
-    distinct<TKey extends Primitive>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    distinct(): IEnumerable<TOut>;
+    distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
 
     elementAt(index: number): TOut;
 
@@ -465,8 +466,9 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return element;
     }
 
-    public distinct(keySelector: Selector<TOut, Primitive>): IEnumerable<TOut>;
-    public distinct(keySelector?: Selector<TOut, Primitive>): IEnumerable<TOut>
+    public distinct(): IEnumerable<TOut>;
+    public distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    public distinct<TKey>(keySelector?: Selector<TOut, TKey>): IEnumerable<TOut>
     {
         return new UniqueEnumerable(this.clone(), keySelector);
     }
@@ -763,20 +765,20 @@ class ConcatEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class UniqueEnumerable<TElement> extends Enumerable<TElement>
+class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
-    private _seen: any;
-    private _keySelector: Selector<TElement, Primitive> | undefined;
+    private _seen: { primitive: Dynamic, complex: Array<TElement | TKey> };
+    private _keySelector: Selector<TElement, TKey> | undefined;
 
-    public constructor(source: IEnumerable<TElement>, keySelector?: Selector<TElement, Primitive>)
+    public constructor(source: IEnumerable<TElement>, keySelector?: Selector<TElement, TKey>)
     {
         super(source);
         this._keySelector = keySelector;
-        this._seen = {};
+        this._seen = { primitive: {number: {}, string: {}, boolean: {}}, complex: [] };
     }
 
-    public clone(): UniqueEnumerable<TElement>
+    public clone(): UniqueEnumerable<TElement, TKey>
     {
         return new UniqueEnumerable(this.source.clone(), this._keySelector);
     }
@@ -784,8 +786,7 @@ class UniqueEnumerable<TElement> extends Enumerable<TElement>
     public reset(): void
     {
         super.reset();
-
-        this._seen = {};
+        this._seen = { primitive: {number: {}, string: {}, boolean: {}}, complex: [] };
     }
 
     private isUnique(element: TElement): boolean
@@ -793,10 +794,15 @@ class UniqueEnumerable<TElement> extends Enumerable<TElement>
         const key = this._keySelector !== undefined
             ? this._keySelector(element)
             : element;
+        const type = typeof key;
 
-        return this._seen.hasOwnProperty(key)
+        return (type in this._seen.primitive)
+            ? this._seen.primitive[type].hasOwnProperty(key)
                 ? false
-                : this._seen[key] = true;
+                : this._seen.primitive[type][key] = true
+            : this._seen.complex.indexOf(key) !== -1
+                ? false
+                : this._seen.complex.push(key) > -1;
     }
 
     public next(): boolean

@@ -3,6 +3,7 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
+export type Dynamic = any;
 export type Primitive = number | string | boolean;
 export type Selector<TElement, TOut> = (element: TElement) => TOut;
 export type Predicate<TElement> = Selector<TElement, boolean>;
