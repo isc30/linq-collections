@@ -1129,14 +1129,14 @@ class OrderedEnumerable<TElement, TKey>
             throw new Error("Out of bounds");
         }
 
-        return this._elements.value[(this._elements.value.length - 1) - this._currentIndex];
+        return this._elements.value[this._currentIndex];
     }
 
     public next(): boolean
     {
         if (!this._elements.isValid())
         {
-            this._elements.value = this.orderElements(this.source.toArray());
+            this._elements.value = this.toArray();
         }
 
         ++this._currentIndex;
@@ -1144,9 +1144,10 @@ class OrderedEnumerable<TElement, TKey>
         return this.isValidIndex();
     }
 
-    private orderElements(elements: TElement[]): TElement[]
+    public toArray(): TElement[]
     {
-        return elements.sort(this._comparer.compare.bind(this._comparer));
+        return this.source.toArray()
+            .sort(this._comparer.compare.bind(this._comparer));
     }
 }
 

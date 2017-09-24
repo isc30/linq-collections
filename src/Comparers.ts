@@ -17,14 +17,14 @@ export class Comparer<T>
     public compare(left: any, right: any): number
     {
         return this._isAscending
-            ? left > right
-                ? -1
-                : right > left
-                    ? 1
-                    : 0
-            : left < right
+            ? left < right
                 ? -1
                 : right < left
+                    ? 1
+                    : 0
+            : left > right
+                ? -1
+                : right > left
                     ? 1
                     : 0;
     }
