@@ -790,7 +790,6 @@ class UniqueEnumerable<TElement> extends Enumerable<TElement>
 
     private isUnique(element: TElement): boolean
     {
-        const type = typeof element;
         const key = this._keySelector !== undefined
             ? this._keySelector(element)
             : element;
