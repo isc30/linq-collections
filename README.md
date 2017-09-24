@@ -4,13 +4,13 @@
 [![npm downloads](https://img.shields.io/npm/dt/linq-collections.svg)](https://npmjs.org/package/linq-collections)
 [![package dependencies](https://img.shields.io/david/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections)
 [![build status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
-[![coverage](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master)](https://coveralls.io/github/isc30/linq-collections?branch=master)
+[![coverage](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master&cache=no)](https://coveralls.io/github/isc30/linq-collections?branch=master)
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
 Includes collections: List, Dictionary, ...
 
-## ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) Under active development
+## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
 This project is activelly being developed and improved by Ivan Sanz (isc30)<br />Please expect some missing features until is finished.<br/>
 https://github.com/isc30/linq-collections
 
