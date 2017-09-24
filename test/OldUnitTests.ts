@@ -235,40 +235,6 @@ export namespace UnitTests
         Test.isEqual(base.singleOrDefault(e => e === 11811), undefined);
     }
 
-    function min(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.throwsException(() => base.min());
-
-        base = Enumerable.fromSource([2]);
-        Test.isEqual(base.min(), 2);
-
-        base = Enumerable.fromSource([3, 4, -8, 77, 1]);
-        Test.isEqual(base.min(), -8);
-
-        const strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
-        Test.isEqual(strbase.min(), "are");
-        Test.isEqual(strbase.min(e => e[0]), "a");
-        Test.isEqual(strbase.min(e => e[1]), "e");
-    }
-
-    function max(): void
-    {
-        let base = Enumerable.empty<number>();
-        Test.throwsException(() => base.max());
-
-        base = Enumerable.fromSource([2]);
-        Test.isEqual(base.max(), 2);
-
-        base = Enumerable.fromSource([3, 4, -8, 77, 1]);
-        Test.isEqual(base.max(), 77);
-
-        const strbase = Enumerable.fromSource(["hello", "ivan", "how", "are", "you"]);
-        Test.isEqual(strbase.max(), "you");
-        Test.isEqual(strbase.max(e => e[0]), "y");
-        Test.isEqual(strbase.max(e => e[1]), "v");
-    }
-
     function sum(): void
     {
         let base = Enumerable.empty<number>();
@@ -316,41 +282,6 @@ export namespace UnitTests
 
         Test.isArrayEqual(base.skip(2).take(2).toArray(), [65, 32]);
         Test.isArrayEqual(base.skip(7).take(5).toArray(), [2]);
-    }
-
-    function forEach(): void
-    {
-        const base = Enumerable.fromSource([1, 2, 3]);
-        const iterated: number[] = [];
-
-        base.forEach(e =>
-        {
-            iterated.push(e);
-        });
-
-        Test.isArrayEqual(base.toArray(), iterated);
-
-        // Check inmutablility
-
-        const original = base.toArray();
-
-        base.forEach(e =>
-        {
-            e = e + 1;
-        });
-
-        Test.isArrayEqual(base.toArray(), original);
-
-        // With indices
-
-        const indices: number[] = [];
-
-        base.forEach((e, i) =>
-        {
-            indices.push(e + i);
-        });
-
-        Test.isArrayEqual(indices, [1, 3, 5]);
     }
 
     function union(): void

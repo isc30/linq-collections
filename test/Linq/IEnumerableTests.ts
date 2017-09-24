@@ -20,11 +20,11 @@ export namespace IEnumerableTests
         describe("Except", except);
         describe("First", first);
         describe("FirstOrDefault", firstOrDefault);
-        // describe("ForEach", aggregate);
+        describe("ForEach", forEach);
         describe("Last", last);
         describe("LastOrDefault", lastOrDefault);
-        // describe("Max", aggregate);
-        // describe("Min", aggregate);
+        describe("Max", max);
+        describe("Min", aggregate);
         describe("OrderBy", orderBy);
         describe("OrderByDescending", orderByDescending);
         // describe("Select", aggregate);
@@ -636,6 +636,104 @@ export namespace IEnumerableTests
             Test.isEqual(base.lastOrDefault(), 2);
             Test.isEqual(base.lastOrDefault(e => e > 5), 7);
             Test.isEqual(base.lastOrDefault(e => e % 6 === 0), 36);
+        });
+    }
+
+    function forEach(): void
+    {
+        it("All elements are iterated", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3]);
+            const iterated: number[] = [];
+
+            base.forEach(e =>
+            {
+                iterated.push(e);
+            });
+
+            Test.isArrayEqual(base.toArray(), iterated);
+        });
+
+        it("Primitive type inmutability", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3]);
+            const original = base.toArray();
+
+            base.forEach(e =>
+            {
+                e = e + 1;
+            });
+
+            Test.isArrayEqual(base.toArray(), original);
+        });
+
+        it("Using indices", () =>
+        {
+            const base = Enumerable.fromSource([1, 2, 3]);
+            const indices: number[] = [];
+
+            base.forEach((e, i) =>
+            {
+                indices.push(e + i);
+            });
+
+            Test.isArrayEqual(indices, [1, 3, 5]);
+        });
+    }
+
+    function max(): void
+    {
+        it("Exception if empty", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.throwsException(() => base.max());
+        });
+
+        it("Value is correct (no selector)", () =>
+        {
+            let base = Enumerable.fromSource([2]);
+            Test.isEqual(base.max(), 2);
+
+            base = Enumerable.fromSource([3, 4, -8, 77, 1]);
+            Test.isEqual(base.max(), 77);
+        });
+
+        it("Value is correct (with selector)", () =>
+        {
+            const strbase = Enumerable.fromSource([
+                "hello", "ivan", "how", "are", "you",
+            ]);
+            Test.isEqual(strbase.max(), "you");
+            Test.isEqual(strbase.max(e => e[0]), "y");
+            Test.isEqual(strbase.max(e => e[1]), "v");
+        });
+    }
+
+    function min(): void
+    {
+        it("Exception if empty", () =>
+        {
+            const base = Enumerable.empty<number>();
+            Test.throwsException(() => base.min());
+        });
+
+        it("Value is correct (no selector)", () =>
+        {
+            let base = Enumerable.fromSource([2]);
+            Test.isEqual(base.min(), 2);
+
+            base = Enumerable.fromSource([3, 4, -8, 77, 1]);
+            Test.isEqual(base.min(), -8);
+        });
+
+        it("Value is correct (with selector)", () =>
+        {
+            const strbase = Enumerable.fromSource([
+                "hello", "ivan", "how", "are", "you",
+            ]);
+            Test.isEqual(strbase.min(), "are");
+            Test.isEqual(strbase.min(e => e[0]), "a");
+            Test.isEqual(strbase.min(e => e[1]), "e");
         });
     }
 }
