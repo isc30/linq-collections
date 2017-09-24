@@ -3,7 +3,7 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-import { Selector } from "./Types";
+import { Selector, Dynamic } from "./Types";
 
 export class Comparer<T>
 {
@@ -14,7 +14,7 @@ export class Comparer<T>
         this._isAscending = isAscending;
     }
 
-    public compare(left: any, right: any): number
+    public compare(left: Dynamic, right: Dynamic): number
     {
         return this._isAscending
             ? left < right

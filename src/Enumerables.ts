@@ -548,7 +548,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         }
 
         return this.aggregate(
-            (previous: any, current: any) =>
+            (previous: Dynamic, current: Dynamic) =>
                 previous !== undefined
                     ? previous + current
                     : current);
