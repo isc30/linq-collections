@@ -3,7 +3,7 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-import { Selector, Predicate, Aggregator, Action } from "./Types";
+import { Selector, Predicate, Aggregator, Action, Primitive } from "./Types";
 import { List } from "./Containers";
 import { IIterator, ArrayIterator } from "./Iterators";
 import { Comparer, KeyComparer  } from "./Comparers";
@@ -183,7 +183,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
         while (this.next())
         {
-            result++;
+            ++result;
         }
 
         // tslint:disable-next-line:no-bitwise
@@ -265,7 +265,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     {
         let result = new ConcatEnumerable<TOut>(this.clone(), other.clone());
 
-        for (let i = 0, end = others.length; i < end; i++)
+        for (let i = 0, end = others.length; i < end; ++i)
         {
             result = new ConcatEnumerable<TOut>(result, others[i].clone());
         }
@@ -298,7 +298,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
         while (this.next())
         {
-            currentIndex++;
+            ++currentIndex;
 
             if (currentIndex === index)
             {
@@ -366,7 +366,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     {
         this.reset();
 
-        for (let i = 0; this.next(); i++)
+        for (let i = 0; this.next(); ++i)
         {
             action(this.value(), i);
         }
@@ -467,15 +467,15 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     }
 
     public distinct(): IEnumerable<TOut>;
-    public distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
-    public distinct<TKey>(keySelector?: Selector<TOut, TKey>): IEnumerable<TOut>
+    public distinct(keySelector: Selector<TOut, Primitive>): IEnumerable<TOut>;
+    public distinct(keySelector?: Selector<TOut, Primitive>): IEnumerable<TOut>
     {
         if (keySelector !== undefined)
         {
-            return new UniqueEnumerable<TOut, TKey>(this.clone(), keySelector);
+            return new UniqueEnumerable<TOut, Primitive>(this.clone(), keySelector);
         }
 
-        return new UniqueEnumerable<TOut, TOut>(this.clone(), UniqueEnumerable.elementSelector);
+        return new UniqueEnumerable<TOut, TOut>(this.clone());
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -574,7 +574,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         do
         {
             sum += selector(this.value());
-            count++;
+            ++count;
         }
         while (this.next());
 
@@ -594,8 +594,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     public union(other: IEnumerable<TOut>): IEnumerable<TOut>
     {
         return new UniqueEnumerable<TOut, TOut>(
-            this.concat(other),
-            UniqueEnumerable.elementSelector);
+            this.concat(other));
     }
 }
 
@@ -772,21 +771,25 @@ class ConcatEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
+class UniqueEnumerable<TElement, TKey extends Primitive> extends Enumerable<TElement>
 {
-    public static elementSelector<TIn extends TOut, TOut>(e: TIn)
-    {
-        return e as TOut;
-    }
-
     protected source: IEnumerable<TElement>;
-    private _seenKeys: TKey[];
-    private _keySelector: Selector<TElement, TKey>;
+    private _seen: { primitives: any, complex: Array<TElement | TKey> };
+    private _keySelector: Selector<TElement, Primitive> | undefined;
 
-    public constructor(source: IEnumerable<TElement>, keySelector: Selector<TElement, TKey>)
+    public constructor(source: IEnumerable<TElement>, keySelector?: Selector<TElement, Primitive>)
     {
         super(source);
-        this._seenKeys = [];
+
+        this._seen = {
+            primitives: {
+                number: {},
+                string: {},
+                boolean: {},
+            },
+            complex: [],
+        };
+
         this._keySelector = keySelector;
     }
 
@@ -798,23 +801,31 @@ class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
     public reset(): void
     {
         super.reset();
-        this._seenKeys = [];
+
+        this._seen = {
+            primitives: {
+                number: {},
+                string: {},
+                boolean: {},
+            },
+            complex: [],
+        };
     }
 
     private isUnique(element: TElement): boolean
     {
-        const key = this._keySelector !== UniqueEnumerable.elementSelector
+        const type = typeof element;
+        const key = this._keySelector !== undefined
             ? this._keySelector(element)
             : element;
 
-        if (this._seenKeys.indexOf(key as TKey) === -1)
-        {
-            this._seenKeys.push(key as TKey);
-
-            return true;
-        }
-
-        return false;
+        return (type in this._seen.primitives)
+            ? this._seen.primitives[type].hasOwnProperty(key)
+                ? false
+                : this._seen.primitives[type][key] = true
+            : this._seen.complex.indexOf(key) !== -1
+                ? false
+                : this._seen.complex.push(key) > 0;
     }
 
     public next(): boolean
@@ -832,31 +843,7 @@ class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 
     public toArray(): TElement[]
     {
-        const baseArray = this.source.toArray();
-        const seenElements: TElement[] = [];
-        const seenKeys: Array<TElement | TKey> = [];
-        const hasKeySelector = this._keySelector !== UniqueEnumerable.elementSelector;
-
-        for (let i = 0, end = baseArray.length; i < end; i++)
-        {
-            const key = hasKeySelector
-                ? this._keySelector(baseArray[i])
-                : baseArray[i];
-
-            if (seenKeys.indexOf(key) === -1)
-            {
-                seenKeys.push(key);
-
-                if (hasKeySelector)
-                {
-                    seenElements.push(baseArray[i]);
-                }
-            }
-        }
-
-        return hasKeySelector
-            ? seenElements
-            : seenKeys as TElement[];
+        return this.source.toArray().filter(this.isUnique.bind(this));
     }
 }
 
@@ -1175,7 +1162,7 @@ class OrderedEnumerable<TElement, TKey>
             this._elements.value = this.orderElements(this.source.toArray());
         }
 
-        this._currentIndex++;
+        ++this._currentIndex;
 
         return this.isValidIndex();
     }
