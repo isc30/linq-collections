@@ -6,7 +6,7 @@
 import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive } from "./Types";
 import { List } from "./Containers";
 import { IIterator, ArrayIterator } from "./Iterators";
-import { Comparer, createComparerForKey, combineComparers } from "./Comparers";
+import { Comparer, createComparer, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
 
 export interface IEnumerable<TOut> extends IIterator<TOut>
@@ -528,7 +528,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         keySelector: Selector<TOut, TKey>,
         comparer?: Comparer<TKey>): IEnumerable<TOut>
     {
-        return new OrderedEnumerable(this.clone(), createComparerForKey(keySelector, true, comparer));
+        return new OrderedEnumerable(this.clone(), createComparer(keySelector, true, comparer));
     }
 
     public orderByDescending<TKey>(
@@ -540,7 +540,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         keySelector: Selector<TOut, TKey>,
         comparer?: Comparer<TKey>): IEnumerable<TOut>
     {
-        return new OrderedEnumerable(this.clone(), createComparerForKey(keySelector, false, comparer));
+        return new OrderedEnumerable(this.clone(), createComparer(keySelector, false, comparer));
     }
 
     public max(): TOut;
