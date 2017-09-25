@@ -16,10 +16,22 @@ export namespace IEnumerableTests
         return new Enumerable(new ArrayIterator(elements));
     }
 
+    function ReverseEnumerableInstancer<T>(elements: T[])
+    {
+        return new Enumerable(new ArrayIterator(elements)).reverse().reverse();
+    }
+
+    function OrderedEnumerableInstancer<T>(elements: T[])
+    {
+        return new Enumerable(new ArrayIterator(elements)).orderBy(e => e);
+    }
+
     function runTest(name: string, test: (instancer: Instancer) => void)
     {
         describe(`${name} (Iterator)`, () => test(EnumerableInstancer));
         describe(`${name} (Array)`, () => test(ArrayInstancer));
+        describe(`${name} (2x Reverse)`, () => test(ReverseEnumerableInstancer));
+        // describe(`${name} (Ordered)`, () => test(OrderedEnumerableInstancer));
     }
 
     export function run(): void

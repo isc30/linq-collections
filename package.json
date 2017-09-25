@@ -1,6 +1,6 @@
 {
   "name": "linq-collections",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)",
   "main": "./build/src/Linq.js",
   "files": [
