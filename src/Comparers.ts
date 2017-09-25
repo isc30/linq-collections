@@ -13,6 +13,27 @@ export function combineComparers<T>(left: Comparer<T>, right: Comparer<T>): Comp
     return (l: T, r: T) => left(l, r) || right(l, r);
 }
 
+export function compare<T, TKey>(left: T, right: T, keySelector: Selector<T, TKey>, ascending: boolean): ComparerResult
+{
+    const leftKey = keySelector(left);
+    const rightKey = keySelector(right);
+
+    if (ascending)
+    {
+        return leftKey < rightKey
+            ? -1
+            : leftKey > rightKey
+                ? 1
+                : 0;
+    }
+
+    return leftKey < rightKey
+        ? 1
+        : leftKey > rightKey
+            ? -1
+            : 0;
+}
+
 export function createComparer<TElement, TKey>(
     keySelector: Selector<TElement, TKey>,
     ascending: boolean,
@@ -23,27 +44,5 @@ export function createComparer<TElement, TKey>(
         return (l: TElement, r: TElement) => customComparer(keySelector(l), keySelector(r));
     }
 
-    return ascending
-        ? (l: TElement, r: TElement) =>
-            {
-                const left = keySelector(l);
-                const right = keySelector(r);
-
-                return left < right
-                    ? -1
-                    : left > right
-                        ? 1
-                        : 0;
-            }
-        : (l: TElement, r: TElement) =>
-            {
-                const left = keySelector(l);
-                const right = keySelector(r);
-
-                return left < right
-                    ? 1
-                    : left > right
-                        ? -1
-                        : 0;
-            };
+    return (l: TElement, r: TElement) => compare(l, r, keySelector, ascending);
 }

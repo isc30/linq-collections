@@ -77,16 +77,16 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
     min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
     orderBy<TKey>(
-        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+        keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
     orderBy<TKey>(
         keySelector: Selector<TOut, TKey>,
-        comparer: Comparer<TKey>): IEnumerable<TOut>;
+        comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
 
     orderByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+        keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
     orderByDescending<TKey>(
         keySelector: Selector<TOut, TKey>,
-        comparer: Comparer<TKey>): IEnumerable<TOut>;
+        comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
 
     reverse(): IEnumerable<TOut>;
 
@@ -520,25 +520,25 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     }
 
     public orderBy<TKey>(
-        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+        keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
     public orderBy<TKey>(
         keySelector: Selector<TOut, TKey>,
-        comparer: Comparer<TKey>): IEnumerable<TOut>;
+        comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
     public orderBy<TKey>(
         keySelector: Selector<TOut, TKey>,
-        comparer?: Comparer<TKey>): IEnumerable<TOut>
+        comparer?: Comparer<TKey>): IOrderedEnumerable<TOut>
     {
         return new OrderedEnumerable(this.clone(), createComparer(keySelector, true, comparer));
     }
 
     public orderByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+        keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
     public orderByDescending<TKey>(
         keySelector: Selector<TOut, TKey>,
-        comparer: Comparer<TKey>): IEnumerable<TOut>;
+        comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
     public orderByDescending<TKey>(
         keySelector: Selector<TOut, TKey>,
-        comparer?: Comparer<TKey>): IEnumerable<TOut>
+        comparer?: Comparer<TKey>): IOrderedEnumerable<TOut>
     {
         return new OrderedEnumerable(this.clone(), createComparer(keySelector, false, comparer));
     }
