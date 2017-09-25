@@ -1150,7 +1150,10 @@ class OrderedEnumerable<TElement, TKey>
 
     public toArray(): TElement[]
     {
-        return this.source.toArray().sort(this._comparer);
+        const x = this.source.toArray();
+        x.sort(this._comparer);
+
+        return x;
     }
 }
 
