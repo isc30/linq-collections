@@ -6,7 +6,7 @@
 import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive } from "./Types";
 import { List } from "./Containers";
 import { IIterator, ArrayIterator } from "./Iterators";
-import { Comparer, KeyComparer  } from "./Comparers";
+import { Comparer, createComparerForKey, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
 
 export interface IEnumerable<TOut> extends IIterator<TOut>
@@ -76,17 +76,25 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
     min(): TOut;
     min<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
 
-    orderBy<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>;
+    orderBy<TKey>(
+        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    orderBy<TKey>(
+        keySelector: Selector<TOut, TKey>,
+        comparer: Comparer<TKey>): IEnumerable<TOut>;
 
-    orderByDescending<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>;
+    orderByDescending<TKey>(
+        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    orderByDescending<TKey>(
+        keySelector: Selector<TOut, TKey>,
+        comparer: Comparer<TKey>): IEnumerable<TOut>;
 
     reverse(): IEnumerable<TOut>;
 
     select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>;
 
     selectMany<TSelectorOut>(
-        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>):
-        IEnumerable<TSelectorOut>;
+        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>)
+        : IEnumerable<TSelectorOut>;
 
     // sequenceEqual
 
@@ -511,14 +519,28 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
                 : current);
     }
 
-    public orderBy<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>
+    public orderBy<TKey>(
+        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    public orderBy<TKey>(
+        keySelector: Selector<TOut, TKey>,
+        comparer: Comparer<TKey>): IEnumerable<TOut>;
+    public orderBy<TKey>(
+        keySelector: Selector<TOut, TKey>,
+        comparer?: Comparer<TKey>): IEnumerable<TOut>
     {
-        return new OrderedEnumerable(this.clone(), new KeyComparer(keySelector, true));
+        return new OrderedEnumerable(this.clone(), createComparerForKey(keySelector, true, comparer));
     }
 
-    public orderByDescending<TSelectorOut>(keySelector: Selector<TOut, TSelectorOut>): IEnumerable<TOut>
+    public orderByDescending<TKey>(
+        keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
+    public orderByDescending<TKey>(
+        keySelector: Selector<TOut, TKey>,
+        comparer: Comparer<TKey>): IEnumerable<TOut>;
+    public orderByDescending<TKey>(
+        keySelector: Selector<TOut, TKey>,
+        comparer?: Comparer<TKey>): IEnumerable<TOut>
     {
-        return new OrderedEnumerable(this.clone(), new KeyComparer(keySelector, false));
+        return new OrderedEnumerable(this.clone(), createComparerForKey(keySelector, false, comparer));
     }
 
     public max(): TOut;
@@ -1128,8 +1150,7 @@ class OrderedEnumerable<TElement, TKey>
 
     public toArray(): TElement[]
     {
-        return this.source.toArray()
-            .sort(this._comparer.compare.bind(this._comparer));
+        return this.source.toArray().sort(this._comparer);
     }
 }
 

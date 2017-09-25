@@ -3,101 +3,44 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-import { Selector, Dynamic } from "./Types";
+import { Selector } from "./Types";
 
-type NewComparer = <T>(left: T, right: T) => number;
+export type ComparerResult = -1 | 0 | 1;
+export type Comparer<T> = (left: T, right: T) => ComparerResult;
 
-export class Comparer<T>
+export function defaultComparer<T>(left: T, right: T): ComparerResult
 {
-    protected _isAscending: boolean;
-
-    public constructor(isAscending: boolean)
-    {
-        this._isAscending = isAscending;
-    }
-
-    public compare(left: Dynamic, right: Dynamic): number
-    {
-        return this._isAscending
-            ? left < right
-                ? -1
-                : right < left
-                    ? 1
-                    : 0
-            : left > right
-                ? -1
-                : right > left
-                    ? 1
-                    : 0;
-    }
-
-    public then(other: Comparer<T>): Comparer<T>
-    {
-        return new ComparerChain(this, other);
-    }
+    return left < right
+        ? -1
+        : left > right
+            ? 1
+            : 0;
 }
 
-export class KeyComparer<TElement, TKey> extends Comparer<TElement>
+export function defaultComparerDescending<T>(left: T, right: T): ComparerResult
 {
-    private _keySelector: Selector<TElement, TKey>;
-
-    public constructor(keySelector: Selector<TElement, TKey>, isAscending: boolean)
-    {
-        super(isAscending);
-        this._keySelector = keySelector;
-    }
-
-    public compare(left: TElement, right: TElement): number
-    {
-        return super.compare(
-            this._keySelector(left),
-            this._keySelector(right));
-    }
+    return left < right
+        ? 1
+        : left > right
+            ? -1
+            : 0;
 }
 
-export class CustomComparer<T> extends Comparer<T>
+export function combineComparers<T>(left: Comparer<T>, right: Comparer<T>): Comparer<T>
 {
-    private _comparer: (left: T, right: T) => number;
-
-    public constructor(comparer: (left: T, right: T) => number)
-    {
-        super(true);
-        this._comparer = comparer;
-    }
-
-    public compare(left: T, right: T): number
-    {
-        return this._comparer(left, right);
-    }
+    return (l: T, r: T) => left(l, r) || right(l, r);
 }
 
-class ComparerChain<T> extends Comparer<T>
+export function createComparerForKey<TElement, TKey>(
+    selector: Selector<TElement, TKey>,
+    ascending: boolean,
+    customComparer?: Comparer<TKey>): Comparer<TElement>
 {
-    private _comparers: Array<Comparer<T>>;
+    const comparer = customComparer !== undefined
+        ? customComparer
+        : ascending
+            ? defaultComparer
+            : defaultComparerDescending;
 
-    public constructor(...comparers: Array<Comparer<T>>)
-    {
-        super(true);
-        this._comparers = comparers;
-    }
-
-    public compare(left: T, right: T): number
-    {
-        for (const comparer of this._comparers)
-        {
-            const result = comparer.compare(left, right);
-
-            if (result !== 0)
-            {
-                return result;
-            }
-        }
-
-        return 0;
-    }
-
-    public then(other: Comparer<T>): Comparer<T>
-    {
-        return new ComparerChain(...this._comparers, other);
-    }
+    return (l: TElement, r: TElement) => comparer(selector(l), selector(r));
 }
