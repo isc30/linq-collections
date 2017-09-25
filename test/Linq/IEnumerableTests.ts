@@ -1,4 +1,4 @@
-import { IEnumerable, Enumerable } from "../../src/Enumerables";
+import { IEnumerable, Enumerable, ReverseEnumerable } from "../../src/Enumerables";
 import { ArrayIterator, StringIterator } from "../../src/Iterators";
 import { Test } from "../Test";
 
@@ -18,12 +18,12 @@ export namespace IEnumerableTests
 
     function ReverseEnumerableInstancer<T>(elements: T[])
     {
-        return new Enumerable(new ArrayIterator(elements)).reverse().reverse();
+        return new ReverseEnumerable(Enumerable.fromSource(elements).reverse());
     }
 
     function OrderedEnumerableInstancer<T>(elements: T[])
     {
-        return new Enumerable(new ArrayIterator(elements)).orderBy(e => e);
+        return Enumerable.fromSource(elements).orderBy(e => e);
     }
 
     function runTest(name: string, test: (instancer: Instancer) => void)
@@ -506,6 +506,24 @@ export namespace IEnumerableTests
         {
             const base = new Enumerable(instancer([1, 2, 3, 4]).reverse());
             Test.isArrayEqual(base.toArray(), [4, 3, 2, 1]);
+        });
+
+        it("Double reverse does nothing (array)", () =>
+        {
+            let base = instancer([1, 2, 3, 4]).reverse().reverse();
+            Test.isArrayEqual(base.toArray(), [1, 2, 3, 4]);
+
+            base = new Enumerable(instancer([1, 2, 3, 4]).reverse()).reverse();
+            Test.isArrayEqual(base.toArray(), [1, 2, 3, 4]);
+        });
+
+        it("Double reverse does nothing (iterator)", () =>
+        {
+            let base = new Enumerable(instancer([1, 2, 3, 4]).reverse().reverse());
+            Test.isArrayEqual(base.toArray(), [1, 2, 3, 4]);
+
+            base = new Enumerable(new Enumerable(instancer([1, 2, 3, 4]).reverse()).reverse());
+            Test.isArrayEqual(base.toArray(), [1, 2, 3, 4]);
         });
     }
 

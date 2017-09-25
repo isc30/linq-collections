@@ -926,7 +926,7 @@ class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
     }
 }
 
-class ReverseEnumerable<TElement> extends Enumerable<TElement>
+export class ReverseEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
     private _elements: Cached<TElement[]>;
@@ -937,6 +937,11 @@ class ReverseEnumerable<TElement> extends Enumerable<TElement>
         super(source);
         this._elements = new Cached<TElement[]>();
         this._currentIndex = -1;
+    }
+
+    public clone(): IEnumerable<TElement>
+    {
+        return new ReverseEnumerable(this.source.clone());
     }
 
     public reset(): void
