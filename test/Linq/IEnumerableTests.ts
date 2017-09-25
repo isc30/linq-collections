@@ -452,23 +452,49 @@ export namespace IEnumerableTests
 
     function orderBy(instancer: Instancer): void
     {
-        it("Return empty if empty source", () =>
+        it("Return empty if empty source (iterator)", () =>
         {
             const base = instancer([]);
-            Test.isArrayEqual(base.orderBy(e => e).toArray(), []);
+            const ordered = new Enumerable(base.orderBy(e => e));
+            Test.isArrayEqual(ordered.toArray(), []);
         });
 
-        it("Simple order", () =>
+        it("Simple order (iterator)", () =>
         {
             const base = instancer([2, 6, 3, 7, 1]);
-            Test.isArrayEqual(base.orderBy(e => e).toArray(), [1, 2, 3, 6, 7]);
+            const ordered = new Enumerable(base.orderBy(e => e));
+            Test.isArrayEqual(ordered.toArray(), [1, 2, 3, 6, 7]);
         });
 
-        it("Simple order (key)", () =>
+        it("Simple order (string) (iterator)", () =>
         {
             const base = instancer(["Ivan", "Uxue", "Manolo", "Antonio"]);
+            const ordered = new Enumerable(base.orderBy(e => e[1]));
             Test.isArrayEqual(
-                base.orderBy(e => e[1]).toArray(),
+                ordered.toArray(),
+                ["Manolo", "Antonio", "Ivan", "Uxue"]);
+        });
+
+        it("Return empty if empty source (array)", () =>
+        {
+            const base = instancer([]);
+            const ordered = base.orderBy(e => e);
+            Test.isArrayEqual(ordered.toArray(), []);
+        });
+
+        it("Simple order (array)", () =>
+        {
+            const base = instancer([2, 6, 3, 7, 1]);
+            const ordered = base.orderBy(e => e);
+            Test.isArrayEqual(ordered.toArray(), [1, 2, 3, 6, 7]);
+        });
+
+        it("Simple order (string) (array)", () =>
+        {
+            const base = instancer(["Ivan", "Uxue", "Manolo", "Antonio"]);
+            const ordered = base.orderBy(e => e[1]);
+            Test.isArrayEqual(
+                ordered.toArray(),
                 ["Manolo", "Antonio", "Ivan", "Uxue"]);
         });
     }
