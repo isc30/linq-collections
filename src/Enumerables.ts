@@ -1170,7 +1170,7 @@ class ArrayEnumerable<TOut> extends Enumerable<TOut>
 
     public toArray(): TOut[]
     {
-        return [...this._originalSource];
+        return ([] as TOut[]).concat(this._originalSource); // Faster way to copy array
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
