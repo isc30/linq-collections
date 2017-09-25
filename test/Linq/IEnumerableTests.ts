@@ -42,7 +42,7 @@ export namespace IEnumerableTests
         runTest("Last", last);
         runTest("LastOrDefault", lastOrDefault);
         runTest("Max", max);
-        runTest("Min", aggregate);
+        runTest("Min", min);
         runTest("OrderBy", orderBy);
         runTest("OrderByDescending", orderByDescending);
         runTest("Reverse", reverse);
