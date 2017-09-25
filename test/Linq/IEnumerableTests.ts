@@ -45,15 +45,17 @@ export namespace IEnumerableTests
         runTest("Min", aggregate);
         runTest("OrderBy", orderBy);
         runTest("OrderByDescending", orderByDescending);
-        // describe("Select", aggregate);
-        // describe("SelectMany", aggregate);
-        // describe("Single", aggregate);
-        // describe("SingleOrDefault", aggregate);
-        // describe("Skip", aggregate);
-        // describe("Sum", aggregate);
-        // describe("Take", aggregate);
-        // describe("Union", aggregate);
-        // describe("Where", aggregate);
+        runTest("Reverse", reverse);
+        runTest("Select", select);
+        runTest("SelectMany", selectMany);
+        runTest("Single", single);
+        runTest("SingleOrDefault", singleOrDefault);
+        runTest("Skip", skip);
+        runTest("Skip + Take", skipTake);
+        runTest("Sum", sum);
+        runTest("Take", take);
+        runTest("Union", union);
+        runTest("Where", where);
     }
 
     function toArray(instancer: Instancer): void
@@ -92,6 +94,12 @@ export namespace IEnumerableTests
         {
             const base = instancer([]);
             Test.throwsException(() => base.aggregate((p, c) => c));
+        });
+
+        it("No exception if empty but with default value", () =>
+        {
+            const base = instancer<number>([]);
+            Test.isEqual(base.aggregate((p, c) => c, -666), -666);
         });
 
         it("No initial value", () =>
@@ -474,6 +482,21 @@ export namespace IEnumerableTests
         });
     }
 
+    function reverse(instancer: Instancer): void
+    {
+        it("Value is correct (array)", () =>
+        {
+            const base = instancer([1, 2, 3, 4]).reverse();
+            Test.isArrayEqual(base.toArray(), [4, 3, 2, 1]);
+        });
+
+        it("Value is correct (iterator)", () =>
+        {
+            const base = new Enumerable(instancer([1, 2, 3, 4]).reverse());
+            Test.isArrayEqual(base.toArray(), [4, 3, 2, 1]);
+        });
+    }
+
     function elementAt(instancer: Instancer): void
     {
         it("Negative index throws exception", () =>
@@ -740,6 +763,374 @@ export namespace IEnumerableTests
             Test.isEqual(strbase.min(), "are");
             Test.isEqual(strbase.min(e => e[0]), "a");
             Test.isEqual(strbase.min(e => e[1]), "e");
+        });
+    }
+
+    function select(instancer: Instancer): void
+    {
+        it("Empty if empty", () =>
+        {
+            const base = instancer([]).select(e => e + 1);
+            Test.isArrayEqual(base.toArray(), []);
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = instancer([1, 2, 3]).select(e => e + 1);
+            Test.isArrayEqual(base.toArray(), [2, 3, 4]);
+        });
+
+        it("Value is correct (string)", () =>
+        {
+            const base = instancer(["pepin", "sanz", "macheta"]).select(e => e.length);
+            Test.isArrayEqual(base.toArray(), [5, 4, 7]);
+        });
+
+        it("Value is correct (iterators)", () =>
+        {
+            const i = instancer([1, 2, 3]);
+            const names = i.select(e => "name" + e);
+            Test.isTrue(names.next());
+            Test.isEqual(names.value(), "name1");
+            Test.isTrue(names.next());
+            Test.isEqual(names.value(), "name2");
+            i.next();
+            i.next();
+            i.next();
+            Test.isTrue(names.next());
+            Test.isEqual(names.value(), "name3");
+            Test.isFalse(names.next());
+            Test.throwsException(() => names.value());
+        });
+    }
+
+    class SelectManyTestClass
+    {
+        public numbers: IEnumerable<number>;
+
+        public constructor(numbers: IEnumerable<number>)
+        {
+            this.numbers = numbers;
+        }
+    }
+
+    function selectMany(instancer: Instancer): void
+    {
+        it("Empty returns empty", () =>
+        {
+            const base = instancer<SelectManyTestClass>([]);
+            Test.isArrayEqual(base.selectMany(e => e.numbers).toArray(), []);
+        });
+
+        it("Single element", () =>
+        {
+            const base = instancer([new SelectManyTestClass(instancer([1, 2, 3]))]);
+            Test.isArrayEqual(base.selectMany(e => e.numbers).toArray(), [1, 2, 3]);
+        });
+
+        it("Multiple elements", () =>
+        {
+            const base = instancer([
+                new SelectManyTestClass(instancer([1, 2, 3])),
+                new SelectManyTestClass(instancer([4, 5])),
+                new SelectManyTestClass(instancer([])),
+                new SelectManyTestClass(instancer([6])),
+                new SelectManyTestClass(instancer([7, 8])),
+            ]);
+
+            Test.isArrayEqual(
+                base.selectMany(e => e.numbers).toArray(),
+                [1, 2, 3, 4, 5, 6, 7, 8]);
+        });
+    }
+
+    function single(instancer: Instancer): void
+    {
+        it("Exception if empty (no selector)", () =>
+        {
+            const base = instancer<number>([]);
+            Test.throwsException(() => base.single());
+        });
+
+        it("Exception if empty (with selector)", () =>
+        {
+            const base = instancer<number>([]);
+            Test.throwsException(() => base.single(e => true));
+        });
+
+        it("Value is correct (single element)", () =>
+        {
+            const base = instancer([33]);
+            Test.isEqual(base.single(), 33);
+        });
+
+        it("Value is correct (multiple elements)", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.single(e => e > 60), 65);
+            Test.isEqual(base.single(e => e % 6 === 0), 36);
+        });
+
+        it("Exception if no element was found", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.throwsException(() => base.single(e => e === 11811));
+        });
+
+        it("Exception if more than 1 element was found", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.throwsException(() => base.single());
+            Test.throwsException(() => base.single(e => e > 5));
+        });
+    }
+
+    function singleOrDefault(instancer: Instancer): void
+    {
+        it("Undefined if empty (no selector)", () =>
+        {
+            const base = instancer<number>([]);
+            Test.isEqual(base.singleOrDefault(), undefined);
+        });
+
+        it("Undefined if empty (with selector)", () =>
+        {
+            const base = instancer<number>([]);
+            Test.isEqual(base.singleOrDefault(e => true), undefined);
+        });
+
+        it("Value is correct (single element)", () =>
+        {
+            const base = instancer([33]);
+            Test.isEqual(base.singleOrDefault(), 33);
+        });
+
+        it("Value is correct (multiple elements)", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.singleOrDefault(e => e > 60), 65);
+            Test.isEqual(base.singleOrDefault(e => e % 6 === 0), 36);
+        });
+
+        it("Undefined if no element was found", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isEqual(base.singleOrDefault(e => e === 11811), undefined);
+        });
+
+        it("Exception if more than 1 element was found", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.throwsException(() => base.singleOrDefault());
+            Test.throwsException(() => base.singleOrDefault(e => e > 5));
+        });
+    }
+
+    function skip(instancer: Instancer): void
+    {
+        it("Exception if negative amount", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.throwsException(() => base.skip(-666));
+        });
+
+        it("Value is same (skipping 0 elements)", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(
+                base.skip(0).toArray(),
+                [-2, 4, 65, 32, 1, 36, 7, 2]);
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.skip(1).toArray(), [4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.skip(3).toArray(), [32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.skip(6).toArray(), [7, 2]);
+        });
+
+        it("Empty if amount >= count", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.skip(8).toArray(), []);
+            Test.isArrayEqual(base.skip(99).toArray(), []);
+            Test.isArrayEqual(base.skip(666).toArray(), []);
+        });
+    }
+
+    function skipTake(instancer: Instancer): void
+    {
+        it("Value is correct", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+
+            Test.isArrayEqual(base.skip(2).take(2).toArray(), [65, 32]);
+            Test.isArrayEqual(base.skip(7).take(5).toArray(), [2]);
+        });
+    }
+
+    function sum(instancer: Instancer): void
+    {
+        it("Zero if empty", () =>
+        {
+            const base = instancer<number>([]);
+            Test.isEqual(base.sum(e => e), 0);
+        });
+
+        it("Value is correct (single element)", () =>
+        {
+            const base = instancer([2]);
+            Test.isEqual(base.sum(e => e), 2);
+        });
+
+        it("Value is correct (multiple elements)", () =>
+        {
+            const base = instancer([3, 4, -20, 1]);
+            Test.isEqual(base.sum(e => e), -12);
+        });
+    }
+
+    function take(instancer: Instancer): void
+    {
+        it("Exception if negative amount", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.throwsException(() => base.take(-666));
+        });
+
+        it("Value is empty (take 0 elements)", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.take(0).toArray(), []);
+        });
+
+        it("Value is correct", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.take(1).toArray(), [-2]);
+            Test.isArrayEqual(base.take(3).toArray(), [-2, 4, 65]);
+            Test.isArrayEqual(base.take(6).toArray(), [-2, 4, 65, 32, 1, 36]);
+        });
+
+        it("Value is correct (amount >= count)", () =>
+        {
+            const base = instancer([-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.take(8).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.take(99).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
+            Test.isArrayEqual(base.take(666).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
+        });
+    }
+
+    function union(instancer: Instancer): void
+    {
+        it("Empty returns empty (array)", () =>
+        {
+            const base1 = instancer<number>([]);
+            const base2 = instancer<number>([]);
+            const union = base1.union(base2);
+
+            Test.isArrayEqual(union.toArray(), []);
+        });
+
+        it("Empty returns empty (iterator)", () =>
+        {
+            const base1 = instancer<number>([]);
+            const base2 = instancer<number>([]);
+            const union = new Enumerable(base1.union(base2));
+
+            Test.isArrayEqual(union.toArray(), []);
+        });
+
+        it("Value is correct (array)", () =>
+        {
+            const base1 = instancer([1, 2, 3, 4]);
+            const base2 = instancer([2, 5, 6, 1, 7]);
+            const union = base1.union(base2);
+
+            Test.isArrayEqual(union.toArray(), [1, 2, 3, 4, 5, 6, 7]);
+        });
+
+        it("Value is correct (iterator)", () =>
+        {
+            const base1 = instancer([1, 2, 3, 4]);
+            const base2 = instancer([2, 5, 6, 1, 7]);
+            const union = new Enumerable(base1.union(base2));
+
+            Test.isArrayEqual(union.toArray(), [1, 2, 3, 4, 5, 6, 7]);
+        });
+
+        it("Value is correct (left is empty) (array)", () =>
+        {
+            const base1 = instancer([1, 2, 3, 4]);
+            const base2 = instancer<number>([]);
+            const union = base1.union(base2);
+
+            Test.isArrayEqual(union.toArray(), [1, 2, 3, 4]);
+        });
+
+        it("Value is correct (left is empty) (iterator)", () =>
+        {
+            const base1 = instancer<number>([]);
+            const base2 = instancer([1, 2, 3, 4]);
+            const union = new Enumerable(base1.union(base2));
+
+            Test.isArrayEqual(union.toArray(), [1, 2, 3, 4]);
+        });
+
+        it("Value is correct (right is empty) (array)", () =>
+        {
+            const base1 = instancer<number>([]);
+            const base2 = instancer([1, 2, 3, 4]);
+            const union = base1.union(base2);
+
+            Test.isArrayEqual(union.toArray(), [1, 2, 3, 4]);
+        });
+
+        it("Value is correct (right is empty) (iterator)", () =>
+        {
+            const base1 = instancer([1, 2, 3, 4]);
+            const base2 = instancer<number>([]);
+            const union = new Enumerable(base1.union(base2));
+
+            Test.isArrayEqual(union.toArray(), [1, 2, 3, 4]);
+        });
+    }
+
+    function where(instancer: Instancer): void
+    {
+        it("Empty if empty", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(base.where(e => true).toArray(), []);
+        });
+
+        it("Value is correct (returns elements) (array)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const where = base.where(e => e < 30);
+            Test.isArrayEqual(where.toArray(), [21, 20]);
+        });
+
+        it("Value is correct (no elements) (array)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const where = base.where(e => e > 90);
+            Test.isArrayEqual(where.toArray(), []);
+        });
+
+        it("Value is correct (returns elements) (iterator)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const where = new Enumerable(base.where(e => e < 30));
+            Test.isArrayEqual(where.toArray(), [21, 20]);
+        });
+
+        it("Value is correct (no elements) (iterator)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const where = new Enumerable(base.where(e => e > 90));
+            Test.isArrayEqual(where.toArray(), []);
         });
     }
 }

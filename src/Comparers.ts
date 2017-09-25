@@ -5,6 +5,8 @@
 
 import { Selector, Dynamic } from "./Types";
 
+type NewComparer = <T>(left: T, right: T) => number;
+
 export class Comparer<T>
 {
     protected _isAscending: boolean;

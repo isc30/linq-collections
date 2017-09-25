@@ -3,7 +3,7 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-import { Selector, Predicate, Aggregator, Action, Dynamic } from "./Types";
+import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive } from "./Types";
 import { List } from "./Containers";
 import { IIterator, ArrayIterator } from "./Iterators";
 import { Comparer, KeyComparer  } from "./Comparers";
@@ -100,8 +100,7 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
 
     // skipWhile
 
-    sum(): TOut;
-    sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
+    sum(selector: Selector<TOut, number>): number;
 
     take(amount: number): IEnumerable<TOut>;
 
@@ -254,11 +253,8 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         };
 
         return this
-            .select(selectToEnumerable)
-            .aggregate(
-                (p, c) => p !== undefined
-                    ? new ConcatEnumerable(p, c)
-                    : c);
+            .select(selectToEnumerable).toArray()
+            .reduce((p, c) => new ConcatEnumerable(p, c), Enumerable.empty());
     }
 
     public concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>
@@ -481,16 +477,20 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
         this.reset();
 
-        if (!this.next())
+        if (initialValue === undefined)
         {
-            throw new Error("Sequence contains no elements");
+            if (!this.next())
+            {
+                throw new Error("Sequence contains no elements");
+            }
+
+            value = aggregator(value as TValue, this.value());
         }
 
-        do
+        while (this.next())
         {
             value = aggregator(value as TValue, this.value());
         }
-        while (this.next());
 
         return value as TValue;
     }
@@ -537,21 +537,10 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
                 : current);
     }
 
-    public sum(): TOut;
-    public sum<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): TSelectorOut;
-    public sum<TSelectorOut>(selector?: Selector<TOut, TSelectorOut>): TOut | TSelectorOut
+    public sum(selector: Selector<TOut, number>): number
     {
-        if (selector !== undefined)
-        {
-            // Don't copy iterators
-            return new TransformEnumerable<TOut, TSelectorOut>(this, selector).sum();
-        }
-
         return this.aggregate(
-            (previous: Dynamic, current: Dynamic) =>
-                previous !== undefined
-                    ? previous + current
-                    : current);
+            (previous: number, current: TOut) => previous + selector(current), 0);
     }
 
     public average(selector: Selector<TOut, number>): number
@@ -817,11 +806,6 @@ class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 
         return hasValue;
     }
-
-    public toArray(): TElement[]
-    {
-        return this.source.toArray().filter(this.isUnique.bind(this));
-    }
 }
 
 class RangeEnumerable<TElement> extends Enumerable<TElement>
@@ -1030,16 +1014,9 @@ class ReverseEnumerable<TElement> extends Enumerable<TElement>
         return this.source.clone(); // haha so smart
     }
 
-    public sum(): TElement;
-    public sum<TSelectorOut>(selector: Selector<TElement, TSelectorOut>): TSelectorOut;
-    public sum<TSelectorOut>(selector?: Selector<TElement, TSelectorOut>): TElement | TSelectorOut
+    public sum(selector: Selector<TElement, number>): number
     {
-        if (selector !== undefined)
-        {
-            return this.source.sum(selector);
-        }
-
-        return this.source.sum();
+        return this.source.sum(selector);
     }
 
     public next(): boolean
