@@ -1040,6 +1040,15 @@ export namespace IEnumerableTests
             Test.isArrayEqual(base.skip(99).toArray(), []);
             Test.isArrayEqual(base.skip(666).toArray(), []);
         });
+
+        it("Exception if index is out of bounds", () =>
+        {
+            const base = instancer([-2, 4]).skip(1);
+
+            Test.throwsException(() => base.value());
+            Test.isTrue(base.next()); Test.isEqual(base.value(), 4);
+            Test.isFalse(base.next()); Test.throwsException(() => base.value());
+        });
     }
 
     function skipTake(instancer: Instancer): void
@@ -1050,6 +1059,16 @@ export namespace IEnumerableTests
 
             Test.isArrayEqual(base.skip(2).take(2).toArray(), [65, 32]);
             Test.isArrayEqual(base.skip(7).take(5).toArray(), [2]);
+        });
+
+        it("Exception if index is out of bounds", () =>
+        {
+            const base = instancer([-2, 4, 5, 6]).skip(1).take(2);
+
+            Test.throwsException(() => base.value());
+            Test.isTrue(base.next()); Test.isEqual(base.value(), 4);
+            Test.isTrue(base.next()); Test.isEqual(base.value(), 5);
+            Test.isFalse(base.next()); Test.throwsException(() => base.value());
         });
     }
 
@@ -1102,6 +1121,15 @@ export namespace IEnumerableTests
             Test.isArrayEqual(base.take(8).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
             Test.isArrayEqual(base.take(99).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
             Test.isArrayEqual(base.take(666).toArray(), [-2, 4, 65, 32, 1, 36, 7, 2]);
+        });
+
+        it("Exception if index is out of bounds", () =>
+        {
+            const base = instancer([-2, 4]).take(1);
+
+            Test.throwsException(() => base.value());
+            Test.isTrue(base.next()); Test.isEqual(base.value(), -2);
+            Test.isFalse(base.next()); Test.throwsException(() => base.value());
         });
     }
 
