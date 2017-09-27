@@ -262,7 +262,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
         return this
             .select(selectToEnumerable).toArray()
-            .reduce((p, c) => new ConcatEnumerable(p, c), Enumerable.empty());
+            .reduce((p, c) => new ConcatEnumerable(p, c), Enumerable.empty()) as IEnumerable<TSelectorOut>;
     }
 
     public concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>

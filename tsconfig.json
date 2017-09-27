@@ -13,6 +13,8 @@
         "sourceMap": true,
         "strict": true,
         "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
         "strictNullChecks": true,
         "allowUnreachableCode": false,
         "types": ["mocha"],

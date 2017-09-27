@@ -11,16 +11,16 @@ export namespace IteratorTests
     function runTest(name: string, test: (instancer: Instancer) => void)
     {
         describe(`${name} (ArrayIterator)`, () => test(
-            e => new ArrayIterator(e)));
+            <T>(e: T[]) => new ArrayIterator(e)));
 
         describe(`${name} (Enumerable)`, () => test(
-            e => new Enumerable(new ArrayIterator(e))));
+            <T>(e: T[]) => new Enumerable(new ArrayIterator(e))));
 
         describe(`${name} (ConditionalEnumerable)`, () => test(
-            e => new ConditionalEnumerable(Enumerable.fromSource(e), x => true)));
+            <T>(e: T[]) => new ConditionalEnumerable(Enumerable.fromSource(e), x => true)));
 
         describe(`${name} (ConcatEnumerable)`, () => test(
-            e => e.length > 1
+            <T>(e: T[]) => e.length > 1
                 ? new ConcatEnumerable(
                     Enumerable.fromSource([e[0]]),
                     Enumerable.fromSource(e.slice(1)))
@@ -29,22 +29,22 @@ export namespace IteratorTests
                     Enumerable.fromSource([]))));
 
         describe(`${name} (OrderedEnumerable)`, () => test(
-            e => new OrderedEnumerable(Enumerable.fromSource(e), undefined)));
+            <T>(e: T[]) => new OrderedEnumerable(Enumerable.fromSource(e), undefined)));
 
         describe(`${name} (RangeEnumerable)`, () => test(
-            e => new RangeEnumerable(Enumerable.fromSource(e), undefined, undefined)));
+            <T>(e: T[]) => new RangeEnumerable(Enumerable.fromSource(e), undefined, undefined)));
 
         describe(`${name} (TransformEnumerable)`, () => test(
-            e => new TransformEnumerable(Enumerable.fromSource(e), x => x)));
+            <T>(e: T[]) => new TransformEnumerable(Enumerable.fromSource(e), x => x)));
 
         describe(`${name} (ReverseEnumerable)`, () => test(
-            e => new ReverseEnumerable(new ReverseEnumerable(Enumerable.fromSource(e)))));
+            <T>(e: T[]) => new ReverseEnumerable(new ReverseEnumerable(Enumerable.fromSource(e)))));
 
         describe(`${name} (OrderedEnumerable)`, () => test(
-            e => new OrderedEnumerable(Enumerable.fromSource(e), (x, y) => 0)));
+            <T>(e: T[]) => new OrderedEnumerable(Enumerable.fromSource(e), (x, y) => 0)));
 
         describe(`${name} (ArrayEnumerable)`, () => test(
-            e => new ArrayEnumerable(e)));
+            <T>(e: T[]) => new ArrayEnumerable(e)));
     }
 
     export function run(): void
