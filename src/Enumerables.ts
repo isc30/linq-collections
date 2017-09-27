@@ -9,9 +9,9 @@ import { IIterator, ArrayIterator } from "./Iterators";
 import { Comparer, createComparer, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
 
-export interface IEnumerable<TOut> extends IIterator<TOut>
+export interface ICollection<TOut>
 {
-    clone(): IEnumerable<TOut>;
+    clone(): ICollection<TOut>;
 
     toArray(): TOut[];
     toList(): List<TOut>;
@@ -120,8 +120,15 @@ export interface IEnumerable<TOut> extends IIterator<TOut>
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 }
 
+export interface IEnumerable<TOut> extends ICollection<TOut>, IIterator<TOut>
+{
+    clone(): IEnumerable<TOut>;
+}
+
 export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 {
+    clone(): IOrderedEnumerable<TOut>;
+
     /*thenBy<TSelectorOut>(
         keySelector: Selector<TOut, TSelectorOut>): TSelectorOut;
     thenBy<TSelectorOut>(
@@ -172,7 +179,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public toList(): List<TOut>
     {
-        return new List<TOut>(...this.toArray());
+        return new List<TOut>(this.toArray());
     }
 
     public count(): number;
@@ -1161,18 +1168,18 @@ export class OrderedEnumerable<TElement, TKey>
 
 export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 {
-    private _originalSource: TOut[];
+    protected _arraySource: TOut[];
 
     public constructor(source: TOut[])
     {
         super(new ArrayIterator(source));
 
-        this._originalSource = source;
+        this._arraySource = source;
     }
 
     public toArray(): TOut[]
     {
-        return ([] as TOut[]).concat(this._originalSource); // Faster way to copy array
+        return ([] as TOut[]).concat(this._arraySource); // Faster way to copy array
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -1183,12 +1190,12 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (initialValue !== undefined)
         {
-            return this._originalSource.reduce(
+            return this._arraySource.reduce(
                 aggregator as Aggregator<TOut, TValue>,
                 initialValue);
         }
 
-        return this._originalSource.reduce(aggregator as Aggregator<TOut, TOut>);
+        return this._arraySource.reduce(aggregator as Aggregator<TOut, TOut>);
     }
 
     public any(): boolean;
@@ -1197,17 +1204,17 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._originalSource.some(predicate);
+            return this._arraySource.some(predicate);
         }
 
         this.reset();
 
-        return this._originalSource.length > 0;
+        return this._arraySource.length > 0;
     }
 
     public all(predicate: Predicate<TOut>): boolean
     {
-        return this._originalSource.every(predicate);
+        return this._arraySource.every(predicate);
     }
 
     public average(selector: Selector<TOut, number>): number
@@ -1219,12 +1226,12 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 
         let sum = 0;
 
-        for (const v of this._originalSource)
+        for (const v of this._arraySource)
         {
             sum += selector(v);
         }
 
-        return sum / this._originalSource.length;
+        return sum / this._arraySource.length;
     }
 
     public count(): number;
@@ -1233,16 +1240,16 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._originalSource.filter(predicate).length;
+            return this._arraySource.filter(predicate).length;
         }
 
         // tslint:disable-next-line:no-bitwise
-        return this._originalSource.length >>> 0;
+        return this._arraySource.length >>> 0;
     }
 
     public clone(): IEnumerable<TOut>
     {
-        return new ArrayEnumerable(this._originalSource);
+        return new ArrayEnumerable(this._arraySource);
     }
 
     public elementAtOrDefault(index: number): TOut | undefined
@@ -1252,7 +1259,7 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
             throw new Error("Negative index is forbiden");
         }
 
-        return this._originalSource[index];
+        return this._arraySource[index];
     }
 
     public firstOrDefault(): TOut | undefined;
@@ -1261,10 +1268,10 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._originalSource.filter(predicate)[0];
+            return this._arraySource.filter(predicate)[0];
         }
 
-        return this._originalSource[0];
+        return this._arraySource[0];
     }
 
     public lastOrDefault(): TOut | undefined;
@@ -1273,11 +1280,11 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            const records = this._originalSource.filter(predicate);
+            const records = this._arraySource.filter(predicate);
 
             return records[records.length - 1];
         }
 
-        return this._originalSource[this._originalSource.length - 1];
+        return this._arraySource[this._arraySource.length - 1];
     }
 }

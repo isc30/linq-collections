@@ -3,76 +3,92 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-import { Enumerable, IEnumerable } from "./Enumerables";
+import { Enumerable, IEnumerable, ArrayEnumerable, ICollection } from "./Enumerables";
 import { ArrayIterator } from "./Iterators";
 
-export interface IList<TElement>
+interface IKeyValuePair<TKey, TValue>
+{
+    key: TKey;
+    value: TValue;
+}
+
+export interface IList<TElement>// extends ILinq<TElement>
 {
     asEnumerable(): IEnumerable<TElement>;
     clone(): IList<TElement>;
     clear(): void;
-    at(index: number): TElement;
+    at(index: number): TElement | undefined;
     add(element: TElement): void;
     indexOf(element: TElement): number | undefined;
     insert(index: number, element: TElement): void;
 }
 
-export class List<TElement> extends Array<TElement> implements IList<TElement>
+export class List<TElement> implements IList<TElement>
 {
-    protected _index: number;
+    protected _source: TElement[];
+
+    public constructor(elements: TElement[])
+    {
+        this._source = elements;
+    }
 
     public asEnumerable(): IEnumerable<TElement>
     {
-        return Enumerable.fromSource<TElement>(this as TElement[]);
+        return Enumerable.fromSource<TElement>(this.asArray());
+    }
+
+    public asArray(): TElement[]
+    {
+        return this._source;
     }
 
     public toArray(): TElement[]
     {
-        return this;
+        return ([] as TElement[]).concat(this._source);
     }
 
-    public clone(): List<TElement>
+    public clone(): IList<TElement>
     {
-        return new List<TElement>(...this.slice());
-    }
-
-    public count(): number
-    {
-        return this.length;
+        return new List<TElement>(this.toArray());
     }
 
     public clear(): void
     {
-        this.clear();
+        this._source = [];
     }
 
-    public at(index: number): TElement
+    public at(index: number): TElement | undefined
     {
-        if (!this.isValidIndex(index))
+        /*if (!this.isValidIndex(index))
         {
             throw new Error("Out of bounds");
-        }
+        }*/
 
-        return this[index];
+        return this._source[index];
     }
 
     public add(...elements: TElement[]): void
     {
-        this.push(...elements);
+        this._source.push(...elements);
     }
 
     public contains(element: TElement): boolean
     {
-        return this.indexOf(element) !== undefined;
+        return this._source.indexOf(element) !== undefined;
     }
 
     public insert(index: number, element: TElement): void
     {
-        this.splice(index, 0, element);
+        this._source.splice(index, 0, element);
+    }
+
+    public indexOf(element: TElement): number
+    {
+        return this._source.indexOf(element);
     }
 
     protected isValidIndex(index: number): boolean
     {
-        return index >= 0 && index < this.length;
+        return index >= 0 && index < this._source.length;
     }
 }

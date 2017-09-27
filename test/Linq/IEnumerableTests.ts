@@ -2,6 +2,7 @@
 import { IEnumerable, Enumerable, ReverseEnumerable, ConditionalEnumerable, ConcatEnumerable, UniqueEnumerable, RangeEnumerable, TransformEnumerable, OrderedEnumerable, ArrayEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
 import { Test } from "../Test";
+import { List } from "../../src/Containers";
 
 export namespace IEnumerableTests
 {
@@ -62,6 +63,7 @@ export namespace IEnumerableTests
     export function run(): void
     {
         runTest("ToArray", toArray);
+        runTest("ToList", toList);
         runTest("Aggregate", aggregate);
         runTest("All", all);
         runTest("Any", any);
@@ -122,6 +124,17 @@ export namespace IEnumerableTests
             const strSource = ["asd", "asdaa"];
             const strI = instancer(strSource);
             Test.isArrayEqual(strI.toArray(), strSource);
+        });
+    }
+
+    function toList(instancer: Instancer): void
+    {
+        it("Returns List", () =>
+        {
+            const list = instancer<number>([1, 2, 3]).toList();
+
+            Test.isTrue(list instanceof List);
+            Test.isFalse(list instanceof Array);
         });
     }
 
