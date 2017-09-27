@@ -4,6 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dt/linq-collections.svg)](https://npmjs.org/package/linq-collections)
 [![package dependencies](https://img.shields.io/david/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections)
 [![build status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
+[![Known Vulnerabilities](https://snyk.io/test/github/isc30/linq-collections/badge.svg)](https://snyk.io/test/github/isc30/linq-collections)
 [![coverage](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master&cache=no)](https://coveralls.io/github/isc30/linq-collections?branch=master)
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 

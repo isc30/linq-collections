@@ -21,17 +21,11 @@ export namespace IEnumerableTests
         return new ReverseEnumerable(Enumerable.fromSource(elements).reverse());
     }
 
-    function OrderedEnumerableInstancer<T>(elements: T[])
-    {
-        return Enumerable.fromSource(elements).orderBy(e => e);
-    }
-
     function runTest(name: string, test: (instancer: Instancer) => void)
     {
         describe(`${name} (Iterator)`, () => test(EnumerableInstancer));
         describe(`${name} (Array)`, () => test(ArrayInstancer));
         describe(`${name} (2x Reverse)`, () => test(ReverseEnumerableInstancer));
-        // describe(`${name} (Ordered)`, () => test(OrderedEnumerableInstancer));
     }
 
     export function run(): void
