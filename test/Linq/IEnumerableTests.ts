@@ -1,5 +1,6 @@
-import { IEnumerable, Enumerable, ReverseEnumerable } from "../../src/Enumerables";
-import { ArrayIterator, StringIterator } from "../../src/Iterators";
+// tslint:disable-next-line:max-line-length
+import { IEnumerable, Enumerable, ReverseEnumerable, ConditionalEnumerable, ConcatEnumerable, UniqueEnumerable, RangeEnumerable, TransformEnumerable, OrderedEnumerable, ArrayEnumerable } from "../../src/Enumerables";
+import { ArrayIterator } from "../../src/Iterators";
 import { Test } from "../Test";
 
 export namespace IEnumerableTests
@@ -23,9 +24,39 @@ export namespace IEnumerableTests
 
     function runTest(name: string, test: (instancer: Instancer) => void)
     {
-        describe(`${name} (Iterator)`, () => test(EnumerableInstancer));
-        describe(`${name} (Array)`, () => test(ArrayInstancer));
-        describe(`${name} (2x Reverse)`, () => test(ReverseEnumerableInstancer));
+        describe(`${name} (Enumerable)`, () => test(
+            e => new Enumerable(new ArrayIterator(e))));
+
+        describe(`${name} (ConditionalEnumerable)`, () => test(
+            e => new ConditionalEnumerable(Enumerable.fromSource(e), x => true)));
+
+        describe(`${name} (ConcatEnumerable)`, () => test(
+            e => e.length > 1
+                ? new ConcatEnumerable(
+                    Enumerable.fromSource([e[0]]),
+                    Enumerable.fromSource(e.slice(1)))
+                : new ConcatEnumerable(
+                    Enumerable.fromSource(e),
+                    Enumerable.fromSource([]))));
+
+        let counter = 0;
+        describe(`${name} (UniqueEnumerable)`, () => test(
+            e => new UniqueEnumerable(Enumerable.fromSource(e), k => counter++)));
+
+        describe(`${name} (RangeEnumerable)`, () => test(
+            e => new RangeEnumerable(Enumerable.fromSource(e), undefined, undefined)));
+
+        describe(`${name} (TransformEnumerable)`, () => test(
+            e => new TransformEnumerable(Enumerable.fromSource(e), x => x)));
+
+        describe(`${name} (ReverseEnumerable)`, () => test(
+            e => new ReverseEnumerable(new ReverseEnumerable(Enumerable.fromSource(e)))));
+
+        describe(`${name} (OrderedEnumerable)`, () => test(
+            e => new OrderedEnumerable(Enumerable.fromSource(e), undefined)));
+
+        describe(`${name} (ArrayEnumerable)`, () => test(
+            e => new ArrayEnumerable(e)));
     }
 
     export function run(): void
@@ -420,6 +451,8 @@ export namespace IEnumerableTests
             const base = instancer([
                 -5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0,
             ]);
+
+            console.log(base.toArray());
 
             Test.isArrayEqual(
                 base.distinct(e => e).toArray(),

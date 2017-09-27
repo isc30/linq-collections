@@ -691,7 +691,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
     }
 }
 
-class ConditionalEnumerable<TElement> extends Enumerable<TElement>
+export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
     private _predicate: Predicate<TElement>;
@@ -721,7 +721,7 @@ class ConditionalEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class ConcatEnumerable<TElement> extends Enumerable<TElement>
+export class ConcatEnumerable<TElement> extends Enumerable<TElement>
 {
     private _otherSource: IIterator<TElement>;
     private _isFirstSourceFinished: boolean;
@@ -742,6 +742,7 @@ class ConcatEnumerable<TElement> extends Enumerable<TElement>
     {
         this.source.reset();
         this._otherSource.reset();
+        this._isFirstSourceFinished = false;
         this.currentValue.invalidate();
     }
 
@@ -776,7 +777,7 @@ class ConcatEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
+export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
     private _seen: { primitive: Dynamic, complex: Array<TElement | TKey> };
@@ -830,7 +831,7 @@ class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
     }
 }
 
-class RangeEnumerable<TElement> extends Enumerable<TElement>
+export class RangeEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
     private _start: number | undefined;
@@ -906,7 +907,7 @@ class RangeEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
+export class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
 {
     protected source: IEnumerable<TElement>;
     private _transform: Selector<TElement, TOut>;
@@ -1069,16 +1070,16 @@ export class ReverseEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-class OrderedEnumerable<TElement, TKey>
+export class OrderedEnumerable<TElement, TKey>
     extends EnumerableBase<TElement, TElement>
     implements IOrderedEnumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
-    private _comparer: Comparer<TElement>;
+    private _comparer: Comparer<TElement> | undefined;
     private _elements: Cached<TElement[]>;
     private _currentIndex: number;
 
-    public constructor(source: IEnumerable<TElement>, comparer: Comparer<TElement>)
+    public constructor(source: IEnumerable<TElement>, comparer: Comparer<TElement> | undefined)
     {
         super(source);
 
@@ -1150,14 +1151,15 @@ class OrderedEnumerable<TElement, TKey>
 
     public toArray(): TElement[]
     {
-        const x = this.source.toArray();
-        x.sort(this._comparer);
+        const result = this.source.toArray();
 
-        return x;
+        return this._comparer !== undefined
+            ? result.sort(this._comparer)
+            : result;
     }
 }
 
-class ArrayEnumerable<TOut> extends Enumerable<TOut>
+export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 {
     private _originalSource: TOut[];
 

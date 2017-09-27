@@ -1,5 +1,4 @@
-import { IEnumerable, Enumerable, ReverseEnumerable } from "../../src/Enumerables";
-import { ArrayIterator, StringIterator } from "../../src/Iterators";
+import { Enumerable } from "../../src/Enumerables";
 import { Test } from "../Test";
 
 export namespace IEnumerableIntegrationTests

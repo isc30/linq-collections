@@ -1,5 +1,5 @@
 import { Test } from "../test/Test";
-import { ArrayIterator, Enumerable, IEnumerable, List, StringIterator } from "../src/Linq";
+import { ArrayIterator, Enumerable, IEnumerable, List } from "../src/Linq";
 
 export namespace UnitTests
 {

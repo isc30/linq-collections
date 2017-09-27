@@ -1,27 +1,71 @@
 import { Test } from "../Test";
-import { ArrayIterator } from "../../src/Iterators";
+import { ArrayIterator, IIterator } from "../../src/Iterators";
+import { Enumerable, ArrayEnumerable, ConditionalEnumerable,
+    ConcatEnumerable, UniqueEnumerable, RangeEnumerable,
+    TransformEnumerable, ReverseEnumerable, OrderedEnumerable} from "../../src/Enumerables";
 
-export namespace ArrayIteratorTests
+export namespace IteratorTests
 {
-    export function run(): void
+    type Instancer = <T>(elements: T[]) => IIterator<T>;
+
+    function runTest(name: string, test: (instancer: Instancer) => void)
     {
-        describe("Next", next);
-        describe("Reset", reset);
-        describe("Value", value);
-        describe("Clone", clone);
+        describe(`${name} (ArrayIterator)`, () => test(
+            e => new ArrayIterator(e)));
+
+        describe(`${name} (Enumerable)`, () => test(
+            e => new Enumerable(new ArrayIterator(e))));
+
+        describe(`${name} (ConditionalEnumerable)`, () => test(
+            e => new ConditionalEnumerable(Enumerable.fromSource(e), x => true)));
+
+        describe(`${name} (ConcatEnumerable)`, () => test(
+            e => e.length > 1
+                ? new ConcatEnumerable(
+                    Enumerable.fromSource([e[0]]),
+                    Enumerable.fromSource(e.slice(1)))
+                : new ConcatEnumerable(
+                    Enumerable.fromSource(e),
+                    Enumerable.fromSource([]))));
+
+        describe(`${name} (OrderedEnumerable)`, () => test(
+            e => new OrderedEnumerable(Enumerable.fromSource(e), undefined)));
+
+        describe(`${name} (RangeEnumerable)`, () => test(
+            e => new RangeEnumerable(Enumerable.fromSource(e), undefined, undefined)));
+
+        describe(`${name} (TransformEnumerable)`, () => test(
+            e => new TransformEnumerable(Enumerable.fromSource(e), x => x)));
+
+        describe(`${name} (ReverseEnumerable)`, () => test(
+            e => new ReverseEnumerable(new ReverseEnumerable(Enumerable.fromSource(e)))));
+
+        describe(`${name} (OrderedEnumerable)`, () => test(
+            e => new OrderedEnumerable(Enumerable.fromSource(e), (x, y) => 0)));
+
+        describe(`${name} (ArrayEnumerable)`, () => test(
+            e => new ArrayEnumerable(e)));
     }
 
-    function next(): void
+    export function run(): void
+    {
+        runTest("Next", next);
+        runTest("Reset", reset);
+        runTest("Value", value);
+        runTest("Clone", clone);
+    }
+
+    function next(instancer: Instancer): void
     {
         it("Return false for empty collection", () =>
         {
-            const it = new ArrayIterator<number>([]);
+            const it = instancer<number>([]);
             Test.isFalse(it.next());
         });
 
         it("Iterate over elements + return false in the end", () =>
         {
-            const it = new ArrayIterator<number>([1, 2, 3]);
+            const it = instancer([1, 2, 3]);
             Test.isTrue(it.next()); // 1
             Test.isTrue(it.next()); // 2
             Test.isTrue(it.next()); // 3
@@ -29,11 +73,11 @@ export namespace ArrayIteratorTests
         });
     }
 
-    function reset(): void
+    function reset(instancer: Instancer): void
     {
         it("Iterator is resetted correctly", () =>
         {
-            const it = new ArrayIterator<number>([1, 2]);
+            const it = instancer([1, 2]);
 
             Test.isTrue(it.next()); // 1
             Test.isTrue(it.next()); // 2
@@ -55,7 +99,7 @@ export namespace ArrayIteratorTests
 
         it("Multiple reset in a row act like single one", () =>
         {
-            const it = new ArrayIterator<number>([1, 2]);
+            const it = instancer([1, 2]);
 
             it.reset();
             it.reset();
@@ -79,18 +123,18 @@ export namespace ArrayIteratorTests
         });
     }
 
-    function value(): void
+    function value(instancer: Instancer): void
     {
         it("Exception if getting an out of bounds value", () =>
         {
-            const it = new ArrayIterator<number>([]);
+            const it = instancer<number>([]);
             Test.isFalse(it.next());
             Test.throwsException(() => it.value());
         });
 
         it("Get values", () =>
         {
-            const it = new ArrayIterator<number>([2, 4, 6]);
+            const it = instancer([2, 4, 6]);
 
             Test.isTrue(it.next()); Test.isEqual(it.value(), 2);
             Test.isTrue(it.next()); Test.isEqual(it.value(), 4);
@@ -100,7 +144,7 @@ export namespace ArrayIteratorTests
 
         it("Get values + exception in the end (out of bounds)", () =>
         {
-            const it = new ArrayIterator<number>([2, 4]);
+            const it = instancer([2, 4]);
 
             Test.isTrue(it.next()); Test.isEqual(it.value(), 2);
             Test.isTrue(it.next()); Test.isEqual(it.value(), 4);
@@ -108,11 +152,11 @@ export namespace ArrayIteratorTests
         });
     }
 
-    function clone(): void
+    function clone(instancer: Instancer): void
     {
         it("Cloned iterator is resetted by default", () =>
         {
-            const original = new ArrayIterator<number>([2, 4, 6]);
+            const original = instancer([2, 4, 6]);
             Test.isTrue(original.next()); Test.isEqual(original.value(), 2);
 
             const clone = original.clone();
@@ -121,7 +165,7 @@ export namespace ArrayIteratorTests
 
         it("Cloned iterator doesn't affect original one", () =>
         {
-            const original = new ArrayIterator<number>([2, 4, 6]);
+            const original = instancer([2, 4, 6]);
             Test.isTrue(original.next()); Test.isEqual(original.value(), 2);
 
             const cloned = original.clone();
@@ -138,7 +182,7 @@ export namespace ArrayIteratorTests
 
         it("Cloned iterator is identical to original", () =>
         {
-            const original = new ArrayIterator<number>([2, 4, 6]);
+            const original = instancer([2, 4, 6]);
             const cloned = original.clone();
 
             Test.isTrue(original.next()); Test.isEqual(original.value(), 2);
