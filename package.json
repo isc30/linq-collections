@@ -76,8 +76,6 @@
   "nyc": {
     "exclude": [
       "build/test"
-    ],
-    "sourceMap": false,
-    "instrument": false
+    ]
   }
 }
