@@ -29,7 +29,7 @@ export namespace IteratorTests
                     Enumerable.fromSource([]))));
 
         describe(`${name} (OrderedEnumerable)`, () => test(
-            <T>(e: T[]) => new OrderedEnumerable(Enumerable.fromSource(e), undefined)));
+            <T>(e: T[]) => new OrderedEnumerable(Enumerable.fromSource(e), (l, r) => 0)));
 
         describe(`${name} (RangeEnumerable)`, () => test(
             <T>(e: T[]) => new RangeEnumerable(Enumerable.fromSource(e), undefined, undefined)));
