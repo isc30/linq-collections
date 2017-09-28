@@ -84,9 +84,6 @@ export interface ICollection<TOut>
 
     orderByDescending<TKey>(
         keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
-    orderByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>,
-        comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
 
     reverse(): IEnumerable<TOut>;
 
@@ -132,11 +129,7 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
         keySelector: Selector<TOut, TKey>,
         comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
 
-    thenByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
-    thenByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>,
-        comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
+    thenByDescending<TKey>(keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
 }
 
 export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
@@ -536,15 +529,9 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     }
 
     public orderByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
-    public orderByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>,
-        comparer: Comparer<TKey>): IOrderedEnumerable<TOut>;
-    public orderByDescending<TKey>(
-        keySelector: Selector<TOut, TKey>,
-        comparer?: Comparer<TKey>): IOrderedEnumerable<TOut>
+        keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>
     {
-        return new OrderedEnumerable(this.clone(), createComparer(keySelector, false, comparer));
+        return new OrderedEnumerable(this.clone(), createComparer(keySelector, false, undefined));
     }
 
     public max(): TOut;
@@ -1074,7 +1061,7 @@ export class ReverseEnumerable<TElement> extends Enumerable<TElement>
     }
 }
 
-export class OrderedEnumerable<TElement, TKey>
+export class OrderedEnumerable<TElement>
     extends EnumerableBase<TElement, TElement>
     implements IOrderedEnumerable<TElement>
 {
@@ -1098,32 +1085,44 @@ export class OrderedEnumerable<TElement, TKey>
             && this._currentIndex < this._elements.value.length;
     }
 
-    public thenBy<TKeySelector>(
-        keySelector: Selector<TElement, TKeySelector>): IOrderedEnumerable<TElement>;
-    public thenBy<TKeySelector>(
-        keySelector: Selector<TElement, TKeySelector>,
-        comparer: Comparer<TKeySelector>): IOrderedEnumerable<TElement>;
-    public thenBy<TKeySelector>(
-        keySelector: Selector<TElement, TKeySelector>,
-        comparer?: Comparer<TKeySelector>): IOrderedEnumerable<TElement>
+    public orderBy<TKey>(
+        keySelector: Selector<TElement, TKey>): IOrderedEnumerable<TElement>;
+    public orderBy<TKey>(
+        keySelector: Selector<TElement, TKey>,
+        comparer: Comparer<TKey>): IOrderedEnumerable<TElement>;
+    public orderBy<TKey>(
+        keySelector: Selector<TElement, TKey>,
+        comparer?: Comparer<TKey>): IOrderedEnumerable<TElement>
+    {
+        return new OrderedEnumerable(this.source.clone(), createComparer(keySelector, true, comparer));
+    }
+
+    public orderByDescending<TKey>(
+        keySelector: Selector<TElement, TKey>): IOrderedEnumerable<TElement>
+    {
+        return new OrderedEnumerable(this.source.clone(), createComparer(keySelector, false, undefined));
+    }
+
+    public thenBy<TKey>(
+        keySelector: Selector<TElement, TKey>): IOrderedEnumerable<TElement>;
+    public thenBy<TKey>(
+        keySelector: Selector<TElement, TKey>,
+        comparer: Comparer<TKey>): IOrderedEnumerable<TElement>;
+    public thenBy<TKey>(
+        keySelector: Selector<TElement, TKey>,
+        comparer?: Comparer<TKey>): IOrderedEnumerable<TElement>
     {
         return new OrderedEnumerable(
-            this.clone(),
+            this.source.clone(),
             combineComparers(this._comparer, createComparer(keySelector, true, comparer)));
     }
 
     public thenByDescending<TKeySelector>(
-        keySelector: Selector<TElement, TKeySelector>): IOrderedEnumerable<TElement>;
-    public thenByDescending<TKeySelector>(
-        keySelector: Selector<TElement, TKeySelector>,
-        comparer: Comparer<TKeySelector>): IOrderedEnumerable<TElement>;
-    public thenByDescending<TKeySelector>(
-        keySelector: Selector<TElement, TKeySelector>,
-        comparer?: Comparer<TKeySelector>): IOrderedEnumerable<TElement>
+        keySelector: Selector<TElement, TKeySelector>): IOrderedEnumerable<TElement>
     {
         return new OrderedEnumerable(
-            this.clone(),
-            combineComparers(this._comparer, createComparer(keySelector, false, comparer)));
+            this.source.clone(),
+            combineComparers(this._comparer, createComparer(keySelector, false, undefined)));
     }
 
     public reset(): void

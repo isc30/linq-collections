@@ -508,6 +508,13 @@ export namespace IEnumerableTests
             Test.isArrayEqual(ordered.toArray(), [1, 2, 3, 6, 7]);
         });
 
+        it("Simple order (custom comparer) (iterator)", () =>
+        {
+            const base = instancer([2, 6, 3, 7, 1]);
+            const ordered = new Enumerable(base.orderBy(e => e, (l, r) => l < 5 ? -1 : 1));
+            Test.isArrayEqual(ordered.toArray(), [2, 3, 1, 7, 6]);
+        });
+
         it("Simple order (string) (iterator)", () =>
         {
             const base = instancer(["Ivan", "Uxue", "Manolo", "Antonio"]);
@@ -529,6 +536,13 @@ export namespace IEnumerableTests
             const base = instancer([2, 6, 3, 7, 1]);
             const ordered = base.orderBy(e => e);
             Test.isArrayEqual(ordered.toArray(), [1, 2, 3, 6, 7]);
+        });
+
+        it("Simple order (custom comparer)", () =>
+        {
+            const base = instancer([2, 6, 3, 7, 1]);
+            const ordered = base.orderBy(e => e, (l, r) => l < 5 ? -1 : 1);
+            Test.isArrayEqual(ordered.toArray(), [2, 3, 1, 7, 6]);
         });
 
         it("Simple order (string)", () =>
@@ -566,21 +580,21 @@ export namespace IEnumerableTests
                 ["Uxue", "Ivan", "Antonio", "Manolo"]);
         });
 
-        it("Return empty if empty source (array)", () =>
+        it("Return empty if empty source", () =>
         {
             const base = instancer([]);
             const ordered = base.orderByDescending(e => e);
             Test.isArrayEqual(ordered.toArray(), []);
         });
 
-        it("Simple order (array)", () =>
+        it("Simple order", () =>
         {
             const base = instancer([2, 6, 3, 7, 1]);
             const ordered = base.orderByDescending(e => e);
             Test.isArrayEqual(ordered.toArray(), [7, 6, 3, 2, 1]);
         });
 
-        it("Simple order (string) (array)", () =>
+        it("Simple order (string)", () =>
         {
             const base = instancer(["Ivan", "Uxue", "Manolo", "Antonio"]);
             const ordered = base.orderByDescending(e => e[1]);
@@ -592,7 +606,7 @@ export namespace IEnumerableTests
 
     function reverse(instancer: Instancer): void
     {
-        it("Value is correct (array)", () =>
+        it("Value is correct ", () =>
         {
             const base = instancer([1, 2, 3, 4]).reverse();
             Test.isArrayEqual(base.toArray(), [4, 3, 2, 1]);
@@ -604,7 +618,7 @@ export namespace IEnumerableTests
             Test.isArrayEqual(base.toArray(), [4, 3, 2, 1]);
         });
 
-        it("Double reverse does nothing (array)", () =>
+        it("Double reverse does nothing", () =>
         {
             let base = instancer([1, 2, 3, 4]).reverse().reverse();
             Test.isArrayEqual(base.toArray(), [1, 2, 3, 4]);
@@ -1349,6 +1363,26 @@ export namespace IEnumerableTests
             ]);
         });
 
+        it("Simple order (custom comparer) (iterator)", () =>
+        {
+            const elements = [
+                {id: 1, day: 4}, // 0
+                {id: 2, day: 7}, // 1
+                {id: 3, day: 4}, // 2
+                {id: 4, day: 9}, // 3
+                {id: 5, day: 1}, // 4
+            ];
+            const base = instancer<IThenByTestClass>(elements);
+            const ordered = new Enumerable(base.orderBy(e => e.day).thenBy(e => e.id, (l, r) => l < 3 ? 1 : -1));
+            Test.isArrayEqual(ordered.toArray(), [
+                elements[4],
+                elements[2],
+                elements[0],
+                elements[1],
+                elements[3],
+            ]);
+        });
+
         it("Return empty if empty source", () =>
         {
             const base = instancer<IThenByTestClass>([]);
@@ -1393,6 +1427,26 @@ export namespace IEnumerableTests
                 elements[1],
                 elements[3],
                 elements[0],
+            ]);
+        });
+
+        it("Simple order (custom comparer)", () =>
+        {
+            const elements = [
+                {id: 1, day: 4}, // 0
+                {id: 2, day: 7}, // 1
+                {id: 3, day: 4}, // 2
+                {id: 4, day: 9}, // 3
+                {id: 5, day: 1}, // 4
+            ];
+            const base = instancer<IThenByTestClass>(elements);
+            const ordered = base.orderBy(e => e.day).thenBy(e => e.id, (l, r) => l < 3 ? 1 : -1);
+            Test.isArrayEqual(ordered.toArray(), [
+                elements[4],
+                elements[2],
+                elements[0],
+                elements[1],
+                elements[3],
             ]);
         });
     }
