@@ -12,7 +12,8 @@ Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScr
 Includes collections: List, Dictionary, ...
 
 ## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
-This project is activelly being developed and improved by Ivan Sanz (isc30)<br />Please expect some missing features until is finished.<br/>
+This project is activelly being developed and improved by Ivan Sanz (isc30)<br />
+Please expect some missing features until it's finished.<br />
 https://github.com/isc30/linq-collections
 
 ## Intellisense friendly
