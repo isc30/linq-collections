@@ -55,9 +55,6 @@ export namespace IEnumerableTests
 
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
-
-        /*describe(`${name} (OrderedEnumerable)`, () => test(
-            <T>(e: T[]) => new OrderedEnumerable(Enumerable.fromSource(e), (l, r) => 0)));*/
     }
 
     export function run(): void
@@ -553,6 +550,36 @@ export namespace IEnumerableTests
                 ordered.toArray(),
                 ["Manolo", "Antonio", "Ivan", "Uxue"]);
         });
+
+        it("Return empty if empty source (double)", () =>
+        {
+            const base = instancer([]);
+            const ordered = base.orderBy(e => e).orderBy(e => e);
+            Test.isArrayEqual(ordered.toArray(), []);
+        });
+
+        it("Simple order (double)", () =>
+        {
+            const base = instancer([2, 6, 3, 7, 1]);
+            const ordered = base.orderBy(e => e).orderBy(e => e);
+            Test.isArrayEqual(ordered.toArray(), [1, 2, 3, 6, 7]);
+        });
+
+        it("Simple order (custom comparer) (double)", () =>
+        {
+            const base = instancer([2, 6, 3, 7, 1]);
+            const ordered = base.orderBy(e => e).orderBy(e => e, (l, r) => l < 5 ? -1 : 1);
+            Test.isArrayEqual(ordered.toArray(), [2, 3, 1, 7, 6]);
+        });
+
+        it("Simple order (string) (double)", () =>
+        {
+            const base = instancer(["Ivan", "Uxue", "Manolo", "Antonio"]);
+            const ordered = base.orderBy(e => e[1]).orderBy(e => e[1]);
+            Test.isArrayEqual(
+                ordered.toArray(),
+                ["Manolo", "Antonio", "Ivan", "Uxue"]);
+        });
     }
 
     function orderByDescending(instancer: Instancer): void
@@ -598,6 +625,29 @@ export namespace IEnumerableTests
         {
             const base = instancer(["Ivan", "Uxue", "Manolo", "Antonio"]);
             const ordered = base.orderByDescending(e => e[1]);
+            Test.isArrayEqual(
+                ordered.toArray(),
+                ["Uxue", "Ivan", "Antonio", "Manolo"]);
+        });
+
+        it("Return empty if empty source (double)", () =>
+        {
+            const base = instancer([]);
+            const ordered = base.orderByDescending(e => e).orderByDescending(e => e);
+            Test.isArrayEqual(ordered.toArray(), []);
+        });
+
+        it("Simple order (double)", () =>
+        {
+            const base = instancer([2, 6, 3, 7, 1]);
+            const ordered = base.orderByDescending(e => e).orderByDescending(e => e);
+            Test.isArrayEqual(ordered.toArray(), [7, 6, 3, 2, 1]);
+        });
+
+        it("Simple order (double) (string)", () =>
+        {
+            const base = instancer(["Ivan", "Uxue", "Manolo", "Antonio"]);
+            const ordered = base.orderByDescending(e => e).orderByDescending(e => e[1]);
             Test.isArrayEqual(
                 ordered.toArray(),
                 ["Uxue", "Ivan", "Antonio", "Manolo"]);
