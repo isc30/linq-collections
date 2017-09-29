@@ -4,17 +4,17 @@
 */
 
 import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive } from "./Types";
-import { List } from "./Containers";
-import { IIterator, ArrayIterator } from "./Iterators";
+import { IList, List } from "./Collections";
+import { IIterable, ArrayIterator } from "./Iterators";
 import { Comparer, createComparer, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
 
-export interface ICollection<TOut>
+export interface IQueryable<TOut>
 {
-    clone(): ICollection<TOut>;
+    copy(): IQueryable<TOut>;
 
     toArray(): TOut[];
-    toList(): List<TOut>;
+    toList(): IList<TOut>;
     // toDictionary
     // toLookup
 
@@ -114,14 +114,14 @@ export interface ICollection<TOut>
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 }
 
-export interface IEnumerable<TOut> extends ICollection<TOut>, IIterator<TOut>
+export interface IEnumerable<TOut> extends IQueryable<TOut>, IIterable<TOut>
 {
-    clone(): IEnumerable<TOut>;
+    copy(): IEnumerable<TOut>;
 }
 
 export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 {
-    clone(): IOrderedEnumerable<TOut>;
+    copy(): IOrderedEnumerable<TOut>;
 
     thenBy<TKey>(
         keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
@@ -134,14 +134,14 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 
 export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
-    protected readonly source: IIterator<TElement> | IEnumerable<TElement>;
+    protected readonly source: IIterable<TElement> | IEnumerable<TElement>;
 
-    protected constructor(source: IIterator<TElement>)
+    protected constructor(source: IIterable<TElement>)
     {
         this.source = source;
     }
 
-    public abstract clone(): IEnumerable<TOut>;
+    public abstract copy(): IEnumerable<TOut>;
     public abstract value(): TOut;
 
     public reset(): void
@@ -167,7 +167,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return result;
     }
 
-    public toList(): List<TOut>
+    public toList(): IList<TOut>
     {
         return new List<TOut>(this.toArray());
     }
@@ -226,7 +226,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public reverse(): IEnumerable<TOut>
     {
-        return new ReverseEnumerable<TOut>(this.clone());
+        return new ReverseEnumerable<TOut>(this.copy());
     }
 
     public contains(element: TOut): boolean
@@ -236,12 +236,12 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public where(predicate: Predicate<TOut>): IEnumerable<TOut>
     {
-        return new ConditionalEnumerable<TOut>(this.clone(), predicate);
+        return new ConditionalEnumerable<TOut>(this.copy(), predicate);
     }
 
     public select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>
     {
-        return new TransformEnumerable<TOut, TSelectorOut>(this.clone(), selector);
+        return new TransformEnumerable<TOut, TSelectorOut>(this.copy(), selector);
     }
 
     public selectMany<TSelectorOut>(
@@ -264,11 +264,11 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>
     {
-        let result = new ConcatEnumerable<TOut>(this.clone(), other.clone());
+        let result = new ConcatEnumerable<TOut>(this.copy(), other.copy());
 
         for (let i = 0, end = others.length; i < end; ++i)
         {
-            result = new ConcatEnumerable<TOut>(result, others[i].clone());
+            result = new ConcatEnumerable<TOut>(result, others[i].copy());
         }
 
         return result;
@@ -471,7 +471,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     public distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
     public distinct<TKey>(keySelector?: Selector<TOut, TKey>): IEnumerable<TOut>
     {
-        return new UniqueEnumerable(this.clone(), keySelector);
+        return new UniqueEnumerable(this.copy(), keySelector);
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -525,13 +525,13 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         keySelector: Selector<TOut, TKey>,
         comparer?: Comparer<TKey>): IOrderedEnumerable<TOut>
     {
-        return new OrderedEnumerable(this.clone(), createComparer(keySelector, true, comparer));
+        return new OrderedEnumerable(this.copy(), createComparer(keySelector, true, comparer));
     }
 
     public orderByDescending<TKey>(
         keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>
     {
-        return new OrderedEnumerable(this.clone(), createComparer(keySelector, false, undefined));
+        return new OrderedEnumerable(this.copy(), createComparer(keySelector, false, undefined));
     }
 
     public max(): TOut;
@@ -580,12 +580,12 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public skip(amount: number): IEnumerable<TOut>
     {
-        return new RangeEnumerable<TOut>(this.clone(), amount, undefined);
+        return new RangeEnumerable<TOut>(this.copy(), amount, undefined);
     }
 
     public take(amount: number): IEnumerable<TOut>
     {
-        return new RangeEnumerable<TOut>(this.clone(), undefined, amount);
+        return new RangeEnumerable<TOut>(this.copy(), undefined, amount);
     }
 
     public union(other: IEnumerable<TOut>): IEnumerable<TOut>
@@ -598,7 +598,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 {
     protected currentValue: Cached<TElement>;
 
-    public static fromSource<TElement>(source: TElement[] | IIterator<TElement>): IEnumerable<TElement>
+    public static fromSource<TElement>(source: TElement[] | IIterable<TElement>): IEnumerable<TElement>
     {
         if (Array.isArray(source))
         {
@@ -647,15 +647,15 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return new ArrayEnumerable(source);
     }
 
-    public constructor(source: IIterator<TElement>)
+    public constructor(source: IIterable<TElement>)
     {
         super(source);
         this.currentValue = new Cached<TElement>();
     }
 
-    public clone(): IEnumerable<TElement>
+    public copy(): IEnumerable<TElement>
     {
-        return new Enumerable<TElement>(this.source.clone());
+        return new Enumerable<TElement>(this.source.copy());
     }
 
     public value(): TElement
@@ -693,9 +693,9 @@ export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
         this._predicate = predicate;
     }
 
-    public clone(): ConditionalEnumerable<TElement>
+    public copy(): ConditionalEnumerable<TElement>
     {
-        return new ConditionalEnumerable<TElement>(this.source.clone(), this._predicate);
+        return new ConditionalEnumerable<TElement>(this.source.copy(), this._predicate);
     }
 
     public next(): boolean
@@ -714,19 +714,19 @@ export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 
 export class ConcatEnumerable<TElement> extends Enumerable<TElement>
 {
-    private _otherSource: IIterator<TElement>;
+    private _otherSource: IIterable<TElement>;
     private _isFirstSourceFinished: boolean;
 
-    public constructor(left: IIterator<TElement>, right: IIterator<TElement>)
+    public constructor(left: IIterable<TElement>, right: IIterable<TElement>)
     {
         super(left);
         this._otherSource = right;
         this._isFirstSourceFinished = false;
     }
 
-    public clone(): ConcatEnumerable<TElement>
+    public copy(): ConcatEnumerable<TElement>
     {
-        return new ConcatEnumerable<TElement>(this.source.clone(), this._otherSource.clone());
+        return new ConcatEnumerable<TElement>(this.source.copy(), this._otherSource.copy());
     }
 
     public reset(): void
@@ -781,9 +781,9 @@ export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
         this._seen = { primitive: {number: {}, string: {}, boolean: {}}, complex: [] };
     }
 
-    public clone(): UniqueEnumerable<TElement, TKey>
+    public copy(): UniqueEnumerable<TElement, TKey>
     {
-        return new UniqueEnumerable(this.source.clone(), this._keySelector);
+        return new UniqueEnumerable(this.source.copy(), this._keySelector);
     }
 
     public reset(): void
@@ -842,9 +842,9 @@ export class RangeEnumerable<TElement> extends Enumerable<TElement>
         this._currentIndex = -1;
     }
 
-    public clone(): RangeEnumerable<TElement>
+    public copy(): RangeEnumerable<TElement>
     {
-        return new RangeEnumerable<TElement>(this.source.clone(), this._start, this._count);
+        return new RangeEnumerable<TElement>(this.source.copy(), this._start, this._count);
     }
 
     public reset(): void
@@ -911,9 +911,9 @@ export class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement
         this._currentValue = new Cached<TOut>();
     }
 
-    public clone(): TransformEnumerable<TElement, TOut>
+    public copy(): TransformEnumerable<TElement, TOut>
     {
-        return new TransformEnumerable<TElement, TOut>(this.source.clone(), this._transform);
+        return new TransformEnumerable<TElement, TOut>(this.source.copy(), this._transform);
     }
 
     public value(): TOut
@@ -953,9 +953,9 @@ export class ReverseEnumerable<TElement> extends Enumerable<TElement>
         this._currentIndex = -1;
     }
 
-    public clone(): IEnumerable<TElement>
+    public copy(): IEnumerable<TElement>
     {
-        return new ReverseEnumerable(this.source.clone());
+        return new ReverseEnumerable(this.source.copy());
     }
 
     public reset(): void
@@ -1030,7 +1030,7 @@ export class ReverseEnumerable<TElement> extends Enumerable<TElement>
 
     public reverse(): IEnumerable<TElement>
     {
-        return this.source.clone(); // haha so smart
+        return this.source.copy(); // haha so smart
     }
 
     public sum(selector: Selector<TElement, number>): number
@@ -1094,13 +1094,13 @@ export class OrderedEnumerable<TElement>
         keySelector: Selector<TElement, TKey>,
         comparer?: Comparer<TKey>): IOrderedEnumerable<TElement>
     {
-        return new OrderedEnumerable(this.source.clone(), createComparer(keySelector, true, comparer));
+        return new OrderedEnumerable(this.source.copy(), createComparer(keySelector, true, comparer));
     }
 
     public orderByDescending<TKey>(
         keySelector: Selector<TElement, TKey>): IOrderedEnumerable<TElement>
     {
-        return new OrderedEnumerable(this.source.clone(), createComparer(keySelector, false, undefined));
+        return new OrderedEnumerable(this.source.copy(), createComparer(keySelector, false, undefined));
     }
 
     public thenBy<TKey>(
@@ -1113,7 +1113,7 @@ export class OrderedEnumerable<TElement>
         comparer?: Comparer<TKey>): IOrderedEnumerable<TElement>
     {
         return new OrderedEnumerable(
-            this.source.clone(),
+            this.source.copy(),
             combineComparers(this._comparer, createComparer(keySelector, true, comparer)));
     }
 
@@ -1121,7 +1121,7 @@ export class OrderedEnumerable<TElement>
         keySelector: Selector<TElement, TKeySelector>): IOrderedEnumerable<TElement>
     {
         return new OrderedEnumerable(
-            this.source.clone(),
+            this.source.copy(),
             combineComparers(this._comparer, createComparer(keySelector, false, undefined)));
     }
 
@@ -1131,9 +1131,9 @@ export class OrderedEnumerable<TElement>
         this._currentIndex = -1;
     }
 
-    public clone(): IOrderedEnumerable<TElement>
+    public copy(): IOrderedEnumerable<TElement>
     {
-        return new OrderedEnumerable(this.source.clone(), this._comparer);
+        return new OrderedEnumerable(this.source.copy(), this._comparer);
     }
 
     public value(): TElement
@@ -1170,18 +1170,18 @@ export class OrderedEnumerable<TElement>
 
 export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 {
-    protected _arraySource: TOut[];
+    protected _list: IList<TOut>;
 
     public constructor(source: TOut[])
     {
         super(new ArrayIterator(source));
 
-        this._arraySource = source;
+        this._list = new List(source);
     }
 
     public toArray(): TOut[]
     {
-        return ([] as TOut[]).concat(this._arraySource); // Faster way to copy array
+        return this._list.toArray();
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -1192,12 +1192,12 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (initialValue !== undefined)
         {
-            return this._arraySource.reduce(
+            return this._list.aggregate(
                 aggregator as Aggregator<TOut, TValue>,
-                initialValue);
+                initialValue as TValue);
         }
 
-        return this._arraySource.reduce(aggregator as Aggregator<TOut, TOut>);
+        return this._list.aggregate(aggregator as Aggregator<TOut, TOut | undefined>);
     }
 
     public any(): boolean;
@@ -1206,34 +1206,20 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._arraySource.some(predicate);
+            return this._list.any(predicate);
         }
 
-        this.reset();
-
-        return this._arraySource.length > 0;
+        return this._list.any();
     }
 
     public all(predicate: Predicate<TOut>): boolean
     {
-        return this._arraySource.every(predicate);
+        return this._list.all(predicate);
     }
 
     public average(selector: Selector<TOut, number>): number
     {
-        if (this.count() === 0)
-        {
-            throw new Error("Sequence contains no elements");
-        }
-
-        let sum = 0;
-
-        for (const v of this._arraySource)
-        {
-            sum += selector(v);
-        }
-
-        return sum / this._arraySource.length;
+        return this._list.average(selector);
     }
 
     public count(): number;
@@ -1242,26 +1228,20 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._arraySource.filter(predicate).length;
+            return this._list.count(predicate);
         }
 
-        // tslint:disable-next-line:no-bitwise
-        return this._arraySource.length >>> 0;
+        return this._list.count();
     }
 
-    public clone(): IEnumerable<TOut>
+    public copy(): IEnumerable<TOut>
     {
-        return new ArrayEnumerable(this._arraySource);
+        return new ArrayEnumerable(this._list.asArray());
     }
 
     public elementAtOrDefault(index: number): TOut | undefined
     {
-        if (index < 0)
-        {
-            throw new Error("Negative index is forbiden");
-        }
-
-        return this._arraySource[index];
+        return this._list.elementAtOrDefault(index);
     }
 
     public firstOrDefault(): TOut | undefined;
@@ -1270,10 +1250,10 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._arraySource.filter(predicate)[0];
+            return this._list.firstOrDefault(predicate);
         }
 
-        return this._arraySource[0];
+        return this._list.firstOrDefault();
     }
 
     public lastOrDefault(): TOut | undefined;
@@ -1282,11 +1262,9 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            const records = this._arraySource.filter(predicate);
-
-            return records[records.length - 1];
+            return this._list.lastOrDefault(predicate);
         }
 
-        return this._arraySource[this._arraySource.length - 1];
+        return this._list.lastOrDefault();
     }
 }

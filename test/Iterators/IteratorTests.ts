@@ -1,12 +1,12 @@
 import { Test } from "../Test";
-import { ArrayIterator, IIterator } from "../../src/Iterators";
+import { ArrayIterator, IIterable } from "../../src/Iterators";
 import { Enumerable, ArrayEnumerable, ConditionalEnumerable,
     ConcatEnumerable, UniqueEnumerable, RangeEnumerable,
     TransformEnumerable, ReverseEnumerable, OrderedEnumerable} from "../../src/Enumerables";
 
 export namespace IteratorTests
 {
-    type Instancer = <T>(elements: T[]) => IIterator<T>;
+    type Instancer = <T>(elements: T[]) => IIterable<T>;
 
     function runTest(name: string, test: (instancer: Instancer) => void)
     {
@@ -159,7 +159,7 @@ export namespace IteratorTests
             const original = instancer([2, 4, 6]);
             Test.isTrue(original.next()); Test.isEqual(original.value(), 2);
 
-            const clone = original.clone();
+            const clone = original.copy();
             Test.isTrue(clone.next()); Test.isEqual(clone.value(), 2);
         });
 
@@ -168,7 +168,7 @@ export namespace IteratorTests
             const original = instancer([2, 4, 6]);
             Test.isTrue(original.next()); Test.isEqual(original.value(), 2);
 
-            const cloned = original.clone();
+            const cloned = original.copy();
             cloned.next(); // 2
             cloned.next(); // 4
 
@@ -183,7 +183,7 @@ export namespace IteratorTests
         it("Cloned iterator is identical to original", () =>
         {
             const original = instancer([2, 4, 6]);
-            const cloned = original.clone();
+            const cloned = original.copy();
 
             Test.isTrue(original.next()); Test.isEqual(original.value(), 2);
             Test.isTrue(cloned.next()); Test.isEqual(cloned.value(), 2);

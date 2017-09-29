@@ -1,8 +1,8 @@
 // tslint:disable-next-line:max-line-length
 import { IEnumerable, Enumerable, ReverseEnumerable, ConditionalEnumerable, ConcatEnumerable, UniqueEnumerable, RangeEnumerable, TransformEnumerable, OrderedEnumerable, ArrayEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
+import { List } from "../../src/Collections";
 import { Test } from "../Test";
-import { List } from "../../src/Containers";
 
 export namespace IEnumerableTests
 {

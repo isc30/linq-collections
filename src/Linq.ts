@@ -4,5 +4,5 @@
 */
 
 export { IEnumerable, Enumerable } from "./Enumerables";
-export { IIterator, ArrayIterator } from "./Iterators";
-export { List } from "./Containers";
+export { IIterable, ArrayIterator } from "./Iterators";
+export { List } from "./Collections";

@@ -3,15 +3,15 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-export interface IIterator<TElement>
+export interface IIterable<TElement>
 {
-    clone(): IIterator<TElement>;
+    copy(): IIterable<TElement>;
     reset(): void;
     next(): boolean;
     value(): TElement;
 }
 
-export class ArrayIterator<TElement> implements IIterator<TElement>
+export class ArrayIterator<TElement> implements IIterable<TElement>
 {
     protected readonly source: TElement[];
     private _index: number;
@@ -22,7 +22,7 @@ export class ArrayIterator<TElement> implements IIterator<TElement>
         this.reset();
     }
 
-    public clone(): IIterator<TElement>
+    public copy(): IIterable<TElement>
     {
         return new ArrayIterator<TElement>(this.source);
     }
