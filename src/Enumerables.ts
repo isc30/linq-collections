@@ -48,7 +48,7 @@ export interface IQueryable<TOut>
 
     elementAtOrDefault(index: number): TOut | undefined;
 
-    // +++ except
+    except(other: IQueryable<TOut>): IEnumerable<TOut>;
 
     first(): TOut;
     first(predicate: Predicate<TOut>): TOut;
@@ -113,7 +113,7 @@ export interface IQueryable<TOut>
 
     take(amount: number): IEnumerable<TOut>;
 
-    union(other: IEnumerable<TOut>): IEnumerable<TOut>;
+    union(other: IQueryable<TOut>): IEnumerable<TOut>;
 
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 }
@@ -121,8 +121,6 @@ export interface IQueryable<TOut>
 export interface IEnumerable<TOut> extends IQueryable<TOut>, IIterable<TOut>
 {
     copy(): IEnumerable<TOut>;
-
-    except(other: IEnumerable<TOut>): IEnumerable<TOut>;
 }
 
 export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
@@ -336,7 +334,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return this.value();
     }
 
-    public except(other: IEnumerable<TOut>): IEnumerable<TOut>
+    public except(other: IQueryable<TOut>): IEnumerable<TOut>
     {
         return this.where(e => !other.contains(e));
     }
@@ -609,7 +607,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return new RangeEnumerable<TOut>(this.copy(), undefined, amount);
     }
 
-    public union(other: IEnumerable<TOut>): IEnumerable<TOut>
+    public union(other: IQueryable<TOut>): IEnumerable<TOut>
     {
         return new UniqueEnumerable(this.concat(other));
     }

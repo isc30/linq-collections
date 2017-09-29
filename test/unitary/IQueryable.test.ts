@@ -698,7 +698,7 @@ export namespace IQueryableUnitTest
 
     function except(instancer: Instancer): void
     {
-        /*it("Value is correct (empty)", () =>
+        it("Value is correct (empty)", () =>
         {
             let base = instancer([1, 2, 3, 4]);
             const base2 = instancer([]);
@@ -716,7 +716,7 @@ export namespace IQueryableUnitTest
 
             base2 = instancer([3, 6, 88]);
             Test.isArrayEqual(base.except(base2).toArray(), [1, 2, 4]);
-        });*/
+        });
     }
 
     function first(instancer: Instancer): void
@@ -1195,7 +1195,7 @@ export namespace IQueryableUnitTest
 
     function union(instancer: Instancer): void
     {
-        /*it("Empty returns empty", () =>
+        it("Empty returns empty", () =>
         {
             const base1 = instancer<number>([]);
             const base2 = instancer<number>([]);
@@ -1265,7 +1265,7 @@ export namespace IQueryableUnitTest
             const union = new Enumerable(base1.union(base2));
 
             Test.isArrayEqual(union.toArray(), [1, 2, 3, 4]);
-        });*/
+        });
     }
 
     function where(instancer: Instancer): void

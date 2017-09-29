@@ -254,9 +254,9 @@ export class List<TElement> implements IList<TElement>
         return element;
     }
 
-    public except(other: IEnumerable<TElement>): IEnumerable<TElement>
+    public except(other: IQueryable<TElement>): IEnumerable<TElement>
     {
-        return this.where(e => !other.contains(e));
+        return this.asEnumerable().except(other);
     }
 
     public first(): TElement;
@@ -421,7 +421,7 @@ export class List<TElement> implements IList<TElement>
         return new RangeEnumerable<TElement>(this.asEnumerable(), undefined, amount);
     }
 
-    public union(other: IEnumerable<TElement>): IEnumerable<TElement>
+    public union(other: IQueryable<TElement>): IEnumerable<TElement>
     {
         return new UniqueEnumerable(this.concat(other));
     }
