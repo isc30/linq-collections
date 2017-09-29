@@ -2,7 +2,7 @@ import { Enumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
 import { Test } from "../Test";
 
-export namespace EnumerableTests
+export namespace EnumerableUnitTest
 {
     export function run(): void
     {

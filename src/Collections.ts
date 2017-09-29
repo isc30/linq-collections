@@ -7,6 +7,7 @@
 import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable } from "./Enumerables";
 import { Action, Selector,  Aggregator,  Predicate } from "./Types";
 import { Comparer, createComparer } from "./Comparers";
+import { IIterable } from "./Iterators";
 
 interface IKeyValuePair<TKey, TValue>
 {
@@ -16,9 +17,10 @@ interface IKeyValuePair<TKey, TValue>
 
 export interface IList<TElement> extends IQueryable<TElement>
 {
-    toEnumerable(): IEnumerable<TElement>;
     asArray(): TElement[];
-    copy(): IList<TElement>;
+    copy(): List<TElement>;
+    // concat(other: IList<TElement>, ...others: Array<IList<TElement>>): IEnumerable<TElement>;
+    // except(other: IList<TElement>): IEnumerable<TElement>;
     clear(): void;
     at(index: number): TElement | undefined;
     add(element: TElement): void;
@@ -35,7 +37,7 @@ export class List<TElement> implements IList<TElement>
         this.source = elements;
     }
 
-    public toEnumerable(): IEnumerable<TElement>
+    public asEnumerable(): IEnumerable<TElement>
     {
         return new ArrayEnumerable(this.source);
     }
@@ -50,12 +52,12 @@ export class List<TElement> implements IList<TElement>
         return ([] as TElement[]).concat(this.source);
     }
 
-    public toList(): IList<TElement>
+    public toList(): List<TElement>
     {
         return this.copy();
     }
 
-    public copy(): IList<TElement>
+    public copy(): List<TElement>
     {
         return new List<TElement>(this.toArray());
     }
@@ -156,6 +158,14 @@ export class List<TElement> implements IList<TElement>
         return this.source.length >>> 0;
     }
 
+    public concat(
+        other: TElement[] | IQueryable<TElement>,
+        ...others: Array<TElement[] | IQueryable<TElement>>)
+        : IEnumerable<TElement>
+    {
+        return this.asEnumerable().concat(other, ...others);
+    }
+
     public elementAtOrDefault(index: number): TElement | undefined
     {
         if (index < 0)
@@ -196,7 +206,7 @@ export class List<TElement> implements IList<TElement>
 
     public reverse(): IEnumerable<TElement>
     {
-        return new ReverseEnumerable<TElement>(this.toEnumerable());
+        return new ReverseEnumerable<TElement>(this.asEnumerable());
     }
 
     public contains(element: TElement): boolean
@@ -206,16 +216,16 @@ export class List<TElement> implements IList<TElement>
 
     public where(predicate: Predicate<TElement>): IEnumerable<TElement>
     {
-        return new ConditionalEnumerable<TElement>(this.toEnumerable(), predicate);
+        return new ConditionalEnumerable<TElement>(this.asEnumerable(), predicate);
     }
 
     public select<TSelectorOut>(selector: Selector<TElement, TSelectorOut>): IEnumerable<TSelectorOut>
     {
-        return new TransformEnumerable<TElement, TSelectorOut>(this.toEnumerable(), selector);
+        return new TransformEnumerable<TElement, TSelectorOut>(this.asEnumerable(), selector);
     }
 
     public selectMany<TSelectorOut>(
-        selector: Selector<TElement, TSelectorOut[] | IEnumerable<TSelectorOut>>)
+        selector: Selector<TElement, TSelectorOut[] | List<TSelectorOut> | IEnumerable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>
     {
         const selectToEnumerable = (e: TElement) =>
@@ -223,25 +233,13 @@ export class List<TElement> implements IList<TElement>
             const ie = selector(e);
 
             return Array.isArray(ie)
-                ? Enumerable.fromSource(ie)
-                : ie;
+                ? new ArrayEnumerable(ie)
+                : ie.asEnumerable();
         };
 
         return this
             .select(selectToEnumerable).toArray()
             .reduce((p, c) => new ConcatEnumerable(p, c), Enumerable.empty()) as IEnumerable<TSelectorOut>;
-    }
-
-    public concat(other: IEnumerable<TElement>, ...others: Array<IEnumerable<TElement>>): IEnumerable<TElement>
-    {
-        let result = new ConcatEnumerable<TElement>(this.toEnumerable(), other.copy());
-
-        for (let i = 0, end = others.length; i < end; ++i)
-        {
-            result = new ConcatEnumerable<TElement>(result, others[i].copy());
-        }
-
-        return result;
     }
 
     public elementAt(index: number): TElement
@@ -344,17 +342,17 @@ export class List<TElement> implements IList<TElement>
     {
         if (predicate !== undefined)
         {
-            return this.toEnumerable().singleOrDefault(predicate);
+            return this.asEnumerable().singleOrDefault(predicate);
         }
 
-        return this.toEnumerable().singleOrDefault();
+        return this.asEnumerable().singleOrDefault();
     }
 
     public distinct(): IEnumerable<TElement>;
     public distinct<TKey>(keySelector: Selector<TElement, TKey>): IEnumerable<TElement>;
     public distinct<TKey>(keySelector?: Selector<TElement, TKey>): IEnumerable<TElement>
     {
-        return new UniqueEnumerable(this.toEnumerable(), keySelector);
+        return new UniqueEnumerable(this.asEnumerable(), keySelector);
     }
 
     public min(): TElement;
@@ -364,7 +362,7 @@ export class List<TElement> implements IList<TElement>
         if (selector !== undefined)
         {
             // Don't copy iterators
-            return new TransformEnumerable<TElement, TSelectorOut>(this.toEnumerable(), selector).min();
+            return new TransformEnumerable<TElement, TSelectorOut>(this.asEnumerable(), selector).min();
         }
 
         return this.aggregate((previous, current) =>
@@ -382,13 +380,13 @@ export class List<TElement> implements IList<TElement>
         keySelector: Selector<TElement, TKey>,
         comparer?: Comparer<TKey>): IOrderedEnumerable<TElement>
     {
-        return new OrderedEnumerable(this.toEnumerable(), createComparer(keySelector, true, comparer));
+        return new OrderedEnumerable(this.asEnumerable(), createComparer(keySelector, true, comparer));
     }
 
     public orderByDescending<TKey>(
         keySelector: Selector<TElement, TKey>): IOrderedEnumerable<TElement>
     {
-        return new OrderedEnumerable(this.toEnumerable(), createComparer(keySelector, false, undefined));
+        return new OrderedEnumerable(this.asEnumerable(), createComparer(keySelector, false, undefined));
     }
 
     public max(): TElement;
@@ -398,7 +396,7 @@ export class List<TElement> implements IList<TElement>
         if (selector !== undefined)
         {
             // Don't copy iterators
-            return new TransformEnumerable<TElement, TSelectorOut>(this.toEnumerable(), selector).max();
+            return new TransformEnumerable<TElement, TSelectorOut>(this.asEnumerable(), selector).max();
         }
 
         return this.aggregate((previous, current) =>
@@ -415,12 +413,12 @@ export class List<TElement> implements IList<TElement>
 
     public skip(amount: number): IEnumerable<TElement>
     {
-        return new RangeEnumerable<TElement>(this.toEnumerable(), amount, undefined);
+        return new RangeEnumerable<TElement>(this.asEnumerable(), amount, undefined);
     }
 
     public take(amount: number): IEnumerable<TElement>
     {
-        return new RangeEnumerable<TElement>(this.toEnumerable(), undefined, amount);
+        return new RangeEnumerable<TElement>(this.asEnumerable(), undefined, amount);
     }
 
     public union(other: IEnumerable<TElement>): IEnumerable<TElement>

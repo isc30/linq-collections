@@ -1,7 +1,7 @@
 import { Enumerable } from "../../src/Enumerables";
 import { Test } from "../Test";
 
-export namespace IEnumerableIntegrationTests
+export namespace IEnumerableIntegrationTest
 {
     interface IPerson
     {

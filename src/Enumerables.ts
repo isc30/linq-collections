@@ -4,7 +4,7 @@
 */
 
 import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive } from "./Types";
-import { IList, List } from "./Collections";
+import { List } from "./Collections";
 import { IIterable, ArrayIterator } from "./Iterators";
 import { Comparer, createComparer, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
@@ -13,8 +13,9 @@ export interface IQueryable<TOut>
 {
     copy(): IQueryable<TOut>;
 
+    asEnumerable(): IEnumerable<TOut>;
     toArray(): TOut[];
-    toList(): IList<TOut>;
+    toList(): List<TOut>;
     // toDictionary
     // toLookup
 
@@ -28,7 +29,10 @@ export interface IQueryable<TOut>
 
     average(selector: Selector<TOut, number>): number;
 
-    concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>;
+    concat(
+        other: TOut[] | IQueryable<TOut>,
+        ...others: Array<TOut[] | IQueryable<TOut>>)
+        : IEnumerable<TOut>;
 
     contains(element: TOut): boolean;
 
@@ -44,7 +48,7 @@ export interface IQueryable<TOut>
 
     elementAtOrDefault(index: number): TOut | undefined;
 
-    except(other: IEnumerable<TOut>): IEnumerable<TOut>;
+    // +++ except
 
     first(): TOut;
     first(predicate: Predicate<TOut>): TOut;
@@ -90,7 +94,7 @@ export interface IQueryable<TOut>
     select<TSelectorOut>(selector: Selector<TOut, TSelectorOut>): IEnumerable<TSelectorOut>;
 
     selectMany<TSelectorOut>(
-        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>)
+        selector: Selector<TOut, TSelectorOut[] | IQueryable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>;
 
     // sequenceEqual
@@ -117,6 +121,8 @@ export interface IQueryable<TOut>
 export interface IEnumerable<TOut> extends IQueryable<TOut>, IIterable<TOut>
 {
     copy(): IEnumerable<TOut>;
+
+    except(other: IEnumerable<TOut>): IEnumerable<TOut>;
 }
 
 export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
@@ -154,6 +160,11 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return this.source.next();
     }
 
+    public asEnumerable(): IEnumerable<TOut>
+    {
+        return this;
+    }
+
     public toArray(): TOut[]
     {
         const result: TOut[] = [];
@@ -167,7 +178,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return result;
     }
 
-    public toList(): IList<TOut>
+    public toList(): List<TOut>
     {
         return new List<TOut>(this.toArray());
     }
@@ -245,7 +256,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     }
 
     public selectMany<TSelectorOut>(
-        selector: Selector<TOut, TSelectorOut[] | IEnumerable<TSelectorOut>>)
+        selector: Selector<TOut, TSelectorOut[] | IQueryable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>
     {
         const selectToEnumerable = (e: TOut) =>
@@ -253,8 +264,8 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
             const ie = selector(e);
 
             return Array.isArray(ie)
-                ? Enumerable.fromSource(ie)
-                : ie;
+                ? new ArrayEnumerable(ie)
+                : ie.asEnumerable();
         };
 
         return this
@@ -262,13 +273,23 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
             .reduce((p, c) => new ConcatEnumerable(p, c), Enumerable.empty()) as IEnumerable<TSelectorOut>;
     }
 
-    public concat(other: IEnumerable<TOut>, ...others: Array<IEnumerable<TOut>>): IEnumerable<TOut>
+    public concat(
+        other: TOut[] | IQueryable<TOut>,
+        ...others: Array<TOut[] | IQueryable<TOut>>)
+        : IEnumerable<TOut>
     {
-        let result = new ConcatEnumerable<TOut>(this.copy(), other.copy());
+        const asEnumerable = (e: TOut[] | IQueryable<TOut>): IIterable<TOut> =>
+        {
+            return Array.isArray(e)
+                ? new ArrayEnumerable(e)
+                : e.asEnumerable();
+        };
+
+        let result = new ConcatEnumerable<TOut>(this.copy(), asEnumerable(other).copy());
 
         for (let i = 0, end = others.length; i < end; ++i)
         {
-            result = new ConcatEnumerable<TOut>(result, others[i].copy());
+            result = new ConcatEnumerable<TOut>(result, asEnumerable(others[i]).copy());
         }
 
         return result;
@@ -1170,7 +1191,7 @@ export class OrderedEnumerable<TElement>
 
 export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 {
-    protected _list: IList<TOut>;
+    protected _list: List<TOut>;
 
     public constructor(source: TOut[])
     {

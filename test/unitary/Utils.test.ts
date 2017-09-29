@@ -1,7 +1,7 @@
 import { Cached } from "../../src/Utils";
 import { Test } from "./../Test";
 
-export namespace UtilsTests
+export namespace UtilsUnitTest
 {
     export function run(): void
     {

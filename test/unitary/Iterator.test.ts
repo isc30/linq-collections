@@ -4,7 +4,7 @@ import { Enumerable, ArrayEnumerable, ConditionalEnumerable,
     ConcatEnumerable, UniqueEnumerable, RangeEnumerable,
     TransformEnumerable, ReverseEnumerable, OrderedEnumerable} from "../../src/Enumerables";
 
-export namespace IteratorTests
+export namespace IteratorUnitTest
 {
     type Instancer = <T>(elements: T[]) => IIterable<T>;
 

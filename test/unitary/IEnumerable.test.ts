@@ -4,24 +4,9 @@ import { ArrayIterator } from "../../src/Iterators";
 import { List } from "../../src/Collections";
 import { Test } from "../Test";
 
-export namespace IEnumerableTests
+export namespace IEnumerableUnitTest
 {
     type Instancer = <T>(elements: T[]) => IEnumerable<T>;
-
-    function ArrayInstancer<T>(elements: T[])
-    {
-        return Enumerable.fromSource(elements);
-    }
-
-    function EnumerableInstancer<T>(elements: T[])
-    {
-        return new Enumerable(new ArrayIterator(elements));
-    }
-
-    function ReverseEnumerableInstancer<T>(elements: T[])
-    {
-        return new ReverseEnumerable(Enumerable.fromSource(elements).reverse());
-    }
 
     function runTest(name: string, test: (instancer: Instancer) => void)
     {
