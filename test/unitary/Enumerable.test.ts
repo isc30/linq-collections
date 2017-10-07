@@ -71,6 +71,29 @@ export namespace EnumerableUnitTest
 
         base = Enumerable.range(0, 1000000);
         Test.isArrayEqual(base.toArray(), base.toArray());
+
+        // Reverse
+
+        Test.throwsException(() => Enumerable.range(0, -1, false));
+        Test.throwsException(() => Enumerable.range(5, -666, false));
+
+        base = Enumerable.range(0, 0, false);
+        Test.isArrayEqual(base.toArray(), [] as number[]);
+
+        base = Enumerable.range(4, 0, false);
+        Test.isArrayEqual(base.toArray(), [] as number[]);
+
+        base = Enumerable.range(2, 3, false);
+        Test.isArrayEqual(base.toArray(), [2, 1, 0]);
+
+        base = Enumerable.range(-2, 4, false);
+        Test.isArrayEqual(base.toArray(), [-2, -3, -4, -5]);
+
+        base = Enumerable.range(0, 6, false);
+        Test.isArrayEqual(base.toArray(), [0, -1, -2, -3, -4, -5]);
+
+        base = Enumerable.range(0, 1000000, false);
+        Test.isArrayEqual(base.toArray(), base.toArray());
     }
 
     function repeat(): void

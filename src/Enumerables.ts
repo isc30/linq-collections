@@ -632,6 +632,8 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return Enumerable.fromSource([]);
     }
 
+    public static range(start: number, count: number): IEnumerable<number>;
+    public static range(start: number, count: number, ascending: boolean): IEnumerable<number>;
     public static range(start: number, count: number, ascending: boolean = true): IEnumerable<number>
     {
         if (count < 0)
@@ -662,11 +664,11 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
             throw new Error("Count must me >= 0");
         }
 
-        const source = [] as TElement[];
+        const source = new Array<TElement>(count);
 
         for (let i = 0; i < count; ++i)
         {
-            source.push(element);
+            source[i] = element;
         }
 
         return new ArrayEnumerable(source);
