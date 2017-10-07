@@ -119,9 +119,8 @@ export namespace IQueryableUnitTest
         it("Returns List", () =>
         {
             const list = instancer<number>([1, 2, 3]).toList();
-
             Test.isTrue(list instanceof List);
-            Test.isFalse(list instanceof Array);
+            Test.isArrayEqual(list.toArray(), [1, 2, 3]);
         });
     }
 
@@ -928,23 +927,6 @@ export namespace IQueryableUnitTest
             const base = instancer(["pepin", "sanz", "macheta"]).select(e => e.length);
             Test.isArrayEqual(base.toArray(), [5, 4, 7]);
         });
-
-        /*it("Value is correct (iterators)", () =>
-        {
-            const i = instancer([1, 2, 3]);
-            const names = i.select(e => "name" + e);
-            Test.isTrue(names.next());
-            Test.isEqual(names.value(), "name1");
-            Test.isTrue(names.next());
-            Test.isEqual(names.value(), "name2");
-            i.next();
-            i.next();
-            i.next();
-            Test.isTrue(names.next());
-            Test.isEqual(names.value(), "name3");
-            Test.isFalse(names.next());
-            Test.throwsException(() => names.value());
-        });*/
     }
 
     class SelectManyTestClass

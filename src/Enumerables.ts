@@ -4,7 +4,7 @@
 */
 
 import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive } from "./Types";
-import { List } from "./Collections";
+import { IList, List } from "./Collections";
 import { IIterable, ArrayIterator } from "./Iterators";
 import { Comparer, createComparer, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
@@ -15,7 +15,7 @@ export interface IQueryable<TOut>
 
     asEnumerable(): IEnumerable<TOut>;
     toArray(): TOut[];
-    toList(): List<TOut>;
+    toList(): IList<TOut>;
     // toDictionary
     // toLookup
 
@@ -176,7 +176,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return result;
     }
 
-    public toList(): List<TOut>
+    public toList(): IList<TOut>
     {
         return new List<TOut>(this.toArray());
     }
@@ -632,18 +632,24 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return Enumerable.fromSource([]);
     }
 
-    public static range(start: number, count: number): IEnumerable<number>
+    public static range(start: number, count: number, ascending: boolean = true): IEnumerable<number>
     {
         if (count < 0)
         {
             throw new Error("Count must be >= 0");
         }
 
-        const source = [] as number[];
+        const source = new Array<number>(count);
 
-        for (let i = 0; i < count; ++i)
+        if (ascending)
         {
-            source.push(start + i);
+            // tslint:disable-next-line:curly
+            for (let i = 0; i < count; source[i] = start + (i++));
+        }
+        else
+        {
+            // tslint:disable-next-line:curly
+            for (let i = 0; i < count; source[i] = start - (i++));
         }
 
         return new ArrayEnumerable(source);

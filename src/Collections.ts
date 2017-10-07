@@ -15,15 +15,28 @@ interface IKeyValuePair<TKey, TValue>
     value: TValue;
 }
 
+/*export interface ICollection<TElement> extends IQueryable<TElement>
+{
+    copy(): ICollection<TElement>;
+
+    add(element: TElement): void;
+    addRange(elements: TElement[] | IQueryable<TElement>): void;
+    clear(): void;
+    remove(element: TElement): void;
+}*/
+
 export interface IList<TElement> extends IQueryable<TElement>
 {
-    asArray(): TElement[];
-    copy(): List<TElement>;
-    // concat(other: IList<TElement>, ...others: Array<IList<TElement>>): IEnumerable<TElement>;
-    // except(other: IList<TElement>): IEnumerable<TElement>;
-    clear(): void;
-    at(index: number): TElement | undefined;
+    copy(): IList<TElement>;
+
     add(element: TElement): void;
+    addRange(elements: TElement[] | IQueryable<TElement>): void;
+    asArray(): TElement[];
+    clear(): void;
+    get(index: number): TElement | undefined;
+    remove(element: TElement): void;
+    removeAt(index: number): TElement | undefined;
+    set(index: number, element: TElement): void;
     indexOf(element: TElement): number | undefined;
     insert(index: number, element: TElement): void;
 }
@@ -32,9 +45,13 @@ export class List<TElement> implements IList<TElement>
 {
     protected source: TElement[];
 
+    public constructor();
     public constructor(elements: TElement[])
+    public constructor(elements?: TElement[])
     {
-        this.source = elements;
+        this.source = elements !== undefined
+            ? elements
+            : [];
     }
 
     public asEnumerable(): IEnumerable<TElement>
@@ -52,14 +69,14 @@ export class List<TElement> implements IList<TElement>
         return ([] as TElement[]).concat(this.source);
     }
 
-    public toList(): List<TElement>
-    {
-        return this.copy();
-    }
-
-    public copy(): List<TElement>
+    public copy(): IList<TElement>
     {
         return new List<TElement>(this.toArray());
+    }
+
+    public toList(): IList<TElement>
+    {
+        return this.copy();
     }
 
     public clear(): void
@@ -67,19 +84,44 @@ export class List<TElement> implements IList<TElement>
         this.source = [];
     }
 
-    public at(index: number): TElement | undefined
+    public remove(element: TElement): void
     {
-        /*if (!this.isValidIndex(index))
+        this.source = this.source.filter(e => e !== element);
+    }
+
+    public removeAt(index: number): TElement | undefined
+    {
+        if (index < 0)
         {
             throw new Error("Out of bounds");
-        }*/
+        }
 
+        return this.source.splice(index, 1)[0];
+    }
+
+    public get(index: number): TElement | undefined
+    {
         return this.source[index];
     }
 
-    public add(...elements: TElement[]): void
+    public set(index: number, element: TElement): void
     {
-        this.source.push(...elements);
+        this.source[index] = element;
+    }
+
+    public add(element: TElement): void
+    {
+        this.source.push(element);
+    }
+
+    public addRange(elements: TElement[] | IQueryable<TElement>): number
+    {
+        if (Array.isArray(elements))
+        {
+            return this.source.push(...elements);
+        }
+
+        return this.source.push(...elements.toArray());
     }
 
     public insert(index: number, element: TElement): void
