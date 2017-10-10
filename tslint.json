@@ -50,6 +50,8 @@
             "check-else",
             "check-open-brace"
         ],
+        "return-undefined": true,
+        "prefer-for-of": false, // performance vs readability
         "no-empty-interface": false,
         "unified-signatures": false,
         "newline-before-return": true,

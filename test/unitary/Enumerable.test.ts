@@ -8,7 +8,7 @@ export namespace EnumerableUnitTest
     {
         it("FromSource", fromSource);
         it("Empty", empty);
-        it("Range", range);
+        describe("Range", range);
         it("Repeat", repeat);
     }
 
@@ -51,49 +51,65 @@ export namespace EnumerableUnitTest
 
     function range(): void
     {
-        Test.throwsException(() => Enumerable.range(0, -1));
-        Test.throwsException(() => Enumerable.range(5, -666));
+        it("Negative count throws exception", () =>
+        {
+            Test.throwsException(() => Enumerable.range(0, -1));
+            Test.throwsException(() => Enumerable.range(5, -666));
+        });
 
-        let base = Enumerable.range(0, 0);
-        Test.isArrayEqual(base.toArray(), [] as number[]);
+        it("Zero count returns empty", () =>
+        {
+            let base = Enumerable.range(0, 0);
+            Test.isArrayEqual(base.toArray(), [] as number[]);
 
-        base = Enumerable.range(4, 0);
-        Test.isArrayEqual(base.toArray(), [] as number[]);
+            base = Enumerable.range(4, 0);
+            Test.isArrayEqual(base.toArray(), [] as number[]);
+        });
 
-        base = Enumerable.range(2, 3);
-        Test.isArrayEqual(base.toArray(), [2, 3, 4]);
+        it("Value is correct", () =>
+        {
+            let base = Enumerable.range(2, 3);
+            Test.isArrayEqual(base.toArray(), [2, 3, 4]);
 
-        base = Enumerable.range(-2, 4);
-        Test.isArrayEqual(base.toArray(), [-2, -1, 0, 1]);
+            base = Enumerable.range(-2, 4);
+            Test.isArrayEqual(base.toArray(), [-2, -1, 0, 1]);
 
-        base = Enumerable.range(0, 6);
-        Test.isArrayEqual(base.toArray(), [0, 1, 2, 3, 4, 5]);
+            base = Enumerable.range(0, 6);
+            Test.isArrayEqual(base.toArray(), [0, 1, 2, 3, 4, 5]);
 
-        base = Enumerable.range(0, 1000000);
-        Test.isArrayEqual(base.toArray(), base.toArray());
+            base = Enumerable.range(0, 1000000);
+            Test.isArrayEqual(base.toArray(), base.toArray());
+        });
 
-        // Reverse
+        it("Negative count throws exception (descending)", () =>
+        {
+            Test.throwsException(() => Enumerable.range(0, -1, false));
+            Test.throwsException(() => Enumerable.range(5, -666, false));
+        });
 
-        Test.throwsException(() => Enumerable.range(0, -1, false));
-        Test.throwsException(() => Enumerable.range(5, -666, false));
+        it("Zero count returns empty (descending)", () =>
+        {
+            let base = Enumerable.range(0, 0, false);
+            Test.isArrayEqual(base.toArray(), [] as number[]);
 
-        base = Enumerable.range(0, 0, false);
-        Test.isArrayEqual(base.toArray(), [] as number[]);
+            base = Enumerable.range(4, 0, false);
+            Test.isArrayEqual(base.toArray(), [] as number[]);
+        });
 
-        base = Enumerable.range(4, 0, false);
-        Test.isArrayEqual(base.toArray(), [] as number[]);
+        it("Value is correct (descending)", () =>
+        {
+            let base = Enumerable.range(2, 3, false);
+            Test.isArrayEqual(base.toArray(), [2, 1, 0]);
 
-        base = Enumerable.range(2, 3, false);
-        Test.isArrayEqual(base.toArray(), [2, 1, 0]);
+            base = Enumerable.range(-2, 4, false);
+            Test.isArrayEqual(base.toArray(), [-2, -3, -4, -5]);
 
-        base = Enumerable.range(-2, 4, false);
-        Test.isArrayEqual(base.toArray(), [-2, -3, -4, -5]);
+            base = Enumerable.range(0, 6, false);
+            Test.isArrayEqual(base.toArray(), [0, -1, -2, -3, -4, -5]);
 
-        base = Enumerable.range(0, 6, false);
-        Test.isArrayEqual(base.toArray(), [0, -1, -2, -3, -4, -5]);
-
-        base = Enumerable.range(0, 1000000, false);
-        Test.isArrayEqual(base.toArray(), base.toArray());
+            base = Enumerable.range(0, 1000000, false);
+            Test.isArrayEqual(base.toArray(), base.toArray());
+        });
     }
 
     function repeat(): void

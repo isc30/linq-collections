@@ -416,8 +416,6 @@ export namespace IQueryableUnitTest
                 -5, 6, 2, 6, 99, 0, -5, 2, 7, 2, 0,
             ]);
 
-            console.log(base.toArray());
-
             Test.isArrayEqual(
                 base.distinct(e => e).toArray(),
                 [-5, 6, 2, 99, 0, 7]);

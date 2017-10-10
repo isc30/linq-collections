@@ -47,11 +47,9 @@ export class List<TElement> implements IList<TElement>
 
     public constructor();
     public constructor(elements: TElement[])
-    public constructor(elements?: TElement[])
+    public constructor(elements: TElement[] = [])
     {
-        this.source = elements !== undefined
-            ? elements
-            : [];
+        this.source = elements;
     }
 
     public asEnumerable(): IEnumerable<TElement>
@@ -86,12 +84,22 @@ export class List<TElement> implements IList<TElement>
 
     public remove(element: TElement): void
     {
-        this.source = this.source.filter(e => e !== element);
+        const newSource: TElement[] = [];
+
+        for (let i = 0; i < this.source.length; ++i)
+        {
+            if (this.source[i] !== element)
+            {
+                newSource.push(this.source[i]);
+            }
+        }
+
+        this.source = newSource;
     }
 
     public removeAt(index: number): TElement | undefined
     {
-        if (index < 0)
+        if (index < 0 || this.source[index] === undefined)
         {
             throw new Error("Out of bounds");
         }
@@ -106,6 +114,11 @@ export class List<TElement> implements IList<TElement>
 
     public set(index: number, element: TElement): void
     {
+        if (index < 0)
+        {
+            throw new Error("Out of bounds");
+        }
+
         this.source[index] = element;
     }
 
@@ -114,14 +127,14 @@ export class List<TElement> implements IList<TElement>
         this.source.push(element);
     }
 
-    public addRange(elements: TElement[] | IQueryable<TElement>): number
+    public addRange(elements: TElement[] | IQueryable<TElement>): void
     {
-        if (Array.isArray(elements))
+        if (!Array.isArray(elements))
         {
-            return this.source.push(...elements);
+            elements = elements.toArray();
         }
 
-        return this.source.push(...elements.toArray());
+        this.source.push.apply(this.source, elements);
     }
 
     public insert(index: number, element: TElement): void
