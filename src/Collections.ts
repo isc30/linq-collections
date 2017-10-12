@@ -34,10 +34,14 @@ export interface IList<TElement> extends IQueryable<TElement>
     asArray(): TElement[];
     clear(): void;
     get(index: number): TElement | undefined;
+    push(element: TElement): number;
+    pushFront(element: TElement): number;
+    pop(): TElement | undefined;
+    popFront(): TElement | undefined;
     remove(element: TElement): void;
     removeAt(index: number): TElement | undefined;
     set(index: number, element: TElement): void;
-    indexOf(element: TElement): number | undefined;
+    indexOf(element: TElement): number;
     insert(index: number, element: TElement): void;
 }
 
@@ -110,6 +114,26 @@ export class List<TElement> implements IList<TElement>
     public get(index: number): TElement | undefined
     {
         return this.source[index];
+    }
+
+    public push(element: TElement): number
+    {
+        return this.source.push(element);
+    }
+
+    public pushFront(element: TElement): number
+    {
+        return this.source.unshift(element);
+    }
+
+    public pop(): TElement | undefined
+    {
+        return this.source.pop();
+    }
+
+    public popFront(): TElement | undefined
+    {
+        return this.source.shift();
     }
 
     public set(index: number, element: TElement): void

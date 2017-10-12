@@ -11,10 +11,14 @@ export namespace ListUnitTest
         describe("AddRange", addRange);
         describe("Clear", clear);
         describe("Get", get);
+        // push(element: TElement): number;
+        // pushFront(element: TElement): number;
+        // pop(): TElement;
+        // popFront(): TElement;
         describe("Remove", remove);
         describe("RemoveAt", removeAt);
         describe("Set", set);
-        // describe("IndexOf", indexOf);
+        describe("IndexOf", indexOf);
         // describe("Insert", insert);
     }
 
@@ -268,6 +272,34 @@ export namespace ListUnitTest
 
             list.set(7, 33);
             Test.isArrayEqual(list.asArray(), [2, 4, 6, 8, 7, undefined, undefined, 33]);
+        });
+    }
+
+    function indexOf(): void
+    {
+        it("-1 in empty list", () =>
+        {
+            const list = new List<number>();
+            Test.isEqual(list.indexOf(666), -1);
+            Test.isEqual(list.indexOf(0), -1);
+            Test.isEqual(list.indexOf(-666), -1);
+        });
+
+        it("-1 if element not found", () =>
+        {
+            const list = new List([1, 2, 3]);
+            Test.isEqual(list.indexOf(-999), -1);
+            Test.isEqual(list.indexOf(-1), -1);
+            Test.isEqual(list.indexOf(4), -1);
+            Test.isEqual(list.indexOf(999), -1);
+        });
+
+        it("Value is correct", () =>
+        {
+            const list = new List([1, 2, 3]);
+            Test.isEqual(list.indexOf(2), 1);
+            Test.isEqual(list.indexOf(1), 0);
+            Test.isEqual(list.indexOf(3), 2);
         });
     }
 }
