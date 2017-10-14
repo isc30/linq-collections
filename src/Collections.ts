@@ -90,7 +90,7 @@ export class List<TElement> implements IList<TElement>
     {
         const newSource: TElement[] = [];
 
-        for (let i = 0; i < this.source.length; ++i)
+        for (let i = 0, end = this.source.length; i < end; ++i)
         {
             if (this.source[i] !== element)
             {
@@ -163,6 +163,11 @@ export class List<TElement> implements IList<TElement>
 
     public insert(index: number, element: TElement): void
     {
+        if (index < 0 || index > this.source.length)
+        {
+            throw new Error("Out of bounds");
+        }
+
         this.source.splice(index, 0, element);
     }
 
@@ -233,8 +238,7 @@ export class List<TElement> implements IList<TElement>
             return this.source.filter(predicate).length;
         }
 
-        // tslint:disable-next-line:no-bitwise
-        return this.source.length >>> 0;
+        return this.source.length;
     }
 
     public concat(

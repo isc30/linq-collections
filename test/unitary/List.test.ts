@@ -11,15 +11,15 @@ export namespace ListUnitTest
         describe("AddRange", addRange);
         describe("Clear", clear);
         describe("Get", get);
-        // push(element: TElement): number;
-        // pushFront(element: TElement): number;
-        // pop(): TElement;
-        // popFront(): TElement;
+        describe("Push", push);
+        describe("Push", pushFront);
+        describe("Pop", pop);
+        describe("PopFront", popFront);
         describe("Remove", remove);
         describe("RemoveAt", removeAt);
         describe("Set", set);
         describe("IndexOf", indexOf);
-        // describe("Insert", insert);
+        describe("Insert", insert);
     }
 
     function asArray(): void
@@ -156,6 +156,88 @@ export namespace ListUnitTest
             Test.isEqual(list.get(-1), undefined);
             Test.isEqual(list.get(3), undefined);
             Test.isEqual(list.get(999), undefined);
+        });
+    }
+
+    function push(): void
+    {
+        it("Adds element in back of the list", () =>
+        {
+            const list = new List<number>();
+            list.push(2); Test.isArrayEqual(list.asArray(), [2]);
+            list.push(22); Test.isArrayEqual(list.asArray(), [2, 22]);
+            list.push(1); Test.isArrayEqual(list.asArray(), [2, 22, 1]);
+            list.push(4); Test.isArrayEqual(list.asArray(), [2, 22, 1, 4]);
+        });
+    }
+
+    function pushFront(): void
+    {
+        it("Adds element in front of the list", () =>
+        {
+            const list = new List<number>();
+            list.pushFront(2); Test.isArrayEqual(list.asArray(), [2]);
+            list.pushFront(22); Test.isArrayEqual(list.asArray(), [22, 2]);
+            list.pushFront(1); Test.isArrayEqual(list.asArray(), [1, 22, 2]);
+            list.pushFront(4); Test.isArrayEqual(list.asArray(), [4, 1, 22, 2]);
+        });
+    }
+
+    function pop(): void
+    {
+        it("Removes and returns the element in back of the list", () =>
+        {
+            const list = new List([1, 2, 3]);
+
+            let element = list.pop();
+            Test.isEqual(element, 3);
+            Test.isArrayEqual(list.asArray(), [1, 2]);
+
+            element = list.pop();
+            Test.isEqual(element, 2);
+            Test.isArrayEqual(list.asArray(), [1]);
+
+            element = list.pop();
+            Test.isEqual(element, 1);
+            Test.isArrayEqual(list.asArray(), []);
+        });
+
+        it("Returns undefined in empty list", () =>
+        {
+            const list = new List<number>();
+
+            const element = list.pop();
+            Test.isEqual(element, undefined);
+            Test.isArrayEqual(list.asArray(), []);
+        });
+    }
+
+    function popFront(): void
+    {
+        it("Removes and returns the element in back of the list", () =>
+        {
+            const list = new List([1, 2, 3]);
+
+            let element = list.popFront();
+            Test.isEqual(element, 1);
+            Test.isArrayEqual(list.asArray(), [2, 3]);
+
+            element = list.popFront();
+            Test.isEqual(element, 2);
+            Test.isArrayEqual(list.asArray(), [3]);
+
+            element = list.popFront();
+            Test.isEqual(element, 3);
+            Test.isArrayEqual(list.asArray(), []);
+        });
+
+        it("Returns undefined in empty list", () =>
+        {
+            const list = new List<number>();
+
+            const element = list.popFront();
+            Test.isEqual(element, undefined);
+            Test.isArrayEqual(list.asArray(), []);
         });
     }
 
@@ -300,6 +382,35 @@ export namespace ListUnitTest
             Test.isEqual(list.indexOf(2), 1);
             Test.isEqual(list.indexOf(1), 0);
             Test.isEqual(list.indexOf(3), 2);
+        });
+    }
+
+    function insert(): void
+    {
+        it("Throws exception if index < 0", () =>
+        {
+            const list = new List([1, 2, 3]);
+            Test.throwsException(() => list.insert(-3, 55));
+        });
+
+        it("Throws exception if index > length", () =>
+        {
+            const list = new List([1, 2, 3]);
+            Test.throwsException(() => list.insert(4, 55));
+        });
+
+        it("Initializes empty list", () =>
+        {
+            const list = new List<number>();
+            list.insert(0, 4);
+            Test.isArrayEqual(list.asArray(), [4]);
+        });
+
+        it("Moves other elements to fit the new one", () =>
+        {
+            const list = new List([1, 2, 3]);
+            list.insert(1, 55);
+            Test.isArrayEqual(list.asArray(), [1, 55, 2, 3]);
         });
     }
 }

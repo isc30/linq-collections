@@ -97,7 +97,7 @@ export interface IQueryable<TOut>
         selector: Selector<TOut, TSelectorOut[] | IQueryable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>;
 
-    // sequenceEqual
+    // sequenceEquals
 
     single(): TOut;
     single(predicate: Predicate<TOut>): TOut;
