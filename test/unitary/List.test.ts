@@ -7,12 +7,11 @@ export namespace ListUnitTest
     {
         describe("AsArray", asArray);
         describe("Copy", copy);
-        describe("Add", add);
-        describe("AddRange", addRange);
         describe("Clear", clear);
         describe("Get", get);
         describe("Push", push);
         describe("Push", pushFront);
+        describe("PushRange", pushRange);
         describe("Pop", pop);
         describe("PopFront", popFront);
         describe("Remove", remove);
@@ -54,64 +53,6 @@ export namespace ListUnitTest
             Test.isArrayNotEqual(list.asArray(), copy.asArray());
             Test.isArrayEqual(list.asArray(), [1, 2, 3, 245]);
             Test.isArrayEqual(copy.asArray(), [1, 2, 3]);
-        });
-    }
-
-    function add(): void
-    {
-        it("Adds elements in the end", () =>
-        {
-            const list = new List<number>();
-
-            list.add(3);
-            Test.isArrayEqual(list.asArray(), [3]);
-
-            list.add(2);
-            Test.isArrayEqual(list.asArray(), [3, 2]);
-
-            list.add(666);
-            Test.isArrayEqual(list.asArray(), [3, 2, 666]);
-        });
-    }
-
-    function addRange(): void
-    {
-        it("Empty range doesn't modify the original (array)", () =>
-        {
-            const list = new List([1, 2, 3]);
-
-            list.addRange([]);
-            Test.isArrayEqual(list.asArray(), [1, 2, 3]);
-        });
-
-        it("Empty range doesn't modify the original (IQueryable)", () =>
-        {
-            const list = new List([1, 2, 3]);
-
-            list.addRange(new List<number>());
-            Test.isArrayEqual(list.asArray(), [1, 2, 3]);
-        });
-
-        it("Value is correct (array)", () =>
-        {
-            const list = new List([1, 2, 3]);
-
-            list.addRange([22]);
-            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22]);
-
-            list.addRange([24, 67]);
-            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22, 24, 67]);
-        });
-
-        it("Value is correct (IQueryable)", () =>
-        {
-            const list = new List([1, 2, 3]);
-
-            list.addRange(new List([22]));
-            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22]);
-
-            list.addRange(new List([24, 67]));
-            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22, 24, 67]);
         });
     }
 
@@ -180,6 +121,47 @@ export namespace ListUnitTest
             list.pushFront(22); Test.isArrayEqual(list.asArray(), [22, 2]);
             list.pushFront(1); Test.isArrayEqual(list.asArray(), [1, 22, 2]);
             list.pushFront(4); Test.isArrayEqual(list.asArray(), [4, 1, 22, 2]);
+        });
+    }
+
+    function pushRange(): void
+    {
+        it("Empty range doesn't modify the original (array)", () =>
+        {
+            const list = new List([1, 2, 3]);
+
+            Test.isEqual(list.pushRange([]), 3);
+            Test.isArrayEqual(list.asArray(), [1, 2, 3]);
+        });
+
+        it("Empty range doesn't modify the original (IQueryable)", () =>
+        {
+            const list = new List([1, 2, 3]);
+
+            Test.isEqual(list.pushRange(new List<number>()), 3);
+            Test.isArrayEqual(list.asArray(), [1, 2, 3]);
+        });
+
+        it("Value is correct (array)", () =>
+        {
+            const list = new List([1, 2, 3]);
+
+            Test.isEqual(list.pushRange([22]), 4);
+            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22]);
+
+            Test.isEqual(list.pushRange([24, 67]), 6);
+            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22, 24, 67]);
+        });
+
+        it("Value is correct (IQueryable)", () =>
+        {
+            const list = new List([1, 2, 3]);
+
+            Test.isEqual(list.pushRange(new List([22])), 4);
+            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22]);
+
+            Test.isEqual(list.pushRange(new List([24, 67])), 6);
+            Test.isArrayEqual(list.asArray(), [1, 2, 3, 22, 24, 67]);
         });
     }
 

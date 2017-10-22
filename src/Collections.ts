@@ -29,12 +29,11 @@ export interface IList<TElement> extends IQueryable<TElement>
 {
     copy(): IList<TElement>;
 
-    add(element: TElement): void;
-    addRange(elements: TElement[] | IQueryable<TElement>): void;
     asArray(): TElement[];
     clear(): void;
     get(index: number): TElement | undefined;
     push(element: TElement): number;
+    pushRange(elements: TElement[] | IQueryable<TElement>): number;
     pushFront(element: TElement): number;
     pop(): TElement | undefined;
     popFront(): TElement | undefined;
@@ -121,6 +120,16 @@ export class List<TElement> implements IList<TElement>
         return this.source.push(element);
     }
 
+    public pushRange(elements: TElement[] | IQueryable<TElement>): number
+    {
+        if (!Array.isArray(elements))
+        {
+            elements = elements.toArray();
+        }
+
+        return this.source.push.apply(this.source, elements);
+    }
+
     public pushFront(element: TElement): number
     {
         return this.source.unshift(element);
@@ -144,21 +153,6 @@ export class List<TElement> implements IList<TElement>
         }
 
         this.source[index] = element;
-    }
-
-    public add(element: TElement): void
-    {
-        this.source.push(element);
-    }
-
-    public addRange(elements: TElement[] | IQueryable<TElement>): void
-    {
-        if (!Array.isArray(elements))
-        {
-            elements = elements.toArray();
-        }
-
-        this.source.push.apply(this.source, elements);
     }
 
     public insert(index: number, element: TElement): void
