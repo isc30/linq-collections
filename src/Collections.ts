@@ -15,36 +15,7 @@ interface IKeyValuePair<TKey, TValue>
     value: TValue;
 }
 
-/*export interface ICollection<TElement> extends IQueryable<TElement>
-{
-    copy(): ICollection<TElement>;
-
-    add(element: TElement): void;
-    addRange(elements: TElement[] | IQueryable<TElement>): void;
-    clear(): void;
-    remove(element: TElement): void;
-}*/
-
-export interface IList<TElement> extends IQueryable<TElement>
-{
-    copy(): IList<TElement>;
-
-    asArray(): TElement[];
-    clear(): void;
-    get(index: number): TElement | undefined;
-    push(element: TElement): number;
-    pushRange(elements: TElement[] | IQueryable<TElement>): number;
-    pushFront(element: TElement): number;
-    pop(): TElement | undefined;
-    popFront(): TElement | undefined;
-    remove(element: TElement): void;
-    removeAt(index: number): TElement | undefined;
-    set(index: number, element: TElement): void;
-    indexOf(element: TElement): number;
-    insert(index: number, element: TElement): void;
-}
-
-export class List<TElement> implements IList<TElement>
+export abstract class QueryableArray<TElement> implements IQueryable<TElement>
 {
     protected source: TElement[];
 
@@ -55,9 +26,16 @@ export class List<TElement> implements IList<TElement>
         this.source = elements;
     }
 
-    public asEnumerable(): IEnumerable<TElement>
+    public abstract copy(): IQueryable<TElement>;
+
+    public toArray(): TElement[]
     {
-        return new ArrayEnumerable(this.source);
+        return ([] as TElement[]).concat(this.source);
+    }
+
+    public toList(): IList<TElement>
+    {
+        return new List<TElement>(this.toArray());
     }
 
     public asArray(): TElement[]
@@ -65,113 +43,10 @@ export class List<TElement> implements IList<TElement>
         return this.source;
     }
 
-    public toArray(): TElement[]
+    public asEnumerable(): IEnumerable<TElement>
     {
-        return ([] as TElement[]).concat(this.source);
+        return new ArrayEnumerable(this.source);
     }
-
-    public copy(): IList<TElement>
-    {
-        return new List<TElement>(this.toArray());
-    }
-
-    public toList(): IList<TElement>
-    {
-        return this.copy();
-    }
-
-    public clear(): void
-    {
-        this.source = [];
-    }
-
-    public remove(element: TElement): void
-    {
-        const newSource: TElement[] = [];
-
-        for (let i = 0, end = this.source.length; i < end; ++i)
-        {
-            if (this.source[i] !== element)
-            {
-                newSource.push(this.source[i]);
-            }
-        }
-
-        this.source = newSource;
-    }
-
-    public removeAt(index: number): TElement | undefined
-    {
-        if (index < 0 || this.source[index] === undefined)
-        {
-            throw new Error("Out of bounds");
-        }
-
-        return this.source.splice(index, 1)[0];
-    }
-
-    public get(index: number): TElement | undefined
-    {
-        return this.source[index];
-    }
-
-    public push(element: TElement): number
-    {
-        return this.source.push(element);
-    }
-
-    public pushRange(elements: TElement[] | IQueryable<TElement>): number
-    {
-        if (!Array.isArray(elements))
-        {
-            elements = elements.toArray();
-        }
-
-        return this.source.push.apply(this.source, elements);
-    }
-
-    public pushFront(element: TElement): number
-    {
-        return this.source.unshift(element);
-    }
-
-    public pop(): TElement | undefined
-    {
-        return this.source.pop();
-    }
-
-    public popFront(): TElement | undefined
-    {
-        return this.source.shift();
-    }
-
-    public set(index: number, element: TElement): void
-    {
-        if (index < 0)
-        {
-            throw new Error("Out of bounds");
-        }
-
-        this.source[index] = element;
-    }
-
-    public insert(index: number, element: TElement): void
-    {
-        if (index < 0 || index > this.source.length)
-        {
-            throw new Error("Out of bounds");
-        }
-
-        this.source.splice(index, 0, element);
-    }
-
-    public indexOf(element: TElement): number
-    {
-        return this.source.indexOf(element);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    // Collection
 
     public aggregate(aggregator: Aggregator<TElement, TElement | undefined>): TElement;
     public aggregate<TValue>(aggregator: Aggregator<TElement, TValue>, initialValue: TValue): TValue;
@@ -501,5 +376,165 @@ export class List<TElement> implements IList<TElement>
     public union(other: IQueryable<TElement>): IEnumerable<TElement>
     {
         return new UniqueEnumerable(this.concat(other));
+    }
+}
+
+export interface IList<TElement> extends IQueryable<TElement>
+{
+    copy(): IList<TElement>;
+
+    asArray(): TElement[];
+    clear(): void;
+    get(index: number): TElement | undefined;
+    push(element: TElement): number;
+    pushRange(elements: TElement[] | IQueryable<TElement>): number;
+    pushFront(element: TElement): number;
+    pop(): TElement | undefined;
+    popFront(): TElement | undefined;
+    remove(element: TElement): void;
+    removeAt(index: number): TElement | undefined;
+    set(index: number, element: TElement): void;
+    indexOf(element: TElement): number;
+    insert(index: number, element: TElement): void;
+}
+
+export class List<TElement>
+    extends QueryableArray<TElement>
+    implements IList<TElement>
+{
+    public copy(): IList<TElement>
+    {
+        return new List<TElement>(this.toArray());
+    }
+
+    public clear(): void
+    {
+        this.source = [];
+    }
+
+    public remove(element: TElement): void
+    {
+        const newSource: TElement[] = [];
+
+        for (let i = 0, end = this.source.length; i < end; ++i)
+        {
+            if (this.source[i] !== element)
+            {
+                newSource.push(this.source[i]);
+            }
+        }
+
+        this.source = newSource;
+    }
+
+    public removeAt(index: number): TElement | undefined
+    {
+        if (index < 0 || this.source[index] === undefined)
+        {
+            throw new Error("Out of bounds");
+        }
+
+        return this.source.splice(index, 1)[0];
+    }
+
+    public get(index: number): TElement | undefined
+    {
+        return this.source[index];
+    }
+
+    public push(element: TElement): number
+    {
+        return this.source.push(element);
+    }
+
+    public pushRange(elements: TElement[] | IQueryable<TElement>): number
+    {
+        if (!Array.isArray(elements))
+        {
+            elements = elements.toArray();
+        }
+
+        return this.source.push.apply(this.source, elements);
+    }
+
+    public pushFront(element: TElement): number
+    {
+        return this.source.unshift(element);
+    }
+
+    public pop(): TElement | undefined
+    {
+        return this.source.pop();
+    }
+
+    public popFront(): TElement | undefined
+    {
+        return this.source.shift();
+    }
+
+    public set(index: number, element: TElement): void
+    {
+        if (index < 0)
+        {
+            throw new Error("Out of bounds");
+        }
+
+        this.source[index] = element;
+    }
+
+    public insert(index: number, element: TElement): void
+    {
+        if (index < 0 || index > this.source.length)
+        {
+            throw new Error("Out of bounds");
+        }
+
+        this.source.splice(index, 0, element);
+    }
+
+    public indexOf(element: TElement): number
+    {
+        return this.source.indexOf(element);
+    }
+}
+
+export interface IStack<TElement> extends IQueryable<TElement>
+{
+    copy(): IStack<TElement>;
+
+    asArray(): TElement[];
+    clear(): void;
+    peek(): TElement | undefined;
+    pop(): TElement | undefined;
+    push(element: TElement): number;
+}
+
+export class Stack<TElement>
+    extends QueryableArray<TElement>
+    implements IStack<TElement>
+{
+    public copy(): IStack<TElement>
+    {
+        return new Stack<TElement>(this.toArray());
+    }
+
+    public clear(): void
+    {
+        this.source = [];
+    }
+
+    public peek(): TElement | undefined
+    {
+        return this.source[this.source.length - 1];
+    }
+
+    public pop(): TElement | undefined
+    {
+        return this.source.pop();
+    }
+
+    public push(element: TElement): number
+    {
+        return this.source.push(element);
     }
 }

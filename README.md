@@ -9,7 +9,7 @@
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
-Includes collections: List, Dictionary, ...
+Includes collections: List, Dictionary, Stack, ...
 
 ## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
 This project is activelly being developed and improved by Ivan Sanz (isc30)<br />

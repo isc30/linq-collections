@@ -3,6 +3,7 @@ import { IteratorUnitTest } from "./unitary/Iterator.test";
 import { EnumerableUnitTest } from "./unitary/Enumerable.test";
 import { IQueryableUnitTest } from "./unitary/IQueryable.test";
 import { ListUnitTest } from "./unitary/List.test";
+import { StackUnitTest } from "./unitary/Stack.test";
 import { IEnumerableIntegrationTest } from "./integration/IEnumerable.test";
 
 describe("Unit Tests", () =>
@@ -12,6 +13,7 @@ describe("Unit Tests", () =>
     describe("Iterators", IteratorUnitTest.run);
     describe("IQueryable", IQueryableUnitTest.run);
     describe("List", ListUnitTest.run);
+    describe("Stack", StackUnitTest.run);
 });
 
 describe("Integration Tests", () =>

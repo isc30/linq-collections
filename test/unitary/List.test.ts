@@ -10,7 +10,7 @@ export namespace ListUnitTest
         describe("Clear", clear);
         describe("Get", get);
         describe("Push", push);
-        describe("Push", pushFront);
+        describe("PushFront", pushFront);
         describe("PushRange", pushRange);
         describe("Pop", pop);
         describe("PopFront", popFront);

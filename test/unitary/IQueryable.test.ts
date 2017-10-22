@@ -1,7 +1,7 @@
 // tslint:disable-next-line:max-line-length
 import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
-import { List } from "../../src/Collections";
+import { List, Stack } from "../../src/Collections";
 import { Test } from "../Test";
 
 export namespace IQueryableUnitTest
@@ -43,6 +43,9 @@ export namespace IQueryableUnitTest
 
         describe(`${name} (List)`, () => test(
             <T>(e: T[]) => new List(e)));
+
+        describe(`${name} (Stack)`, () => test(
+            <T>(e: T[]) => new Stack(e)));
     }
 
     export function run(): void
