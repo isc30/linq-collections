@@ -6,7 +6,7 @@
 // region IMPORTS
 // tslint:disable-next-line:max-line-length
 import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable } from "./Enumerables";
-import { Action, Selector,  Aggregator, Predicate, Indexer, Dynamic } from "./Types";
+import { Action, Selector,  Aggregator, Predicate, Indexer, Type, Dynamic } from "./Types";
 import { Comparer, createComparer } from "./Comparers";
 import { IIterable } from "./Iterators";
 // endregion
@@ -664,13 +664,15 @@ export interface IKeyValuePair<TKey extends Indexer, TValue>
 }
 
 export interface IDictionary<TKey extends Indexer, TValue>
-    extends IQueryable<IKeyValuePair<string, TValue>>
+    extends IQueryable<IKeyValuePair<TKey, TValue>>
 {
     copy(): IDictionary<TKey, TValue>;
 
     clear(): void;
     containsKey(key: TKey): boolean;
     containsValue(value: TValue): boolean;
+    getKeys(): IList<TKey>;
+    getValues(): IList<TValue>;
     remove(key: TKey): void;
     get(key: TKey): TValue | undefined;
     set(key: TKey, value: TValue): void;
@@ -678,7 +680,7 @@ export interface IDictionary<TKey extends Indexer, TValue>
 }
 
 export class Dictionary<TKey extends Indexer, TValue>
-    extends EnumerableCollection<IKeyValuePair<string, TValue>>
+    extends EnumerableCollection<IKeyValuePair<TKey, TValue>>
     implements IDictionary<TKey, TValue>
 {
     public static fromArray<TArray, TKey extends Indexer, TValue>(
@@ -699,6 +701,7 @@ export class Dictionary<TKey extends Indexer, TValue>
     }
 
     protected dictionary: Dynamic;
+    protected keyType: Type;
 
     public constructor();
     public constructor(keyValuePairs: Array<IKeyValuePair<TKey, TValue>>);
@@ -719,24 +722,23 @@ export class Dictionary<TKey extends Indexer, TValue>
 
     public copy(): IDictionary<TKey, TValue>
     {
-        return new Dictionary<TKey, TValue>(this.toArray() as Array<IKeyValuePair<TKey, TValue>>);
+        return new Dictionary<TKey, TValue>(this.toArray());
     }
 
-    public asEnumerable(): IEnumerable<IKeyValuePair<string, TValue>>
+    public asEnumerable(): IEnumerable<IKeyValuePair<TKey, TValue>>
     {
         return new ArrayEnumerable(this.toArray());
     }
 
-    public toArray(): Array<IKeyValuePair<string, TValue>>
+    public toArray(): Array<IKeyValuePair<TKey, TValue>>
     {
-        return (Object.getOwnPropertyNames(this.dictionary))
-            .map<IKeyValuePair<string, TValue>>(p =>
-            {
-                return {
-                    key: p,
-                    value: this.dictionary[p],
-                };
-            });
+        return this.getKeys().select<IKeyValuePair<TKey, TValue>>(p =>
+        {
+            return {
+                key: p,
+                value: this.dictionary[p],
+            };
+        }).toArray();
     }
 
     public clear(): void
@@ -751,7 +753,45 @@ export class Dictionary<TKey extends Indexer, TValue>
 
     public containsValue(value: TValue): boolean
     {
-        return this.dictionary.indexOf(value) !== -1;
+        const keys = this.getKeysFast();
+
+        for (let i = 0; i < keys.length; ++i)
+        {
+            if (this.dictionary[keys[i]] === value)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public getKeys(): IList<TKey>
+    {
+        const keys = this.getKeysFast();
+
+        return new List(keys.map(
+            k => this.keyType === "number"
+                ? parseFloat(k)
+                : k) as TKey[]);
+    }
+
+    protected getKeysFast(): string[]
+    {
+        return Object.getOwnPropertyNames(this.dictionary);
+    }
+
+    public getValues(): IList<TValue>
+    {
+        const keys = this.getKeysFast();
+        const result = new Array<TValue>(keys.length);
+
+        for (let i = 0; i < keys.length; ++i)
+        {
+            result[i] = this.dictionary[keys[i]];
+        }
+
+        return new List(result);
     }
 
     public remove(key: TKey): void
@@ -779,6 +819,11 @@ export class Dictionary<TKey extends Indexer, TValue>
 
     public setOrUpdate(key: TKey, value: TValue): void
     {
+        if (this.keyType === undefined)
+        {
+            this.keyType = typeof key;
+        }
+
         this.dictionary[key] = value;
     }
 }

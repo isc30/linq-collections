@@ -4,7 +4,7 @@
 // -
 
 // region IMPORTS
-import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive, Indexer } from "./Types";
+import { Selector, Predicate, Aggregator, Action, Dynamic, Indexer } from "./Types";
 import {IKeyValuePair, IList,  List,  IDictionary,  Dictionary} from "./Collections";
 import { IIterable, ArrayIterator } from "./Iterators";
 import { Comparer, createComparer, combineComparers } from "./Comparers";

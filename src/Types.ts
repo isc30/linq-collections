@@ -4,6 +4,7 @@
 */
 
 export type Dynamic = any;
+export type Type = "string" | "number" | "boolean" | "symbol" | "undefined" | "object" | "function";
 export type Indexer = number | string;
 export type Primitive = number | string | boolean;
 export type Selector<TElement, TOut> = (element: TElement) => TOut;
