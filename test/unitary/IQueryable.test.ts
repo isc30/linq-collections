@@ -1,8 +1,9 @@
 // tslint:disable-next-line:max-line-length
 import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
-import { List, Stack } from "../../src/Collections";
+import { List, Stack, Dictionary } from "../../src/Collections";
 import { Test } from "../Test";
+import { Indexer } from "../../src/Types";
 
 export namespace IQueryableUnitTest
 {
@@ -46,12 +47,17 @@ export namespace IQueryableUnitTest
 
         describe(`${name} (Stack)`, () => test(
             <T>(e: T[]) => new Stack(e)));
+
+        counter = 0;
+        describe(`${name} (Dictionary Value)`, () => test(
+            <T>(e: T[]) => Dictionary.fromArray(e, p => counter++, p => p).select(p => p.value)));
     }
 
     export function run(): void
     {
         runTest("ToArray", toArray);
         runTest("ToList", toList);
+        runTest("ToDictionary", toDictionary);
         runTest("Aggregate", aggregate);
         runTest("All", all);
         runTest("Any", any);
@@ -124,6 +130,16 @@ export namespace IQueryableUnitTest
             const list = instancer<number>([1, 2, 3]).toList();
             Test.isTrue(list instanceof List);
             Test.isArrayEqual(list.toArray(), [1, 2, 3]);
+        });
+    }
+
+    function toDictionary(instancer: Instancer): void
+    {
+        it("Returns Dictionary", () =>
+        {
+            const dictionary = instancer<number>([1, 2, 3])
+                .toDictionary(v => v, v => "wow" + v);
+            Test.isTrue(dictionary instanceof Dictionary);
         });
     }
 

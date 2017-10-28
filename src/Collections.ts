@@ -1,113 +1,40 @@
-/*
- * Created by Ivan Sanz (@isc30)
- * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
-*/
+// -
+// Created by Ivan Sanz (@isc30)
+// Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
+// -
 
+// region IMPORTS
 // tslint:disable-next-line:max-line-length
 import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable } from "./Enumerables";
-import { Action, Selector,  Aggregator,  Predicate } from "./Types";
+import { Action, Selector,  Aggregator, Predicate, Indexer, Dynamic } from "./Types";
 import { Comparer, createComparer } from "./Comparers";
 import { IIterable } from "./Iterators";
+// endregion
 
-interface IKeyValuePair<TKey, TValue>
+// region EnumerableCollection
+export abstract class EnumerableCollection<TElement>
+    implements IQueryable<TElement>
 {
-    key: TKey;
-    value: TValue;
-}
-
-export abstract class QueryableArray<TElement> implements IQueryable<TElement>
-{
-    protected source: TElement[];
-
-    public constructor();
-    public constructor(elements: TElement[])
-    public constructor(elements: TElement[] = [])
-    {
-        this.source = elements;
-    }
-
     public abstract copy(): IQueryable<TElement>;
-
-    public toArray(): TElement[]
-    {
-        return ([] as TElement[]).concat(this.source);
-    }
+    public abstract asEnumerable(): IEnumerable<TElement>;
+    public abstract toArray(): TElement[];
 
     public toList(): IList<TElement>
     {
         return new List<TElement>(this.toArray());
     }
 
-    public asArray(): TElement[]
+    public toDictionary<TKey extends Indexer, TValue>(
+        keySelector: Selector<TElement, TKey>,
+        valueSelector: Selector<TElement, TValue>)
+        : IDictionary<TKey, TValue>
     {
-        return this.source;
+        return Dictionary.fromArray(this.toArray(), keySelector, valueSelector);
     }
 
-    public asEnumerable(): IEnumerable<TElement>
+    public reverse(): IEnumerable<TElement>
     {
-        return new ArrayEnumerable(this.source);
-    }
-
-    public aggregate(aggregator: Aggregator<TElement, TElement | undefined>): TElement;
-    public aggregate<TValue>(aggregator: Aggregator<TElement, TValue>, initialValue: TValue): TValue;
-    public aggregate<TValue>(
-        aggregator: Aggregator<TElement, TValue | TElement | undefined>,
-        initialValue?: TValue): TValue | TElement
-    {
-        if (initialValue !== undefined)
-        {
-            return this.source.reduce(
-                aggregator as Aggregator<TElement, TValue>,
-                initialValue);
-        }
-
-        return this.source.reduce(aggregator as Aggregator<TElement, TElement>);
-    }
-
-    public any(): boolean;
-    public any(predicate: Predicate<TElement>): boolean;
-    public any(predicate?: Predicate<TElement>): boolean
-    {
-        if (predicate !== undefined)
-        {
-            return this.source.some(predicate);
-        }
-
-        return this.source.length > 0;
-    }
-
-    public all(predicate: Predicate<TElement>): boolean
-    {
-        return this.source.every(predicate);
-    }
-
-    public average(selector: Selector<TElement, number>): number
-    {
-        if (this.count() === 0)
-        {
-            throw new Error("Sequence contains no elements");
-        }
-
-        let sum = 0;
-
-        for (let i = 0, end = this.source.length; i < end; ++i)
-        {
-            sum += selector(this.source[i]);
-        }
-
-        return sum / this.source.length;
-    }
-
-    public count(): number;
-    public count(predicate: Predicate<TElement>): number;
-    public count(predicate?: Predicate<TElement>): number
-    {
-        if (predicate !== undefined)
-        {
-            return this.source.filter(predicate).length;
-        }
-
-        return this.source.length;
+        return new ReverseEnumerable<TElement>(this.asEnumerable());
     }
 
     public concat(
@@ -116,49 +43,6 @@ export abstract class QueryableArray<TElement> implements IQueryable<TElement>
         : IEnumerable<TElement>
     {
         return this.asEnumerable().concat(other, ...others);
-    }
-
-    public elementAtOrDefault(index: number): TElement | undefined
-    {
-        if (index < 0)
-        {
-            throw new Error("Negative index is forbiden");
-        }
-
-        return this.source[index];
-    }
-
-    public firstOrDefault(): TElement | undefined;
-    public firstOrDefault(predicate: Predicate<TElement>): TElement | undefined;
-    public firstOrDefault(predicate?: Predicate<TElement>): TElement | undefined
-    {
-        if (predicate !== undefined)
-        {
-            return this.source.filter(predicate)[0];
-        }
-
-        return this.source[0];
-    }
-
-    public lastOrDefault(): TElement | undefined;
-    public lastOrDefault(predicate: Predicate<TElement>): TElement | undefined;
-    public lastOrDefault(predicate?: Predicate<TElement>): TElement | undefined
-    {
-        if (predicate !== undefined)
-        {
-            const records = this.source.filter(predicate);
-
-            return records[records.length - 1];
-        }
-
-        return this.source[this.source.length - 1];
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public reverse(): IEnumerable<TElement>
-    {
-        return new ReverseEnumerable<TElement>(this.asEnumerable());
     }
 
     public contains(element: TElement): boolean
@@ -232,14 +116,6 @@ export abstract class QueryableArray<TElement> implements IQueryable<TElement>
         }
 
         return element;
-    }
-
-    public forEach(action: Action<TElement>): void
-    {
-        for (let i = 0, end = this.source.length; i < end; ++i)
-        {
-            action(this.source[i], i);
-        }
     }
 
     public last(): TElement;
@@ -377,9 +253,248 @@ export abstract class QueryableArray<TElement> implements IQueryable<TElement>
     {
         return new UniqueEnumerable(this.concat(other));
     }
-}
 
-export interface IList<TElement> extends IQueryable<TElement>
+    public aggregate(aggregator: Aggregator<TElement, TElement | undefined>): TElement;
+    public aggregate<TValue>(aggregator: Aggregator<TElement, TValue>, initialValue: TValue): TValue;
+    public aggregate<TValue>(
+        aggregator: Aggregator<TElement, TValue | TElement | undefined>,
+        initialValue?: TValue): TValue | TElement
+    {
+        if (initialValue !== undefined)
+        {
+            return this.asEnumerable().aggregate(
+                aggregator as Aggregator<TElement, TValue>,
+                initialValue);
+        }
+
+        return this.asEnumerable().aggregate(
+            aggregator as Aggregator<TElement,
+            TElement>);
+    }
+
+    public any(): boolean;
+    public any(predicate: Predicate<TElement>): boolean;
+    public any(predicate?: Predicate<TElement>): boolean
+    {
+        if (predicate !== undefined)
+        {
+            return this.asEnumerable().any(predicate);
+        }
+
+        return this.asEnumerable().any();
+    }
+
+    public all(predicate: Predicate<TElement>): boolean
+    {
+        return this.asEnumerable().all(predicate);
+    }
+
+    public average(selector: Selector<TElement, number>): number
+    {
+        return this.asEnumerable().average(selector);
+    }
+
+    public count(): number;
+    public count(predicate: Predicate<TElement>): number;
+    public count(predicate?: Predicate<TElement>): number
+    {
+        if (predicate !== undefined)
+        {
+            return this.asEnumerable().count(predicate);
+        }
+
+        return this.asEnumerable().count();
+    }
+
+    public elementAtOrDefault(index: number): TElement | undefined
+    {
+        return this.asEnumerable().elementAtOrDefault(index);
+    }
+
+    public firstOrDefault(): TElement | undefined;
+    public firstOrDefault(predicate: Predicate<TElement>): TElement | undefined;
+    public firstOrDefault(predicate?: Predicate<TElement>): TElement | undefined
+    {
+        if (predicate !== undefined)
+        {
+            return this.asEnumerable().firstOrDefault(predicate);
+        }
+
+        return this.asEnumerable().firstOrDefault();
+    }
+
+    public lastOrDefault(): TElement | undefined;
+    public lastOrDefault(predicate: Predicate<TElement>): TElement | undefined;
+    public lastOrDefault(predicate?: Predicate<TElement>): TElement | undefined
+    {
+        if (predicate !== undefined)
+        {
+            return this.asEnumerable().lastOrDefault(predicate);
+        }
+
+        return this.asEnumerable().lastOrDefault();
+    }
+
+    public forEach(action: Action<TElement>): void
+    {
+        return this.asEnumerable().forEach(action);
+    }
+}
+// endregion
+// region ArrayQueryable
+export abstract class ArrayQueryable<TElement>
+    extends EnumerableCollection<TElement>
+{
+    protected source: TElement[];
+
+    public abstract copy(): IQueryable<TElement>;
+
+    public constructor();
+    public constructor(elements: TElement[])
+    public constructor(elements: TElement[] = [])
+    {
+        super();
+        this.source = elements;
+    }
+
+    public asArray(): TElement[]
+    {
+        return this.source;
+    }
+
+    public toArray(): TElement[]
+    {
+        return ([] as TElement[]).concat(this.source);
+    }
+
+    public toList(): IList<TElement>
+    {
+        return new List<TElement>(this.toArray());
+    }
+
+    public toDictionary<TKey extends Indexer, TValue>(
+        keySelector: Selector<TElement, TKey>,
+        valueSelector: Selector<TElement, TValue>)
+        : IDictionary<TKey, TValue>
+    {
+        return Dictionary.fromArray(this.toArray(), keySelector, valueSelector);
+    }
+
+    public asEnumerable(): IEnumerable<TElement>
+    {
+        return new ArrayEnumerable(this.source);
+    }
+
+    public aggregate(aggregator: Aggregator<TElement, TElement | undefined>): TElement;
+    public aggregate<TValue>(aggregator: Aggregator<TElement, TValue>, initialValue: TValue): TValue;
+    public aggregate<TValue>(
+        aggregator: Aggregator<TElement, TValue | TElement | undefined>,
+        initialValue?: TValue): TValue | TElement
+    {
+        if (initialValue !== undefined)
+        {
+            return this.source.reduce(
+                aggregator as Aggregator<TElement, TValue>,
+                initialValue);
+        }
+
+        return this.source.reduce(aggregator as Aggregator<TElement, TElement>);
+    }
+
+    public any(): boolean;
+    public any(predicate: Predicate<TElement>): boolean;
+    public any(predicate?: Predicate<TElement>): boolean
+    {
+        if (predicate !== undefined)
+        {
+            return this.source.some(predicate);
+        }
+
+        return this.source.length > 0;
+    }
+
+    public all(predicate: Predicate<TElement>): boolean
+    {
+        return this.source.every(predicate);
+    }
+
+    public average(selector: Selector<TElement, number>): number
+    {
+        if (this.count() === 0)
+        {
+            throw new Error("Sequence contains no elements");
+        }
+
+        let sum = 0;
+
+        for (let i = 0, end = this.source.length; i < end; ++i)
+        {
+            sum += selector(this.source[i]);
+        }
+
+        return sum / this.source.length;
+    }
+
+    public count(): number;
+    public count(predicate: Predicate<TElement>): number;
+    public count(predicate?: Predicate<TElement>): number
+    {
+        if (predicate !== undefined)
+        {
+            return this.source.filter(predicate).length;
+        }
+
+        return this.source.length;
+    }
+
+    public elementAtOrDefault(index: number): TElement | undefined
+    {
+        if (index < 0)
+        {
+            throw new Error("Negative index is forbiden");
+        }
+
+        return this.source[index];
+    }
+
+    public firstOrDefault(): TElement | undefined;
+    public firstOrDefault(predicate: Predicate<TElement>): TElement | undefined;
+    public firstOrDefault(predicate?: Predicate<TElement>): TElement | undefined
+    {
+        if (predicate !== undefined)
+        {
+            return this.source.filter(predicate)[0];
+        }
+
+        return this.source[0];
+    }
+
+    public lastOrDefault(): TElement | undefined;
+    public lastOrDefault(predicate: Predicate<TElement>): TElement | undefined;
+    public lastOrDefault(predicate?: Predicate<TElement>): TElement | undefined
+    {
+        if (predicate !== undefined)
+        {
+            const records = this.source.filter(predicate);
+
+            return records[records.length - 1];
+        }
+
+        return this.source[this.source.length - 1];
+    }
+
+    public forEach(action: Action<TElement>): void
+    {
+        for (let i = 0, end = this.source.length; i < end; ++i)
+        {
+            action(this.source[i], i);
+        }
+    }
+}
+// endregion
+// region List
+export interface IList<TElement>
+    extends IQueryable<TElement>
 {
     copy(): IList<TElement>;
 
@@ -399,7 +514,7 @@ export interface IList<TElement> extends IQueryable<TElement>
 }
 
 export class List<TElement>
-    extends QueryableArray<TElement>
+    extends ArrayQueryable<TElement>
     implements IList<TElement>
 {
     public copy(): IList<TElement>
@@ -497,8 +612,10 @@ export class List<TElement>
         return this.source.indexOf(element);
     }
 }
-
-export interface IStack<TElement> extends IQueryable<TElement>
+// endregion
+// region Stack
+export interface IStack<TElement>
+    extends IQueryable<TElement>
 {
     copy(): IStack<TElement>;
 
@@ -510,7 +627,7 @@ export interface IStack<TElement> extends IQueryable<TElement>
 }
 
 export class Stack<TElement>
-    extends QueryableArray<TElement>
+    extends ArrayQueryable<TElement>
     implements IStack<TElement>
 {
     public copy(): IStack<TElement>
@@ -538,3 +655,131 @@ export class Stack<TElement>
         return this.source.push(element);
     }
 }
+// endregion
+// region Dictionary
+export interface IKeyValuePair<TKey extends Indexer, TValue>
+{
+    key: TKey;
+    value: TValue;
+}
+
+export interface IDictionary<TKey extends Indexer, TValue>
+    extends IQueryable<IKeyValuePair<string, TValue>>
+{
+    copy(): IDictionary<TKey, TValue>;
+
+    clear(): void;
+    containsKey(key: TKey): boolean;
+    containsValue(value: TValue): boolean;
+    remove(key: TKey): void;
+    get(key: TKey): TValue | undefined;
+    set(key: TKey, value: TValue): void;
+    setOrUpdate(key: TKey, value: TValue): void;
+}
+
+export class Dictionary<TKey extends Indexer, TValue>
+    extends EnumerableCollection<IKeyValuePair<string, TValue>>
+    implements IDictionary<TKey, TValue>
+{
+    public static fromArray<TArray, TKey extends Indexer, TValue>(
+        array: TArray[],
+        keySelector: Selector<TArray, TKey>,
+        valueSelector: Selector<TArray, TValue>)
+        : IDictionary<TKey, TValue>
+    {
+        const keyValuePairs = array.map<IKeyValuePair<TKey, TValue>>(v =>
+        {
+            return {
+                key: keySelector(v),
+                value: valueSelector(v),
+            };
+        });
+
+        return new Dictionary(keyValuePairs);
+    }
+
+    protected dictionary: Dynamic;
+
+    public constructor();
+    public constructor(keyValuePairs: Array<IKeyValuePair<TKey, TValue>>);
+    public constructor(keyValuePairs?: Array<IKeyValuePair<TKey, TValue>>)
+    {
+        super();
+        this.clear();
+
+        if (keyValuePairs !== undefined)
+        {
+            for (let i = 0; i < keyValuePairs.length; ++i)
+            {
+                const pair = keyValuePairs[i];
+                this.set(pair.key, pair.value);
+            }
+        }
+    }
+
+    public copy(): IDictionary<TKey, TValue>
+    {
+        return new Dictionary<TKey, TValue>(this.toArray() as Array<IKeyValuePair<TKey, TValue>>);
+    }
+
+    public asEnumerable(): IEnumerable<IKeyValuePair<string, TValue>>
+    {
+        return new ArrayEnumerable(this.toArray());
+    }
+
+    public toArray(): Array<IKeyValuePair<string, TValue>>
+    {
+        return (Object.getOwnPropertyNames(this.dictionary))
+            .map<IKeyValuePair<string, TValue>>(p =>
+            {
+                return {
+                    key: p,
+                    value: this.dictionary[p],
+                };
+            });
+    }
+
+    public clear(): void
+    {
+        this.dictionary = {};
+    }
+
+    public containsKey(key: TKey): boolean
+    {
+        return this.dictionary.hasOwnProperty(key);
+    }
+
+    public containsValue(value: TValue): boolean
+    {
+        return this.dictionary.indexOf(value) !== -1;
+    }
+
+    public remove(key: TKey): void
+    {
+        if (this.containsKey(key))
+        {
+            delete this.dictionary[key];
+        }
+    }
+
+    public get(key: TKey): TValue | undefined
+    {
+        return this.dictionary[key];
+    }
+
+    public set(key: TKey, value: TValue): void
+    {
+        if (this.containsKey(key))
+        {
+            throw new Error(`Key already exists: ${key}`);
+        }
+
+        this.setOrUpdate(key, value);
+    }
+
+    public setOrUpdate(key: TKey, value: TValue): void
+    {
+        this.dictionary[key] = value;
+    }
+}
+// endregion

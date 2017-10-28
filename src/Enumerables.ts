@@ -1,14 +1,17 @@
-/*
- * Created by Ivan Sanz (@isc30)
- * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
-*/
+// -
+// Created by Ivan Sanz (@isc30)
+// Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
+// -
 
-import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive } from "./Types";
-import { IList, List } from "./Collections";
+// region IMPORTS
+import { Selector, Predicate, Aggregator, Action, Dynamic, Primitive, Indexer } from "./Types";
+import {IKeyValuePair, IList,  List,  IDictionary,  Dictionary} from "./Collections";
 import { IIterable, ArrayIterator } from "./Iterators";
 import { Comparer, createComparer, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
+// endregion
 
+// region Interfaces
 export interface IQueryable<TOut>
 {
     copy(): IQueryable<TOut>;
@@ -16,7 +19,10 @@ export interface IQueryable<TOut>
     asEnumerable(): IEnumerable<TOut>;
     toArray(): TOut[];
     toList(): IList<TOut>;
-    // toDictionary
+    toDictionary<TKey extends Indexer, TValue>(
+        keySelector: Selector<TOut, TKey>,
+        valueSelector: Selector<TOut, TValue>)
+        : IDictionary<TKey, TValue>;
     // toLookup
 
     aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -135,7 +141,8 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 
     thenByDescending<TKey>(keySelector: Selector<TOut, TKey>): IOrderedEnumerable<TOut>;
 }
-
+// endregion
+// region EnumerableBase
 export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
     protected readonly source: IIterable<TElement> | IEnumerable<TElement>;
@@ -179,6 +186,14 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     public toList(): IList<TOut>
     {
         return new List<TOut>(this.toArray());
+    }
+
+    public toDictionary<TKey extends Indexer, TValue>(
+        keySelector: Selector<TOut, TKey>,
+        valueSelector: Selector<TOut, TValue>)
+        : IDictionary<TKey, TValue>
+    {
+        return Dictionary.fromArray(this.toArray(), keySelector, valueSelector);
     }
 
     public count(): number;
@@ -612,7 +627,8 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return new UniqueEnumerable(this.concat(other));
     }
 }
-
+// endregion
+// region Enumerable
 export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 {
     protected currentValue: Cached<TElement>;
@@ -708,7 +724,8 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
         return super.next();
     }
 }
-
+// endregion
+// region ConditionalEnumerable
 export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
@@ -738,7 +755,8 @@ export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
         return hasValue;
     }
 }
-
+// endregion
+// region ConcatEnumerable
 export class ConcatEnumerable<TElement> extends Enumerable<TElement>
 {
     private _otherSource: IIterable<TElement>;
@@ -794,7 +812,8 @@ export class ConcatEnumerable<TElement> extends Enumerable<TElement>
         return this.currentValue.value;
     }
 }
-
+// endregion
+// region UniqueEnumerable
 export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
@@ -848,7 +867,8 @@ export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
         return hasValue;
     }
 }
-
+// endregion
+// region RangeEnumerable
 export class RangeEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
@@ -924,7 +944,8 @@ export class RangeEnumerable<TElement> extends Enumerable<TElement>
         return super.value();
     }
 }
-
+// endregion
+// region TransformEnumerable
 export class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
 {
     protected source: IEnumerable<TElement>;
@@ -966,7 +987,8 @@ export class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement
         return super.next();
     }
 }
-
+// endregion
+// region ReverseEnumerable
 export class ReverseEnumerable<TElement> extends Enumerable<TElement>
 {
     protected source: IEnumerable<TElement>;
@@ -1087,7 +1109,8 @@ export class ReverseEnumerable<TElement> extends Enumerable<TElement>
         return this._elements.value[(this._elements.value.length - 1) - this._currentIndex];
     }
 }
-
+// endregion
+// region OrderedEnumerable
 export class OrderedEnumerable<TElement>
     extends EnumerableBase<TElement, TElement>
     implements IOrderedEnumerable<TElement>
@@ -1194,21 +1217,22 @@ export class OrderedEnumerable<TElement>
         return result.sort(this._comparer);
     }
 }
-
+// endregion
+// region ArrayEnumerable
 export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 {
-    protected _list: List<TOut>;
+    protected list: List<TOut>;
 
     public constructor(source: TOut[])
     {
         super(new ArrayIterator(source));
 
-        this._list = new List(source);
+        this.list = new List(source);
     }
 
     public toArray(): TOut[]
     {
-        return this._list.toArray();
+        return this.list.toArray();
     }
 
     public aggregate(aggregator: Aggregator<TOut, TOut | undefined>): TOut;
@@ -1219,12 +1243,12 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (initialValue !== undefined)
         {
-            return this._list.aggregate(
+            return this.list.aggregate(
                 aggregator as Aggregator<TOut, TValue>,
                 initialValue as TValue);
         }
 
-        return this._list.aggregate(aggregator as Aggregator<TOut, TOut | undefined>);
+        return this.list.aggregate(aggregator as Aggregator<TOut, TOut | undefined>);
     }
 
     public any(): boolean;
@@ -1233,20 +1257,20 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._list.any(predicate);
+            return this.list.any(predicate);
         }
 
-        return this._list.any();
+        return this.list.any();
     }
 
     public all(predicate: Predicate<TOut>): boolean
     {
-        return this._list.all(predicate);
+        return this.list.all(predicate);
     }
 
     public average(selector: Selector<TOut, number>): number
     {
-        return this._list.average(selector);
+        return this.list.average(selector);
     }
 
     public count(): number;
@@ -1255,20 +1279,20 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._list.count(predicate);
+            return this.list.count(predicate);
         }
 
-        return this._list.count();
+        return this.list.count();
     }
 
     public copy(): IEnumerable<TOut>
     {
-        return new ArrayEnumerable(this._list.asArray());
+        return new ArrayEnumerable(this.list.asArray());
     }
 
     public elementAtOrDefault(index: number): TOut | undefined
     {
-        return this._list.elementAtOrDefault(index);
+        return this.list.elementAtOrDefault(index);
     }
 
     public firstOrDefault(): TOut | undefined;
@@ -1277,10 +1301,10 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._list.firstOrDefault(predicate);
+            return this.list.firstOrDefault(predicate);
         }
 
-        return this._list.firstOrDefault();
+        return this.list.firstOrDefault();
     }
 
     public lastOrDefault(): TOut | undefined;
@@ -1289,9 +1313,10 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
     {
         if (predicate !== undefined)
         {
-            return this._list.lastOrDefault(predicate);
+            return this.list.lastOrDefault(predicate);
         }
 
-        return this._list.lastOrDefault();
+        return this.list.lastOrDefault();
     }
 }
+// endregion
