@@ -6,6 +6,7 @@
 [![build status](https://travis-ci.org/isc30/linq-collections.svg?branch=master)](https://travis-ci.org/isc30/linq-collections)
 [![Known Vulnerabilities](https://snyk.io/test/github/isc30/linq-collections/badge.svg)](https://snyk.io/test/github/isc30/linq-collections)
 [![coverage](https://coveralls.io/repos/github/isc30/linq-collections/badge.svg?branch=master&cache=no)](https://coveralls.io/github/isc30/linq-collections?branch=master)
+[![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
@@ -16,13 +17,16 @@ This project is activelly being developed and improved by Ivan Sanz (isc30)<br /
 Please expect some missing features until it's finished.<br />
 https://github.com/isc30/linq-collections
 
+[![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
+
 ## Intellisense friendly
 Every single method has **complete** type definitions available.<br />
 If you use TypeScript, its purely is based in **generics**.<br /><br />
 [Insert motivational GIF with intellisense in action]
 
 ## Browser compatibility: 100%
-Using **ECMAScript 5**, it has **100% compatibility** with nodejs and all main browsers
+Using **ECMAScript 5**, it has **100% compatibility** with nodejs and all main browsers.<br/>
+Click here to run browser tests: https://isc30.github.io/linq-collections/mocha
 
 [![compatibility](assets/compatibility.png)](assets/compatibility.png)
 
