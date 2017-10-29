@@ -509,8 +509,8 @@ export namespace IQueryableUnitTest
         it("Simple order (custom comparer) (iterator)", () =>
         {
             const base = instancer([2, 6, 3, 7, 1]);
-            const ordered = new Enumerable(base.orderBy(e => e, (l, r) => l < 5 ? -1 : 1));
-            Test.isArrayEqual(ordered.toArray(), [2, 3, 1, 7, 6]);
+            const ordered = new Enumerable(base.orderBy(e => e, (l, r) => l > r ? -1 : 1));
+            Test.isArrayEqual(ordered.toArray(), [7, 6, 3, 2, 1]);
         });
 
         it("Simple order (string) (iterator)", () =>
@@ -539,8 +539,8 @@ export namespace IQueryableUnitTest
         it("Simple order (custom comparer)", () =>
         {
             const base = instancer([2, 6, 3, 7, 1]);
-            const ordered = base.orderBy(e => e, (l, r) => l < 5 ? -1 : 1);
-            Test.isArrayEqual(ordered.toArray(), [2, 3, 1, 7, 6]);
+            const ordered = base.orderBy(e => e, (l, r) => l > r ? -1 : 1);
+            Test.isArrayEqual(ordered.toArray(), [7, 6, 3, 2, 1]);
         });
 
         it("Simple order (string)", () =>
@@ -569,8 +569,8 @@ export namespace IQueryableUnitTest
         it("Simple order (custom comparer) (double)", () =>
         {
             const base = instancer([2, 6, 3, 7, 1]);
-            const ordered = base.orderBy(e => e).orderBy(e => e, (l, r) => l < 5 ? -1 : 1);
-            Test.isArrayEqual(ordered.toArray(), [2, 3, 1, 7, 6]);
+            const ordered = base.orderBy(e => e).orderBy(e => e, (l, r) => l > r ? -1 : 1);
+            Test.isArrayEqual(ordered.toArray(), [7, 6, 3, 2, 1]);
         });
 
         it("Simple order (string) (double)", () =>

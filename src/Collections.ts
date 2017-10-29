@@ -5,7 +5,7 @@
 
 // region IMPORTS
 // tslint:disable-next-line:max-line-length
-import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable } from "./Enumerables";
+import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable, IKeyValue } from "./Enumerables";
 import { Action, Selector,  Aggregator, Predicate, Indexer, Type, Dynamic } from "./Types";
 import { Comparer, createComparer } from "./Comparers";
 import { IIterable } from "./Iterators";
@@ -647,15 +647,9 @@ export class Stack<TElement>
     }
 }
 // endregion
-// region Dictionary
-export interface IKeyValuePair<TKey extends Indexer, TValue>
-{
-    key: TKey;
-    value: TValue;
-}
-
+// region Dictionary 
 export interface IDictionary<TKey extends Indexer, TValue>
-    extends IQueryable<IKeyValuePair<TKey, TValue>>
+    extends IQueryable<IKeyValue<TKey, TValue>>
 {
     copy(): IDictionary<TKey, TValue>;
 
@@ -671,7 +665,7 @@ export interface IDictionary<TKey extends Indexer, TValue>
 }
 
 export class Dictionary<TKey extends Indexer, TValue>
-    extends EnumerableCollection<IKeyValuePair<TKey, TValue>>
+    extends EnumerableCollection<IKeyValue<TKey, TValue>>
     implements IDictionary<TKey, TValue>
 {
     public static fromArray<TArray, TKey extends Indexer, TValue>(
@@ -680,7 +674,7 @@ export class Dictionary<TKey extends Indexer, TValue>
         valueSelector: Selector<TArray, TValue>)
         : IDictionary<TKey, TValue>
     {
-        const keyValuePairs = array.map<IKeyValuePair<TKey, TValue>>(v =>
+        const keyValuePairs = array.map<IKeyValue<TKey, TValue>>(v =>
         {
             return {
                 key: keySelector(v),
@@ -695,8 +689,8 @@ export class Dictionary<TKey extends Indexer, TValue>
     protected keyType: Type;
 
     public constructor();
-    public constructor(keyValuePairs: Array<IKeyValuePair<TKey, TValue>>);
-    public constructor(keyValuePairs?: Array<IKeyValuePair<TKey, TValue>>)
+    public constructor(keyValuePairs: Array<IKeyValue<TKey, TValue>>);
+    public constructor(keyValuePairs?: Array<IKeyValue<TKey, TValue>>)
     {
         super();
         this.clear();
@@ -716,14 +710,14 @@ export class Dictionary<TKey extends Indexer, TValue>
         return new Dictionary<TKey, TValue>(this.toArray());
     }
 
-    public asEnumerable(): IEnumerable<IKeyValuePair<TKey, TValue>>
+    public asEnumerable(): IEnumerable<IKeyValue<TKey, TValue>>
     {
         return new ArrayEnumerable(this.toArray());
     }
 
-    public toArray(): Array<IKeyValuePair<TKey, TValue>>
+    public toArray(): Array<IKeyValue<TKey, TValue>>
     {
-        return this.getKeys().select<IKeyValuePair<TKey, TValue>>(p =>
+        return this.getKeys().select<IKeyValue<TKey, TValue>>(p =>
         {
             return {
                 key: p,

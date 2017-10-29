@@ -5,13 +5,19 @@
 
 // region IMPORTS
 import { Selector, Predicate, Aggregator, Action, Dynamic, Indexer } from "./Types";
-import {IKeyValuePair, IList,  List,  IDictionary,  Dictionary} from "./Collections";
+import { IList,  List,  IDictionary,  Dictionary } from "./Collections";
 import { IIterable, ArrayIterator } from "./Iterators";
 import { Comparer, createComparer, combineComparers } from "./Comparers";
 import { Cached } from "./Utils";
 // endregion
 
 // region Interfaces
+export interface IKeyValue<TKey, TValue>
+{
+    key: TKey;
+    value: TValue;
+}
+
 export interface IQueryable<TOut>
 {
     copy(): IQueryable<TOut>;
