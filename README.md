@@ -26,7 +26,6 @@ If you use TypeScript, its purely is based in **generics**.<br /><br />
 
 ## Browser compatibility: 100%
 Using **ECMAScript 5**, it has **100% compatibility** with nodejs and all main browsers<br/>
-
 Check your browser now is you don't believe it -> [![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 
 [![compatibility](assets/compatibility.png)](assets/compatibility.png)
