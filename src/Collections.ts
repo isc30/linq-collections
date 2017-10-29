@@ -268,8 +268,7 @@ export abstract class EnumerableCollection<TElement>
         }
 
         return this.asEnumerable().aggregate(
-            aggregator as Aggregator<TElement,
-            TElement>);
+            aggregator as Aggregator<TElement, TElement>);
     }
 
     public any(): boolean;
@@ -370,14 +369,6 @@ export abstract class ArrayQueryable<TElement>
     public toList(): IList<TElement>
     {
         return new List<TElement>(this.toArray());
-    }
-
-    public toDictionary<TKey extends Indexer, TValue>(
-        keySelector: Selector<TElement, TKey>,
-        valueSelector: Selector<TElement, TValue>)
-        : IDictionary<TKey, TValue>
-    {
-        return Dictionary.fromArray(this.toArray(), keySelector, valueSelector);
     }
 
     public asEnumerable(): IEnumerable<TElement>
