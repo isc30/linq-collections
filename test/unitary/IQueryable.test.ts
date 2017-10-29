@@ -1,12 +1,41 @@
 // tslint:disable-next-line:max-line-length
 import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
-import { List, Stack, Dictionary } from "../../src/Collections";
+import { List, Stack, Dictionary, EnumerableCollection } from "../../src/Collections";
 import { Test } from "../Test";
 import { Indexer } from "../../src/Types";
 
 export namespace IQueryableUnitTest
 {
+    class EnumerableCollectionBase<TElement>
+        extends EnumerableCollection<TElement>
+    {
+        protected source: TElement[];
+
+        public constructor();
+        public constructor(elements: TElement[])
+        public constructor(elements: TElement[] = [])
+        {
+            super();
+            this.source = elements;
+        }
+
+        public copy(): IQueryable<TElement>
+        {
+            return new EnumerableCollectionBase(this.toArray());
+        }
+
+        public toArray(): TElement[]
+        {
+            return ([] as TElement[]).concat(this.source);
+        }
+
+        public asEnumerable(): IEnumerable<TElement>
+        {
+            return new ArrayEnumerable(this.source);
+        }
+    }
+
     type Instancer = <T>(elements: T[]) => IQueryable<T>;
 
     function runTest(name: string, test: (instancer: Instancer) => void)
@@ -41,6 +70,9 @@ export namespace IQueryableUnitTest
 
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
+
+        describe(`${name} (EnumerableCollection)`, () => test(
+            <T>(e: T[]) => new EnumerableCollectionBase(e)));
 
         describe(`${name} (List)`, () => test(
             <T>(e: T[]) => new List(e)));
