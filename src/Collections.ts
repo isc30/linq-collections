@@ -5,7 +5,7 @@
 
 // region IMPORTS
 // tslint:disable-next-line:max-line-length
-import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable, IKeyValue } from "./Enumerables";
+import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable, IKeyValue, IGrouping } from "./Enumerables";
 import { Action, Selector,  Aggregator, Predicate, Indexer, Type, Dynamic } from "./Types";
 import { Comparer, createComparer } from "./Comparers";
 import { IIterable } from "./Iterators";
@@ -116,6 +116,39 @@ export abstract class EnumerableCollection<TElement>
         }
 
         return element;
+    }
+
+    public groupBy<TKey extends Indexer>(
+        keySelector: Selector<TElement, TKey>)
+        : IEnumerable<IGrouping<TKey, TElement>>;
+    public groupBy<TKey extends Indexer, TValue>(
+        keySelector: Selector<TElement, TKey>,
+        valueSelector: Selector<TElement, TValue>)
+        : IEnumerable<IGrouping<TKey, TValue>>;
+    public groupBy<TKey extends Indexer, TValue>(
+        keySelector: Selector<TElement, TKey>,
+        valueSelector?: Selector<TElement, TValue>)
+        : IEnumerable<IGrouping<TKey, TElement | TValue>>
+    {
+        const array = this.toArray();
+        const dictionary = new Dictionary<TKey, IQueryable<TElement | TValue>>();
+
+        for (let i = 0; i < array.length; ++i)
+        {
+            const key = keySelector(array[i]);
+            const value = valueSelector !== undefined
+                ? valueSelector(array[i])
+                : array[i];
+
+            if (!dictionary.containsKey(key))
+            {
+                dictionary.set(key, new List<TElement | TValue>());
+            }
+
+            (dictionary.get(key) as IList<TElement | TValue>).push(value);
+        }
+
+        return dictionary.asEnumerable();
     }
 
     public last(): TElement;
@@ -268,7 +301,7 @@ export abstract class EnumerableCollection<TElement>
         }
 
         return this.asEnumerable().aggregate(
-            aggregator as Aggregator<TElement, TElement>);
+            aggregator as Aggregator<TElement, TElement | undefined>);
     }
 
     public any(): boolean;
@@ -458,6 +491,39 @@ export abstract class ArrayQueryable<TElement>
         }
 
         return this.source[0];
+    }
+
+    public groupBy<TKey extends Indexer>(
+        keySelector: Selector<TElement, TKey>)
+        : IEnumerable<IGrouping<TKey, TElement>>;
+    public groupBy<TKey extends Indexer, TValue>(
+        keySelector: Selector<TElement, TKey>,
+        valueSelector: Selector<TElement, TValue>)
+        : IEnumerable<IGrouping<TKey, TValue>>;
+    public groupBy<TKey extends Indexer, TValue>(
+        keySelector: Selector<TElement, TKey>,
+        valueSelector?: Selector<TElement, TValue>)
+        : IEnumerable<IGrouping<TKey, TElement | TValue>>
+    {
+        const array = this.asArray();
+        const dictionary = new Dictionary<TKey, IQueryable<TElement | TValue>>();
+
+        for (let i = 0; i < array.length; ++i)
+        {
+            const key = keySelector(array[i]);
+            const value = valueSelector !== undefined
+                ? valueSelector(array[i])
+                : array[i];
+
+            if (!dictionary.containsKey(key))
+            {
+                dictionary.set(key, new List<TElement | TValue>());
+            }
+
+            (dictionary.get(key) as IList<TElement | TValue>).push(value);
+        }
+
+        return dictionary.asEnumerable();
     }
 
     public lastOrDefault(): TElement | undefined;

@@ -84,6 +84,21 @@ var EnumerableCollection = /** @class */ (function () {
         }
         return element;
     };
+    EnumerableCollection.prototype.groupBy = function (keySelector, valueSelector) {
+        var array = this.toArray();
+        var dictionary = new Dictionary();
+        for (var i = 0; i < array.length; ++i) {
+            var key = keySelector(array[i]);
+            var value = valueSelector !== undefined
+                ? valueSelector(array[i])
+                : array[i];
+            if (!dictionary.containsKey(key)) {
+                dictionary.set(key, new List());
+            }
+            dictionary.get(key).push(value);
+        }
+        return dictionary.asEnumerable();
+    };
     EnumerableCollection.prototype.last = function (predicate) {
         var element;
         if (predicate !== undefined) {
@@ -268,6 +283,21 @@ var ArrayQueryable = /** @class */ (function (_super) {
             return this.source.filter(predicate)[0];
         }
         return this.source[0];
+    };
+    ArrayQueryable.prototype.groupBy = function (keySelector, valueSelector) {
+        var array = this.asArray();
+        var dictionary = new Dictionary();
+        for (var i = 0; i < array.length; ++i) {
+            var key = keySelector(array[i]);
+            var value = valueSelector !== undefined
+                ? valueSelector(array[i])
+                : array[i];
+            if (!dictionary.containsKey(key)) {
+                dictionary.set(key, new List());
+            }
+            dictionary.get(key).push(value);
+        }
+        return dictionary.asEnumerable();
     };
     ArrayQueryable.prototype.lastOrDefault = function (predicate) {
         if (predicate !== undefined) {
@@ -679,6 +709,21 @@ var EnumerableBase = /** @class */ (function () {
         for (var i = 0; this.next(); ++i) {
             action(this.value(), i);
         }
+    };
+    EnumerableBase.prototype.groupBy = function (keySelector, valueSelector) {
+        var array = this.toArray();
+        var dictionary = new Collections_1.Dictionary();
+        for (var i = 0; i < array.length; ++i) {
+            var key = keySelector(array[i]);
+            var value = valueSelector !== undefined
+                ? valueSelector(array[i])
+                : array[i];
+            if (!dictionary.containsKey(key)) {
+                dictionary.set(key, new Collections_1.List());
+            }
+            dictionary.get(key).push(value);
+        }
+        return dictionary.asEnumerable();
     };
     EnumerableBase.prototype.last = function (predicate) {
         var element;
@@ -1252,6 +1297,19 @@ exports.ArrayEnumerable = ArrayEnumerable;
 * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
+/* ES6 compatibility layer :D
+interface IteratorResult<T>
+{
+    done: boolean;
+    value: T;
+}
+
+interface Iterator<T>
+{
+    next(value?: any): IteratorResult<T>;
+    return?(value?: any): IteratorResult<T>;
+    throw?(e?: any): IteratorResult<T>;
+}*/
 var ArrayIterator = /** @class */ (function () {
     function ArrayIterator(source) {
         this.source = source;
@@ -1287,6 +1345,13 @@ exports.ArrayIterator = ArrayIterator;
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
+function Lazy(factory) {
+    var instance;
+    return function () { return instance !== undefined
+        ? instance
+        : (instance = factory()); };
+}
+exports.Lazy = Lazy;
 var Cached = /** @class */ (function () {
     function Cached() {
         this._isValid = false;

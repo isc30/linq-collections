@@ -18,6 +18,8 @@ export interface IKeyValue<TKey, TValue>
     value: TValue;
 }
 
+export type IGrouping<TKey, TElement> = IKeyValue<TKey, IQueryable<TElement>>;
+
 export interface IQueryable<TOut>
 {
     copy(): IQueryable<TOut>;
@@ -70,7 +72,13 @@ export interface IQueryable<TOut>
 
     forEach(action: Action<TOut>): void;
 
-    // groupBy
+    groupBy<TKey extends Indexer>(
+        keySelector: Selector<TOut, TKey>)
+        : IEnumerable<IGrouping<TKey, TOut>>;
+    groupBy<TKey extends Indexer, TValue>(
+        keySelector: Selector<TOut, TKey>,
+        valueSelector: Selector<TOut, TValue>)
+        : IEnumerable<IGrouping<TKey, TValue>>;
 
     // groupJoin
 
@@ -411,6 +419,39 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         {
             action(this.value(), i);
         }
+    }
+
+    groupBy<TKey extends Indexer>(
+        keySelector: Selector<TOut, TKey>)
+        : IEnumerable<IGrouping<TKey, TOut>>;
+    groupBy<TKey extends Indexer, TValue>(
+        keySelector: Selector<TOut, TKey>,
+        valueSelector: Selector<TOut, TValue>)
+        : IEnumerable<IGrouping<TKey, TValue>>;
+    groupBy<TKey extends Indexer, TValue>(
+        keySelector: Selector<TOut, TKey>,
+        valueSelector?: Selector<TOut, TValue>)
+        : IEnumerable<IGrouping<TKey, TOut | TValue>>
+    {
+        const array = this.toArray();
+        const dictionary = new Dictionary<TKey, IQueryable<TOut | TValue>>();
+
+        for (let i = 0; i < array.length; ++i)
+        {
+            const key = keySelector(array[i]);
+            const value = valueSelector !== undefined
+                ? valueSelector(array[i])
+                : array[i];
+
+            if (!dictionary.containsKey(key))
+            {
+                dictionary.set(key, new List<TOut | TValue>());
+            }
+
+            (dictionary.get(key) as IList<TOut | TValue>).push(value);
+        }
+
+        return dictionary.asEnumerable();
     }
 
     public last(): TOut;

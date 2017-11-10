@@ -11,6 +11,20 @@ export interface IIterable<TElement>
     value(): TElement;
 }
 
+/* ES6 compatibility layer :D
+interface IteratorResult<T>
+{
+    done: boolean;
+    value: T;
+}
+
+interface Iterator<T>
+{
+    next(value?: any): IteratorResult<T>;
+    return?(value?: any): IteratorResult<T>;
+    throw?(e?: any): IteratorResult<T>;
+}*/
+
 export class ArrayIterator<TElement> implements IIterable<TElement>
 {
     protected readonly source: TElement[];

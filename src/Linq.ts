@@ -3,6 +3,8 @@
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 
-export { IEnumerable, Enumerable } from "./Enumerables";
+export { IQueryable, IKeyValue, IGrouping, IEnumerable, IOrderedEnumerable, Enumerable } from "./Enumerables";
 export { IIterable, ArrayIterator } from "./Iterators";
-export { List } from "./Collections";
+export { IList, List, IDictionary, Dictionary, IStack, Stack } from "./Collections";
+export { Comparer, ComparerResult } from './Comparers';
+export * from './Types';
