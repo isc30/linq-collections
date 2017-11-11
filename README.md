@@ -19,24 +19,6 @@ https://github.com/isc30/linq-collections
 
 [![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 
-## Features
-Complete **Linq to Objects** implementation (deferred execution)
-> toArray, toList, toDictionary, toLookup, aggregate, all, any, average, concat, contains, count, defaultIfEmpty, distinct, elementAt, elementAtOrDefault, except, first, firstOrDefault, forEach, groupBy, groupJoin, intersect, join, last, lastOrDefault, longCount, max, min, orderBy, orderByDescending, reverse, select, selectMany, sequenceEquals, single, single, singleOrDefault, skip, skipWhile, sum, take, union, where, ...
-
-Collections
-> List, Dictionary, Stack, Queue, ...
-
-All Collections are **Queryable**
-```typescript
-const list = new List<string>([
-    "Hello",
-    "Bye",
-    "Thanks",
-]);
-
-const notHello = list.where(e => e !== "Hello");
-```
-
 ## Intellisense friendly
 Every single method has **complete** type definitions available.<br />
 If you use TypeScript, its purely is based in **generics**.<br /><br />
@@ -70,6 +52,24 @@ We strongly recommend using `*` for version selector
 dependencies {
     "linq-collections": "*"
 }
+```
+
+## Features
+Complete **Linq to Objects** implementation (deferred execution)
+> toArray, toList, toDictionary, toLookup, aggregate, all, any, average, concat, contains, count, defaultIfEmpty, distinct, elementAt, elementAtOrDefault, except, first, firstOrDefault, forEach, groupBy, groupJoin, intersect, join, last, lastOrDefault, longCount, max, min, orderBy, orderByDescending, reverse, select, selectMany, sequenceEquals, single, single, singleOrDefault, skip, skipWhile, sum, take, union, where, ...
+
+Collections
+> List, Dictionary, Stack, Queue, ...
+
+All Collections are **Queryable**
+```typescript
+const list = new List<string>([
+    "Hello",
+    "Bye",
+    "Thanks",
+]);
+
+const notHello = list.where(e => e !== "Hello");
 ```
 
 ## How to run tests
