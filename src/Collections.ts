@@ -725,7 +725,7 @@ export interface IDictionary<TKey extends Indexer, TValue>
     getKeys(): IList<TKey>;
     getValues(): IList<TValue>;
     remove(key: TKey): void;
-    get(key: TKey): TValue | undefined;
+    get(key: TKey): TValue;
     set(key: TKey, value: TValue): void;
     setOrUpdate(key: TKey, value: TValue): void;
 }
@@ -853,8 +853,13 @@ export class Dictionary<TKey extends Indexer, TValue>
         }
     }
 
-    public get(key: TKey): TValue | undefined
+    public get(key: TKey): TValue
     {
+        if (!this.containsKey(key))
+        {
+            throw new Error(`Key doesn't exist: ${key}`)
+        }
+
         return this.dictionary[key];
     }
 

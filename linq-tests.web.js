@@ -478,6 +478,9 @@ var Dictionary = /** @class */ (function (_super) {
         }
     };
     Dictionary.prototype.get = function (key) {
+        if (!this.containsKey(key)) {
+            throw new Error("Key doesn't exist: " + key);
+        }
         return this.dictionary[key];
     };
     Dictionary.prototype.set = function (key, value) {
@@ -1345,13 +1348,14 @@ exports.ArrayIterator = ArrayIterator;
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-function Lazy(factory) {
-    var instance;
-    return function () { return instance !== undefined
+/*export function Lazy<T>(factory: () => T): () => T
+{
+    let instance: T;
+    
+    return () => instance !== undefined
         ? instance
-        : (instance = factory()); };
-}
-exports.Lazy = Lazy;
+        : (instance = factory());
+}*/
 var Cached = /** @class */ (function () {
     function Cached() {
         this._isValid = false;
@@ -1591,12 +1595,12 @@ var DictionaryUnitTest;
             Test_1.Test.isEqual(dic.get("Hello"), "Hola");
             Test_1.Test.isEqual(dic.get("Bye"), "Adios");
         });
-        it("Undefined if invalid key", function () {
+        it("Exception if invalid key", function () {
             var dic = new Collections_1.Dictionary([
                 { key: "Hello", value: "Hola" },
             ]);
-            Test_1.Test.isEqual(dic.get("Bye"), undefined);
-            Test_1.Test.isEqual(dic.get(":("), undefined);
+            Test_1.Test.throwsException(function () { return dic.get("Bye"); });
+            Test_1.Test.throwsException(function () { return dic.get(":("); });
         });
     }
     function set() {
@@ -1917,6 +1921,7 @@ var IQueryableUnitTest;
         runTest("ThenByDescending", thenByDescending);
         runTest("Union", union);
         runTest("Where", where);
+        runTest("GroupBy", groupBy);
     }
     IQueryableUnitTest.run = run;
     function toArray(instancer) {
@@ -2184,6 +2189,7 @@ var IQueryableUnitTest;
             ]);
             Test_1.Test.isArrayEqual(base.distinct(function (e) { return e[0]; }).toArray(), ["a", "b", "ce", "wea", "era"]);
         });
+        // TODO: Complex types
     }
     function orderBy(instancer) {
         it("Return empty if empty source (iterator)", function () {
@@ -2978,6 +2984,57 @@ var IQueryableUnitTest;
                 elements[0],
                 elements[3],
             ]);
+        });
+    }
+    function groupBy(instancer) {
+        it("Return empty if empty source", function () {
+            var base = instancer([]);
+            var grouped = base.groupBy(function (e) { return e.id; });
+            Test_1.Test.isArrayEqual(grouped.toArray(), []);
+        });
+        it("Return empty if empty source (value selector)", function () {
+            var base = instancer([]);
+            var grouped = base.groupBy(function (e) { return e.id; }, function (e) { return e.name; });
+            Test_1.Test.isArrayEqual(grouped.toArray(), []);
+        });
+        it("Grouping is correct", function () {
+            var people = [
+                { id: 1, type: 3, name: "Ivan" },
+                { id: 2, type: 2, name: "Juanmari" },
+                { id: 3, type: 3, name: "Uxue" },
+                { id: 4, type: 2, name: "Begoña" },
+                { id: 5, type: 1, name: "Juanito" },
+            ];
+            var grouped = instancer(people)
+                .groupBy(function (p) { return p.type; })
+                .toDictionary(function (g) { return g.key; }, function (g) { return g.value; });
+            Test_1.Test.isFalse(grouped.containsKey(0));
+            Test_1.Test.isTrue(grouped.containsKey(1));
+            Test_1.Test.isTrue(grouped.containsKey(2));
+            Test_1.Test.isTrue(grouped.containsKey(3));
+            Test_1.Test.isFalse(grouped.containsKey(4));
+            Test_1.Test.isArrayEqual(grouped.get(1).toArray(), [people[4]]); // Juanito
+            Test_1.Test.isArrayEqual(grouped.get(2).toArray(), [people[1], people[3]]); // Juanmari, Begoña
+            Test_1.Test.isArrayEqual(grouped.get(3).toArray(), [people[0], people[2]]); // Ivan, Uxue
+        });
+        it("Grouping is correct (value selector)", function () {
+            var people = [
+                { id: 1, type: 3, name: "Ivan" },
+                { id: 2, type: 2, name: "Juanmari" },
+                { id: 3, type: 3, name: "Uxue" },
+                { id: 4, type: 2, name: "Begoña" },
+                { id: 5, type: 1, name: "Juanito" },
+            ];
+            var grouped = instancer(people)
+                .groupBy(function (p) { return p.type; }, function (p) { return p.name; });
+            Test_1.Test.isFalse(grouped.any(function (g) { return g.key === 0; }));
+            Test_1.Test.isTrue(grouped.any(function (g) { return g.key === 1; }));
+            Test_1.Test.isTrue(grouped.any(function (g) { return g.key === 2; }));
+            Test_1.Test.isTrue(grouped.any(function (g) { return g.key === 3; }));
+            Test_1.Test.isFalse(grouped.any(function (g) { return g.key === 4; }));
+            Test_1.Test.isArrayEqual(grouped.single(function (g) { return g.key === 1; }).value.toArray(), ["Juanito"]);
+            Test_1.Test.isArrayEqual(grouped.single(function (g) { return g.key === 2; }).value.toArray(), ["Juanmari", "Begoña"]);
+            Test_1.Test.isArrayEqual(grouped.single(function (g) { return g.key === 3; }).value.toArray(), ["Ivan", "Uxue"]);
         });
     }
 })(IQueryableUnitTest = exports.IQueryableUnitTest || (exports.IQueryableUnitTest = {}));

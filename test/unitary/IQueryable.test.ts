@@ -1,7 +1,7 @@
 // tslint:disable-next-line:max-line-length
 import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
-import { List, Stack, Dictionary, EnumerableCollection } from "../../src/Collections";
+import { List, Stack, Dictionary, EnumerableCollection, IDictionary } from "../../src/Collections";
 import { Test } from "../Test";
 import { Indexer } from "../../src/Types";
 
@@ -123,6 +123,7 @@ export namespace IQueryableUnitTest
         runTest("ThenByDescending", thenByDescending);
         runTest("Union", union);
         runTest("Where", where);
+        runTest("GroupBy", groupBy);
     }
 
     function toArray(instancer: Instancer): void
@@ -488,6 +489,8 @@ export namespace IQueryableUnitTest
                 base.distinct(e => e[0]).toArray(),
                 ["a", "b", "ce", "wea", "era"]);
         });
+
+        // TODO: Complex types
     }
 
     function orderBy(instancer: Instancer): void
@@ -1579,6 +1582,79 @@ export namespace IQueryableUnitTest
                 elements[0],
                 elements[3],
             ]);
+        });
+    }
+
+    interface IGroupByTestClass
+    {
+        id: number;
+        type: number;
+        name: string;
+    }
+
+    function groupBy(instancer: Instancer): void
+    {
+        it("Return empty if empty source", () =>
+        {
+            const base = instancer<IGroupByTestClass>([]);
+            const grouped = base.groupBy(e => e.id);
+            Test.isArrayEqual(grouped.toArray(), []);
+        });
+
+        it("Return empty if empty source (value selector)", () =>
+        {
+            const base = instancer<IGroupByTestClass>([]);
+            const grouped = base.groupBy(e => e.id, e => e.name);
+            Test.isArrayEqual(grouped.toArray(), []);
+        });
+
+        it("Grouping is correct", () =>
+        {
+            const people = <IGroupByTestClass[]>[
+                { id: 1, type: 3, name: "Ivan" },
+                { id: 2, type: 2, name: "Juanmari" },
+                { id: 3, type: 3, name: "Uxue" },
+                { id: 4, type: 2, name: "Begoña" },
+                { id: 5, type: 1, name: "Juanito" },
+            ];
+
+            const grouped = instancer(people)
+                .groupBy(p => p.type)
+                .toDictionary(g => g.key, g => g.value);
+
+            Test.isFalse(grouped.containsKey(0));
+            Test.isTrue(grouped.containsKey(1));
+            Test.isTrue(grouped.containsKey(2));
+            Test.isTrue(grouped.containsKey(3));
+            Test.isFalse(grouped.containsKey(4));
+
+            Test.isArrayEqual(grouped.get(1).toArray(), [people[4]]); // Juanito
+            Test.isArrayEqual(grouped.get(2).toArray(), [people[1], people[3]]); // Juanmari, Begoña
+            Test.isArrayEqual(grouped.get(3).toArray(), [people[0], people[2]]); // Ivan, Uxue
+        });
+
+        it("Grouping is correct (value selector)", () =>
+        {
+            const people = <IGroupByTestClass[]>[
+                { id: 1, type: 3, name: "Ivan" },
+                { id: 2, type: 2, name: "Juanmari" },
+                { id: 3, type: 3, name: "Uxue" },
+                { id: 4, type: 2, name: "Begoña" },
+                { id: 5, type: 1, name: "Juanito" },
+            ];
+
+            const grouped = instancer(people)
+                .groupBy(p => p.type, p => p.name);
+
+            Test.isFalse(grouped.any(g => g.key === 0));
+            Test.isTrue(grouped.any(g => g.key === 1));
+            Test.isTrue(grouped.any(g => g.key === 2));
+            Test.isTrue(grouped.any(g => g.key === 3));
+            Test.isFalse(grouped.any(g => g.key === 4));
+
+            Test.isArrayEqual(grouped.single(g => g.key === 1).value.toArray(), ["Juanito"]);
+            Test.isArrayEqual(grouped.single(g => g.key === 2).value.toArray(), ["Juanmari", "Begoña"]);
+            Test.isArrayEqual(grouped.single(g => g.key === 3).value.toArray(), ["Ivan", "Uxue"]);
         });
     }
 }

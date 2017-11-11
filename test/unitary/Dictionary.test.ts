@@ -89,14 +89,14 @@ export namespace DictionaryUnitTest
             Test.isEqual(dic.get("Bye"), "Adios");
         });
 
-        it("Undefined if invalid key", () =>
+        it("Exception if invalid key", () =>
         {
             const dic = new Dictionary<string, string>([
                 { key: "Hello", value: "Hola" },
             ]);
 
-            Test.isEqual(dic.get("Bye"), undefined);
-            Test.isEqual(dic.get(":("), undefined);
+            Test.throwsException(() => dic.get("Bye"));
+            Test.throwsException(() => dic.get(":("));
         });
     }
 
