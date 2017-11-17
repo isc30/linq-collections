@@ -13,9 +13,14 @@ Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScr
 Includes collections: List, Dictionary, Stack, ...
 
 ## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
+https://github.com/isc30/linq-collections<br/>
 This project is activelly being developed and improved by Ivan Sanz (isc30)<br />
 Please expect some missing features until it's finished.<br />
-https://github.com/isc30/linq-collections
+
+### Contributing
+
+[Development status and missing features list](https://github.com/isc30/linq-collections/projects/1)<br/>
+If you want to contribute, open an issue explaining your feature and I will be happy to accept pull requests :D
 
 [![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 

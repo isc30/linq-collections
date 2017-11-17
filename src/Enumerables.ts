@@ -53,8 +53,6 @@ export interface IQueryable<TOut>
     count(): number;
     count(predicate: Predicate<TOut>): number;
 
-    // defaultIfEmpty
-
     distinct(): IEnumerable<TOut>;
     distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
 
