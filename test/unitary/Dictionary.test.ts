@@ -5,6 +5,7 @@ export namespace DictionaryUnitTest
 {
     export function run(): void
     {
+        describe("fromJsObject", fromJsObject);
         describe("Copy", copy);
         describe("Clear", clear);
         describe("Get", get);
@@ -15,6 +16,62 @@ export namespace DictionaryUnitTest
         describe("GetKeys", getKeys);
         describe("GetValues", getValues);
         describe("Remove", remove);
+    }
+
+    function fromJsObject(): void
+    {
+        it("Empty object", () =>
+        {
+            const dic = Dictionary.fromJsObject({});
+
+            Test.isArrayEqual(dic.getKeys().toArray(), []);
+        });
+
+        it("Single property (string)", () =>
+        {
+            const dic = Dictionary.fromJsObject<string>({
+                hello: "hola",
+            });
+
+            Test.isArrayEqual(dic.getKeys().toArray(), ["hello"]);
+            Test.isEqual(dic.get("hello"), "hola");
+        });
+
+        it("Single property (number)", () =>
+        {
+            const dic = Dictionary.fromJsObject<number>({
+                hello: 123,
+            });
+
+            Test.isArrayEqual(dic.getKeys().toArray(), ["hello"]);
+            Test.isEqual(dic.get("hello"), 123);
+        });
+
+        it("Multiple properties (string)", () =>
+        {
+            const dic = Dictionary.fromJsObject<string>({
+                hello: "hola",
+                bye: "adios"
+            });
+
+            Test.isArrayEqual(dic.getKeys().toArray(), ["hello", "bye"]);
+            Test.isArrayEqual(dic.getValues().toArray(), ["hola", "adios"]);
+            Test.isEqual(dic.get("hello"), "hola");
+            Test.isEqual(dic.get("bye"), "adios");
+        });
+
+        it("Multiple properties (number)", () =>
+        {
+            const dic = Dictionary.fromJsObject<number>({
+                hello: 123,
+                bye: 666,
+            });
+
+            Test.isArrayEqual(dic.getKeys().toArray(), ["hello", "bye"]);
+            Test.isArrayEqual(dic.getValues().toArray(), [123, 666]);
+            Test.isEqual(dic.get("hello"), 123);
+            Test.isEqual(dic.get("bye"), 666);
+        });
     }
 
     function copy(): void

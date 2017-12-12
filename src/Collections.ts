@@ -751,6 +751,16 @@ export class Dictionary<TKey extends Indexer, TValue>
         return new Dictionary(keyValuePairs);
     }
 
+    public static fromJsObject<TValue = string>(
+        object: Dynamic)
+        : IDictionary<string, TValue>
+    {
+        const keys = new List(Object.getOwnPropertyNames(object));
+        const keyValues = keys.select(k => <IKeyValue<string, TValue>>{ key: k, value: object[k] });
+
+        return new Dictionary(keyValues.toArray());
+    }
+
     protected dictionary: Dynamic;
     protected keyType: Type;
 

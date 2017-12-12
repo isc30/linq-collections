@@ -424,6 +424,11 @@ var Dictionary = /** @class */ (function (_super) {
         });
         return new Dictionary(keyValuePairs);
     };
+    Dictionary.fromJsObject = function (object) {
+        var keys = new List(Object.getOwnPropertyNames(object));
+        var keyValues = keys.select(function (k) { return ({ key: k, value: object[k] }); });
+        return new Dictionary(keyValues.toArray());
+    };
     Dictionary.prototype.copy = function () {
         return new Dictionary(this.toArray());
     };
@@ -1532,6 +1537,7 @@ var Collections_1 = require("./../../src/Collections");
 var DictionaryUnitTest;
 (function (DictionaryUnitTest) {
     function run() {
+        describe("fromJsObject", fromJsObject);
         describe("Copy", copy);
         describe("Clear", clear);
         describe("Get", get);
@@ -1544,6 +1550,46 @@ var DictionaryUnitTest;
         describe("Remove", remove);
     }
     DictionaryUnitTest.run = run;
+    function fromJsObject() {
+        it("Empty object", function () {
+            var dic = Collections_1.Dictionary.fromJsObject({});
+            Test_1.Test.isArrayEqual(dic.getKeys().toArray(), []);
+        });
+        it("Single property (string)", function () {
+            var dic = Collections_1.Dictionary.fromJsObject({
+                hello: "hola",
+            });
+            Test_1.Test.isArrayEqual(dic.getKeys().toArray(), ["hello"]);
+            Test_1.Test.isEqual(dic.get("hello"), "hola");
+        });
+        it("Single property (number)", function () {
+            var dic = Collections_1.Dictionary.fromJsObject({
+                hello: 123,
+            });
+            Test_1.Test.isArrayEqual(dic.getKeys().toArray(), ["hello"]);
+            Test_1.Test.isEqual(dic.get("hello"), 123);
+        });
+        it("Multiple properties (string)", function () {
+            var dic = Collections_1.Dictionary.fromJsObject({
+                hello: "hola",
+                bye: "adios"
+            });
+            Test_1.Test.isArrayEqual(dic.getKeys().toArray(), ["hello", "bye"]);
+            Test_1.Test.isArrayEqual(dic.getValues().toArray(), ["hola", "adios"]);
+            Test_1.Test.isEqual(dic.get("hello"), "hola");
+            Test_1.Test.isEqual(dic.get("bye"), "adios");
+        });
+        it("Multiple properties (number)", function () {
+            var dic = Collections_1.Dictionary.fromJsObject({
+                hello: 123,
+                bye: 666,
+            });
+            Test_1.Test.isArrayEqual(dic.getKeys().toArray(), ["hello", "bye"]);
+            Test_1.Test.isArrayEqual(dic.getValues().toArray(), [123, 666]);
+            Test_1.Test.isEqual(dic.get("hello"), 123);
+            Test_1.Test.isEqual(dic.get("bye"), 666);
+        });
+    }
     function copy() {
         it("Type is a Dictionary", function () {
             var dic = new Collections_1.Dictionary();
