@@ -71,7 +71,11 @@
     "map",
     "iterator",
     "iterators",
-    "array"
+    "array",
+    "readonly",
+    "read-only",
+    "readonlyList",
+    "readonlydictionary"
   ],
   "nyc": {
     "exclude": [
