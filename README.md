@@ -10,7 +10,7 @@
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
-Includes collections: List, Dictionary, Stack, ...
+Includes collections (+ readonly versions): List, Dictionary, Stack, ...
 
 ## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
 https://github.com/isc30/linq-collections<br/>
@@ -43,7 +43,7 @@ If previous reasons aren't enought, here are few more:
 - **Strongly typed** - Developed in TypeScript, it uses no 'any' or dirty code. Everything is based in generics and strongly typed
 - **Best performance** - Deferred execution with custom iterators make the difference. Currently the fastest library.
 - **Works out of the box** - *'npm install linq-collections'* is the hardest thing you'll need to do
-- **Collections** - Including many type of collections (list, dictionary, ...) with linq integrated inside. As in C#
+- **Collections** - Provides many type of collections (list, dictionary, ... + readonly) with linq integrated inside. As in C#
 - **Strict standard** - Strictly implementing [microsoft's official linq definition](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/classification-of-standard-query-operators-by-manner-of-execution) (you can check it for exceptions, behavior, etc)
 - **Deeply tested** - Each new version is passing tons of quality tests before being released
 
@@ -60,7 +60,7 @@ dependencies {
 Complete **Linq to Objects** implementation (deferred execution)
 > toArray, toList, toDictionary, toLookup, aggregate, all, any, average, concat, contains, count, defaultIfEmpty, distinct, elementAt, elementAtOrDefault, except, first, firstOrDefault, forEach, groupBy, groupJoin, intersect, join, last, lastOrDefault, longCount, max, min, orderBy, orderByDescending, reverse, select, selectMany, sequenceEquals, single, single, singleOrDefault, skip, skipWhile, sum, take, union, where, ...
 
-Collections
+Collections (+ readonly versions)
 > List, Dictionary, Stack, Queue, ...
 
 All Collections are **Queryable**
