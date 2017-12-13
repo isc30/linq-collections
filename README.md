@@ -9,7 +9,7 @@
 [![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 
-Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ECMAScript 5*)<br />
+Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ES5*, *ES6*)<br />
 Includes collections (+ readonly versions): List, Dictionary, Stack, ...
 
 ## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
@@ -27,7 +27,7 @@ If you use TypeScript, its purely is based in **generics**.<br /><br />
 [Insert motivational GIF with intellisense in action]
 
 ## Browser compatibility: 100%
-Using **ECMAScript 5**, it has **100% compatibility** with nodejs and all main browsers<br/>
+Using **ES5**, it has **100% compatibility** with nodejs and all main browsers (+mobile)<br/>
 Check your browser now if you don't believe it -> [![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 
 [![compatibility](assets/compatibility.png)](assets/compatibility.png)

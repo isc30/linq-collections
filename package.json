@@ -75,7 +75,12 @@
     "readonly",
     "read-only",
     "readonlyList",
-    "readonlydictionary"
+    "readonlydictionary",
+    "mobile",
+    "compatible",
+    "es5",
+    "ecmascript5",
+    "es6"
   ],
   "nyc": {
     "exclude": [
