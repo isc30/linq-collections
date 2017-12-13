@@ -550,14 +550,22 @@ export abstract class ArrayQueryable<TElement>
 }
 // endregion
 // region List
-export interface IList<TElement>
+export interface IReadOnlyList<TElement>
     extends IQueryable<TElement>
 {
     copy(): IList<TElement>;
 
+    get(index: number): TElement | undefined;
+
+    indexOf(element: TElement): number;
+}
+
+export interface IList<TElement>
+    extends IReadOnlyList<TElement>
+{
+    asReadOnly(): IReadOnlyList<TElement>;
     asArray(): TElement[];
     clear(): void;
-    get(index: number): TElement | undefined;
     push(element: TElement): number;
     pushRange(elements: TElement[] | IQueryable<TElement>): number;
     pushFront(element: TElement): number;
@@ -566,7 +574,6 @@ export interface IList<TElement>
     remove(element: TElement): void;
     removeAt(index: number): TElement | undefined;
     set(index: number, element: TElement): void;
-    indexOf(element: TElement): number;
     insert(index: number, element: TElement): void;
 }
 
@@ -577,6 +584,11 @@ export class List<TElement>
     public copy(): IList<TElement>
     {
         return new List<TElement>(this.toArray());
+    }
+
+    public asReadOnly(): IReadOnlyList<TElement>
+    {
+        return this;
     }
 
     public clear(): void
@@ -714,18 +726,25 @@ export class Stack<TElement>
 }
 // endregion
 // region Dictionary 
-export interface IDictionary<TKey extends Indexer, TValue>
+export interface IReadOnlyDictionary<TKey extends Indexer, TValue>
     extends IQueryable<IKeyValue<TKey, TValue>>
 {
     copy(): IDictionary<TKey, TValue>;
 
-    clear(): void;
     containsKey(key: TKey): boolean;
     containsValue(value: TValue): boolean;
     getKeys(): IList<TKey>;
     getValues(): IList<TValue>;
-    remove(key: TKey): void;
+
     get(key: TKey): TValue;
+}
+
+export interface IDictionary<TKey extends Indexer, TValue>
+    extends IReadOnlyDictionary<TKey, TValue>
+{
+    asReadOnly(): IReadOnlyDictionary<TKey, TValue>;
+    clear(): void;
+    remove(key: TKey): void;
     set(key: TKey, value: TValue): void;
     setOrUpdate(key: TKey, value: TValue): void;
 }
@@ -784,6 +803,11 @@ export class Dictionary<TKey extends Indexer, TValue>
     public copy(): IDictionary<TKey, TValue>
     {
         return new Dictionary<TKey, TValue>(this.toArray());
+    }
+
+    public asReadOnly(): IReadOnlyDictionary<TKey, TValue>
+    {
+        return this;
     }
 
     public asEnumerable(): IEnumerable<IKeyValue<TKey, TValue>>

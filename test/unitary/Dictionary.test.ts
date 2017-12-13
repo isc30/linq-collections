@@ -5,7 +5,8 @@ export namespace DictionaryUnitTest
 {
     export function run(): void
     {
-        describe("fromJsObject", fromJsObject);
+        describe("FromJsObject", fromJsObject);
+        describe("AsReadOnly", asReadOnly);
         describe("Copy", copy);
         describe("Clear", clear);
         describe("Get", get);
@@ -71,6 +72,18 @@ export namespace DictionaryUnitTest
             Test.isArrayEqual(dic.getValues().toArray(), [123, 666]);
             Test.isEqual(dic.get("hello"), 123);
             Test.isEqual(dic.get("bye"), 666);
+        });
+    }
+
+    function asReadOnly(): void
+    {
+        it("Same object but different interface", () =>
+        {
+            const dic = new Dictionary([
+                { key: "hello", value: "yesssss" }
+            ]);
+
+            Test.isEqual(dic, dic.asReadOnly());
         });
     }
 

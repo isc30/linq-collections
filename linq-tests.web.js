@@ -322,6 +322,9 @@ var List = /** @class */ (function (_super) {
     List.prototype.copy = function () {
         return new List(this.toArray());
     };
+    List.prototype.asReadOnly = function () {
+        return this;
+    };
     List.prototype.clear = function () {
         this.source = [];
     };
@@ -431,6 +434,9 @@ var Dictionary = /** @class */ (function (_super) {
     };
     Dictionary.prototype.copy = function () {
         return new Dictionary(this.toArray());
+    };
+    Dictionary.prototype.asReadOnly = function () {
+        return this;
     };
     Dictionary.prototype.asEnumerable = function () {
         return new Enumerables_1.ArrayEnumerable(this.toArray());
@@ -1537,7 +1543,8 @@ var Collections_1 = require("./../../src/Collections");
 var DictionaryUnitTest;
 (function (DictionaryUnitTest) {
     function run() {
-        describe("fromJsObject", fromJsObject);
+        describe("FromJsObject", fromJsObject);
+        describe("AsReadOnly", asReadOnly);
         describe("Copy", copy);
         describe("Clear", clear);
         describe("Get", get);
@@ -1588,6 +1595,14 @@ var DictionaryUnitTest;
             Test_1.Test.isArrayEqual(dic.getValues().toArray(), [123, 666]);
             Test_1.Test.isEqual(dic.get("hello"), 123);
             Test_1.Test.isEqual(dic.get("bye"), 666);
+        });
+    }
+    function asReadOnly() {
+        it("Same object but different interface", function () {
+            var dic = new Collections_1.Dictionary([
+                { key: "hello", value: "yesssss" }
+            ]);
+            Test_1.Test.isEqual(dic, dic.asReadOnly());
         });
     }
     function copy() {
@@ -3242,6 +3257,7 @@ var ListUnitTest;
 (function (ListUnitTest) {
     function run() {
         describe("AsArray", asArray);
+        describe("AsReadOnly", asReadOnly);
         describe("Copy", copy);
         describe("Clear", clear);
         describe("Get", get);
@@ -3264,6 +3280,12 @@ var ListUnitTest;
             Test_1.Test.isArrayEqual(list.asArray(), array);
             array.push(245);
             Test_1.Test.isArrayEqual(list.asArray(), array);
+        });
+    }
+    function asReadOnly() {
+        it("Same object but different interface", function () {
+            var list = new Collections_1.List(["hi", "yess"]);
+            Test_1.Test.isEqual(list, list.asReadOnly());
         });
     }
     function copy() {

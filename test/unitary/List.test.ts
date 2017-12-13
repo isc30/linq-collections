@@ -6,6 +6,7 @@ export namespace ListUnitTest
     export function run(): void
     {
         describe("AsArray", asArray);
+        describe("AsReadOnly", asReadOnly);
         describe("Copy", copy);
         describe("Clear", clear);
         describe("Get", get);
@@ -31,6 +32,16 @@ export namespace ListUnitTest
             Test.isArrayEqual(list.asArray(), array);
             array.push(245);
             Test.isArrayEqual(list.asArray(), array);
+        });
+    }
+
+    function asReadOnly(): void
+    {
+        it("Same object but different interface", () =>
+        {
+            const list = new List(["hi", "yess"]);
+
+            Test.isEqual(list, list.asReadOnly());
         });
     }
 
