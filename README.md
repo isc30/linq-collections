@@ -9,7 +9,7 @@
 [![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 <!-- [![package dev-dependencies](https://img.shields.io/david/dev/isc30/linq-collections.svg)](https://npmjs.org/package/linq-collections) -->
 
-Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ES5*, *ES6*)<br />
+Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ES5*, *ES6*, +)<br />
 Includes collections (+ readonly versions): List, Dictionary, Stack, ...
 
 ## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
