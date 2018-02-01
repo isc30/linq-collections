@@ -20,7 +20,8 @@
         "allowUnreachableCode": false,
         "strictFunctionTypes": true,
         "types": ["mocha"],
-        "outDir": "build"
+        "outDir": "build",
+        "strictPropertyInitialization": false
     },
     "exclude": [
         "node_modules",
