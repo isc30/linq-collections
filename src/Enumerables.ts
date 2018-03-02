@@ -820,6 +820,11 @@ export class SkipWhileEnumerable<TElement> extends Enumerable<TElement>
         this._shouldContinueChecking = true;
     }
 
+    public reset(): void
+    {
+        this._shouldContinueChecking = true;
+    }
+
     public copy(): SkipWhileEnumerable<TElement>
     {
         return new SkipWhileEnumerable<TElement>(this.source.copy(), this._predicate);
