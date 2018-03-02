@@ -1169,16 +1169,28 @@ export namespace IQueryableUnitTest
 
     function skipWhile(instancer: Instancer): void
     {
-        it("Empty if empty", () =>
+        it("Empty if empty (true)", () =>
         {
             const base = instancer([]);
             Test.isArrayEqual(base.skipWhile(e => true).toArray(), []);
         });
 
-        it("Empty if empty (iterator)", () =>
+        it("Empty if empty (false)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(base.skipWhile(e => false).toArray(), []);
+        });
+
+        it("Empty if empty (true) (iterator)", () =>
         {
             const base = instancer([]);
             Test.isArrayEqual(new Enumerable(base.skipWhile(e => true)).toArray(), []);
+        });
+
+        it("Empty if empty (false) (iterator)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(new Enumerable(base.skipWhile(e => false)).toArray(), []);
         });
 
         it("Value is correct (returns elements)", () =>
