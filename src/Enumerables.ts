@@ -157,7 +157,6 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 // region EnumerableBase
 export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
-    
     protected readonly source: IIterable<TElement> | IEnumerable<TElement>;
 
     protected constructor(source: IIterable<TElement>)
