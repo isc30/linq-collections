@@ -131,6 +131,9 @@ var EnumerableCollection = /** @class */ (function () {
         }
         return this.asEnumerable().singleOrDefault();
     };
+    EnumerableCollection.prototype.skipWhile = function (predicate) {
+        return this.asEnumerable().skipWhile(predicate);
+    };
     EnumerableCollection.prototype.distinct = function (keySelector) {
         return new Enumerables_1.UniqueEnumerable(this.asEnumerable(), keySelector);
     };
@@ -651,6 +654,9 @@ var EnumerableBase = /** @class */ (function () {
             .select(selectToEnumerable).toArray()
             .reduce(function (p, c) { return new ConcatEnumerable(p, c); }, Enumerable.empty());
     };
+    EnumerableBase.prototype.skipWhile = function (predicate) {
+        return new SkipWhileEnumerable(this.copy(), predicate);
+    };
     EnumerableBase.prototype.concat = function (other) {
         var others = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -953,6 +959,37 @@ var ConditionalEnumerable = /** @class */ (function (_super) {
     return ConditionalEnumerable;
 }(Enumerable));
 exports.ConditionalEnumerable = ConditionalEnumerable;
+// endregion
+// region SkipWhileEnumerable
+var SkipWhileEnumerable = /** @class */ (function (_super) {
+    __extends(SkipWhileEnumerable, _super);
+    function SkipWhileEnumerable(source, predicate) {
+        var _this = _super.call(this, source) || this;
+        _this._predicate = predicate;
+        _this._shouldContinueChecking = true;
+        return _this;
+    }
+    SkipWhileEnumerable.prototype.reset = function () {
+        _super.prototype.reset.call(this);
+        this._shouldContinueChecking = true;
+    };
+    SkipWhileEnumerable.prototype.copy = function () {
+        return new SkipWhileEnumerable(this.source.copy(), this._predicate);
+    };
+    SkipWhileEnumerable.prototype.next = function () {
+        if (!this._shouldContinueChecking) {
+            return _super.prototype.next.call(this);
+        }
+        var hasValue;
+        do {
+            hasValue = _super.prototype.next.call(this);
+        } while (hasValue && this._predicate(this.value()));
+        this._shouldContinueChecking = false;
+        return hasValue;
+    };
+    return SkipWhileEnumerable;
+}(Enumerable));
+exports.SkipWhileEnumerable = SkipWhileEnumerable;
 // endregion
 // region ConcatEnumerable
 var ConcatEnumerable = /** @class */ (function (_super) {
@@ -1938,6 +1975,7 @@ var IQueryableUnitTest;
         describe(name + " (RangeEnumerable)", function () { return test(function (e) { return new Enumerables_1.RangeEnumerable(Enumerables_1.Enumerable.fromSource(e), undefined, undefined); }); });
         describe(name + " (TransformEnumerable)", function () { return test(function (e) { return new Enumerables_1.TransformEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return x; }); }); });
         describe(name + " (ReverseEnumerable)", function () { return test(function (e) { return new Enumerables_1.ReverseEnumerable(new Enumerables_1.ReverseEnumerable(Enumerables_1.Enumerable.fromSource(e))); }); });
+        describe(name + " (SkipWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.SkipWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return false; }); }); });
         describe(name + " (ArrayEnumerable)", function () { return test(function (e) { return new Enumerables_1.ArrayEnumerable(e); }); });
         describe(name + " (EnumerableCollection)", function () { return test(function (e) { return new EnumerableCollectionBase(e); }); });
         describe(name + " (List)", function () { return test(function (e) { return new Collections_1.List(e); }); });
@@ -1976,6 +2014,7 @@ var IQueryableUnitTest;
         runTest("SingleOrDefault", singleOrDefault);
         runTest("Skip", skip);
         runTest("Skip + Take", skipTake);
+        runTest("SkipWhile", skipWhile);
         runTest("Sum", sum);
         runTest("Take", take);
         runTest("ThenBy", thenBy);
@@ -2712,6 +2751,44 @@ var IQueryableUnitTest;
             Test_1.Test.isEqual(base.value(), 5);
             Test_1.Test.isFalse(base.next());
             Test_1.Test.throwsException(function () { return base.value(); });
+        });
+    }
+    function skipWhile(instancer) {
+        it("Empty if empty (true)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(base.skipWhile(function (e) { return true; }).toArray(), []);
+        });
+        it("Empty if empty (false)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(base.skipWhile(function (e) { return false; }).toArray(), []);
+        });
+        it("Empty if empty (true) (iterator)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(new Enumerables_1.Enumerable(base.skipWhile(function (e) { return true; })).toArray(), []);
+        });
+        it("Empty if empty (false) (iterator)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(new Enumerables_1.Enumerable(base.skipWhile(function (e) { return false; })).toArray(), []);
+        });
+        it("Value is correct (returns elements)", function () {
+            var base = instancer([39, 40, 21, 66, 20]);
+            var skipWhile = base.skipWhile(function (e) { return e >= 39; });
+            Test_1.Test.isArrayEqual(skipWhile.toArray(), [21, 66, 20]);
+        });
+        it("Value is correct (no elements)", function () {
+            var base = instancer([39, 21, 66, 20]);
+            var skipWhile = base.skipWhile(function (e) { return e < 90; });
+            Test_1.Test.isArrayEqual(skipWhile.toArray(), []);
+        });
+        it("Value is correct (returns elements) (iterator)", function () {
+            var base = instancer([39, 21, 66, 20]);
+            var skipWhile = new Enumerables_1.Enumerable(base.skipWhile(function (e) { return e >= 39; }));
+            Test_1.Test.isArrayEqual(skipWhile.toArray(), [21, 66, 20]);
+        });
+        it("Value is correct (no elements) (iterator)", function () {
+            var base = instancer([39, 21, 66, 20]);
+            var skipWhile = new Enumerables_1.Enumerable(base.skipWhile(function (e) { return e < 90; }));
+            Test_1.Test.isArrayEqual(skipWhile.toArray(), []);
         });
     }
     function sum(instancer) {
