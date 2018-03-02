@@ -209,6 +209,11 @@ export abstract class EnumerableCollection<TElement>
         return this.asEnumerable().singleOrDefault();
     }
 
+    public skipWhile(predicate: Predicate<TElement>): IEnumerable<TElement>
+    {
+        return this.asEnumerable().skipWhile(predicate);
+    }
+
     public distinct(): IEnumerable<TElement>;
     public distinct<TKey>(keySelector: Selector<TElement, TKey>): IEnumerable<TElement>;
     public distinct<TKey>(keySelector?: Selector<TElement, TKey>): IEnumerable<TElement>
