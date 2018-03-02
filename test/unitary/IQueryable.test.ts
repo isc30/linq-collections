@@ -1,5 +1,5 @@
 // tslint:disable-next-line:max-line-length
-import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable } from "../../src/Enumerables";
+import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable, SkipWhileEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
 import { List, Stack, Dictionary, EnumerableCollection, IDictionary } from "../../src/Collections";
 import { Test } from "../Test";
@@ -68,6 +68,9 @@ export namespace IQueryableUnitTest
         describe(`${name} (ReverseEnumerable)`, () => test(
             <T>(e: T[]) => new ReverseEnumerable(new ReverseEnumerable(Enumerable.fromSource(e)))));
 
+        describe(`${name} (SkipWhileEnumerable)`, () => test(
+            <T>(e: T[]) => new SkipWhileEnumerable(Enumerable.fromSource(e), x => false)));
+
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
 
@@ -117,6 +120,7 @@ export namespace IQueryableUnitTest
         runTest("SingleOrDefault", singleOrDefault);
         runTest("Skip", skip);
         runTest("Skip + Take", skipTake);
+        runTest("SkipWhile", skipWhile);
         runTest("Sum", sum);
         runTest("Take", take);
         runTest("ThenBy", thenBy);
@@ -1163,6 +1167,61 @@ export namespace IQueryableUnitTest
             Test.isTrue(base.next()); Test.isEqual(base.value(), 4);
             Test.isTrue(base.next()); Test.isEqual(base.value(), 5);
             Test.isFalse(base.next()); Test.throwsException(() => base.value());
+        });
+    }
+
+    function skipWhile(instancer: Instancer): void
+    {
+        it("Empty if empty (true)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(base.skipWhile(e => true).toArray(), []);
+        });
+
+        it("Empty if empty (false)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(base.skipWhile(e => false).toArray(), []);
+        });
+
+        it("Empty if empty (true) (iterator)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(new Enumerable(base.skipWhile(e => true)).toArray(), []);
+        });
+
+        it("Empty if empty (false) (iterator)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(new Enumerable(base.skipWhile(e => false)).toArray(), []);
+        });
+
+        it("Value is correct (returns elements)", () =>
+        {
+            const base = instancer([39, 40, 21, 66, 20]);
+            const skipWhile = base.skipWhile(e => e >= 39);
+            Test.isArrayEqual(skipWhile.toArray(), [21, 66, 20]);
+        });
+
+        it("Value is correct (no elements)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const skipWhile = base.skipWhile(e => e < 90);
+            Test.isArrayEqual(skipWhile.toArray(), []);
+        });
+
+        it("Value is correct (returns elements) (iterator)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const skipWhile = new Enumerable(base.skipWhile(e => e >= 39));
+            Test.isArrayEqual(skipWhile.toArray(), [21, 66, 20]);
+        });
+
+        it("Value is correct (no elements) (iterator)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const skipWhile = new Enumerable(base.skipWhile(e => e < 90));
+            Test.isArrayEqual(skipWhile.toArray(), []);
         });
     }
 

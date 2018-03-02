@@ -125,7 +125,7 @@ export interface IQueryable<TOut>
 
     skip(amount: number): IEnumerable<TOut>;
 
-    // skipWhile
+    skipWhile(predicate: Predicate<TOut>): IEnumerable<TOut>;
 
     sum(selector: Selector<TOut, number>): number;
 
@@ -296,6 +296,11 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return this
             .select(selectToEnumerable).toArray()
             .reduce((p, c) => new ConcatEnumerable(p, c), Enumerable.empty()) as IEnumerable<TSelectorOut>;
+    }
+
+    public skipWhile(predicate: Selector<TOut, boolean>): IEnumerable<TOut>
+    {
+        return new SkipWhileEnumerable(this.copy(), predicate);
     }
 
     public concat(
@@ -796,6 +801,52 @@ export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
             hasValue = super.next();
         }
         while (hasValue && !this._predicate(this.value()));
+
+        return hasValue;
+    }
+}
+// endregion
+// region SkipWhileEnumerable
+export class SkipWhileEnumerable<TElement> extends Enumerable<TElement>
+{
+    protected source: IEnumerable<TElement>;
+    private _predicate: Predicate<TElement>;
+    private _shouldContinueChecking: boolean;
+
+    public constructor(source: IEnumerable<TElement>, predicate: Predicate<TElement>)
+    {
+        super(source);
+        this._predicate = predicate;
+        this._shouldContinueChecking = true;
+    }
+
+    public reset(): void
+    {
+        super.reset();
+        this._shouldContinueChecking = true;
+    }
+
+    public copy(): SkipWhileEnumerable<TElement>
+    {
+        return new SkipWhileEnumerable<TElement>(this.source.copy(), this._predicate);
+    }
+
+    public next(): boolean
+    {
+        if (!this._shouldContinueChecking)
+        {
+            return super.next();
+        }
+
+        let hasValue: boolean;
+
+        do
+        {
+            hasValue = super.next();
+        }
+        while (hasValue && this._predicate(this.value()));
+
+        this._shouldContinueChecking = false;
 
         return hasValue;
     }
