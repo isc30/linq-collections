@@ -77,3 +77,6 @@ const notHello = list.where(e => e !== "Hello");
 ## How to run tests
 This library uses `mocha` with custom assertion helper for testing.<br />
 Use `nyc mocha` to run the tests and coverage.
+
+## Hall of fame
+* [@nikolalukovic](https://github.com/nikolalukovic)
