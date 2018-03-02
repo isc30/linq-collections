@@ -822,6 +822,7 @@ export class SkipWhileEnumerable<TElement> extends Enumerable<TElement>
 
     public reset(): void
     {
+        super.reset();
         this._shouldContinueChecking = true;
     }
 

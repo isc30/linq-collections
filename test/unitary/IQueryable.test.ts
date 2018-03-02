@@ -1,5 +1,5 @@
 // tslint:disable-next-line:max-line-length
-import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable } from "../../src/Enumerables";
+import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable, SkipWhileEnumerable } from "../../src/Enumerables";
 import { ArrayIterator } from "../../src/Iterators";
 import { List, Stack, Dictionary, EnumerableCollection, IDictionary } from "../../src/Collections";
 import { Test } from "../Test";
@@ -67,6 +67,9 @@ export namespace IQueryableUnitTest
 
         describe(`${name} (ReverseEnumerable)`, () => test(
             <T>(e: T[]) => new ReverseEnumerable(new ReverseEnumerable(Enumerable.fromSource(e)))));
+
+        describe(`${name} (SkipWhileEnumerable)`, () => test(
+            <T>(e: T[]) => new SkipWhileEnumerable(Enumerable.fromSource(e), x => false)));
 
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
