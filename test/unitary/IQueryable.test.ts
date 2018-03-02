@@ -13,7 +13,7 @@ import {
     SkipWhileEnumerable,
     TakeWhileEnumerable,
     TransformEnumerable,
-    UniqueEnumerable
+    UniqueEnumerable,
 } from "../../src/Enumerables";
 import { Dictionary, EnumerableCollection, IDictionary, List, Stack } from "../../src/Collections";
 

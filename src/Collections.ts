@@ -21,7 +21,7 @@ import {
     RangeEnumerable,
     ReverseEnumerable,
     TransformEnumerable,
-    UniqueEnumerable
+    UniqueEnumerable,
 } from "./Enumerables";
 import { Comparer, createComparer } from "./Comparers";
 
