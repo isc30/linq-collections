@@ -1,6 +1,20 @@
 // tslint:disable-next-line:max-line-length
 
-import { ArrayEnumerable, ConcatEnumerable, ConditionalEnumerable, Enumerable, IEnumerable, IQueryable, OrderedEnumerable, RangeEnumerable, ReverseEnumerable, SkipWhileEnumerable, TakeWhileEnumerable, TransformEnumerable, UniqueEnumerable } from "../../src/Enumerables";
+import {
+    ArrayEnumerable,
+    ConcatEnumerable,
+    ConditionalEnumerable,
+    Enumerable,
+    IEnumerable,
+    IQueryable,
+    OrderedEnumerable,
+    RangeEnumerable,
+    ReverseEnumerable,
+    SkipWhileEnumerable,
+    TakeWhileEnumerable,
+    TransformEnumerable,
+    UniqueEnumerable
+} from "../../src/Enumerables";
 import { Dictionary, EnumerableCollection, IDictionary, List, Stack } from "../../src/Collections";
 
 import { ArrayIterator } from "../../src/Iterators";

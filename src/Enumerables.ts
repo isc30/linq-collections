@@ -898,6 +898,7 @@ export class TakeWhileEnumerable<TElement> extends Enumerable<TElement>
         }
 
         this._shouldContinueTaking = false;
+
         return false;
     }
 }

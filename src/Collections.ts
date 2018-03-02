@@ -7,7 +7,22 @@
 // tslint:disable-next-line:max-line-length
 
 import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector, Type } from "./Types";
-import { ArrayEnumerable, ConcatEnumerable, ConditionalEnumerable, Enumerable, IEnumerable, IGrouping, IKeyValue, IOrderedEnumerable, IQueryable, OrderedEnumerable, RangeEnumerable, ReverseEnumerable, TransformEnumerable, UniqueEnumerable } from "./Enumerables";
+import {
+    ArrayEnumerable,
+    ConcatEnumerable,
+    ConditionalEnumerable,
+    Enumerable,
+    IEnumerable,
+    IGrouping,
+    IKeyValue,
+    IOrderedEnumerable,
+    IQueryable,
+    OrderedEnumerable,
+    RangeEnumerable,
+    ReverseEnumerable,
+    TransformEnumerable,
+    UniqueEnumerable
+} from "./Enumerables";
 import { Comparer, createComparer } from "./Comparers";
 
 import { IIterable } from "./Iterators";
