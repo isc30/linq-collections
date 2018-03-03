@@ -15,8 +15,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-// region IMPORTS
-// tslint:disable-next-line:max-line-length
 var Enumerables_1 = require("./Enumerables");
 var Comparers_1 = require("./Comparers");
 // endregion
@@ -133,6 +131,9 @@ var EnumerableCollection = /** @class */ (function () {
     };
     EnumerableCollection.prototype.skipWhile = function (predicate) {
         return this.asEnumerable().skipWhile(predicate);
+    };
+    EnumerableCollection.prototype.takeWhile = function (predicate) {
+        return this.asEnumerable().takeWhile(predicate);
     };
     EnumerableCollection.prototype.distinct = function (keySelector) {
         return new Enumerables_1.UniqueEnumerable(this.asEnumerable(), keySelector);
@@ -568,9 +569,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Collections_1 = require("./Collections");
 var Iterators_1 = require("./Iterators");
 var Comparers_1 = require("./Comparers");
+var Collections_1 = require("./Collections");
 var Utils_1 = require("./Utils");
 // endregion
 // region EnumerableBase
@@ -865,6 +866,9 @@ var EnumerableBase = /** @class */ (function () {
     EnumerableBase.prototype.take = function (amount) {
         return new RangeEnumerable(this.copy(), undefined, amount);
     };
+    EnumerableBase.prototype.takeWhile = function (predicate) {
+        return new TakeWhileEnumerable(this.copy(), predicate);
+    };
     EnumerableBase.prototype.union = function (other) {
         return new UniqueEnumerable(this.concat(other));
     };
@@ -990,6 +994,35 @@ var SkipWhileEnumerable = /** @class */ (function (_super) {
     return SkipWhileEnumerable;
 }(Enumerable));
 exports.SkipWhileEnumerable = SkipWhileEnumerable;
+// endregion
+// region TakeWhileEnumerable
+var TakeWhileEnumerable = /** @class */ (function (_super) {
+    __extends(TakeWhileEnumerable, _super);
+    function TakeWhileEnumerable(source, predicate) {
+        var _this = _super.call(this, source) || this;
+        _this._predicate = predicate;
+        _this._shouldContinueTaking = true;
+        return _this;
+    }
+    TakeWhileEnumerable.prototype.reset = function () {
+        _super.prototype.reset.call(this);
+        this._shouldContinueTaking = true;
+    };
+    TakeWhileEnumerable.prototype.copy = function () {
+        return new TakeWhileEnumerable(this.source.copy(), this._predicate);
+    };
+    TakeWhileEnumerable.prototype.next = function () {
+        if (_super.prototype.next.call(this)) {
+            if (this._shouldContinueTaking && this._predicate(this.value())) {
+                return true;
+            }
+        }
+        this._shouldContinueTaking = false;
+        return false;
+    };
+    return TakeWhileEnumerable;
+}(Enumerable));
+exports.TakeWhileEnumerable = TakeWhileEnumerable;
 // endregion
 // region ConcatEnumerable
 var ConcatEnumerable = /** @class */ (function (_super) {
@@ -1927,6 +1960,7 @@ var EnumerableUnitTest;
 
 },{"../../src/Enumerables":3,"../../src/Iterators":4,"../Test":6}],11:[function(require,module,exports){
 "use strict";
+// tslint:disable-next-line:max-line-length
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1938,10 +1972,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-// tslint:disable-next-line:max-line-length
 var Enumerables_1 = require("../../src/Enumerables");
-var Iterators_1 = require("../../src/Iterators");
 var Collections_1 = require("../../src/Collections");
+var Iterators_1 = require("../../src/Iterators");
 var Test_1 = require("../Test");
 var IQueryableUnitTest;
 (function (IQueryableUnitTest) {
@@ -1976,6 +2009,7 @@ var IQueryableUnitTest;
         describe(name + " (TransformEnumerable)", function () { return test(function (e) { return new Enumerables_1.TransformEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return x; }); }); });
         describe(name + " (ReverseEnumerable)", function () { return test(function (e) { return new Enumerables_1.ReverseEnumerable(new Enumerables_1.ReverseEnumerable(Enumerables_1.Enumerable.fromSource(e))); }); });
         describe(name + " (SkipWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.SkipWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return false; }); }); });
+        describe(name + " (TakeWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.TakeWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return true; }); }); });
         describe(name + " (ArrayEnumerable)", function () { return test(function (e) { return new Enumerables_1.ArrayEnumerable(e); }); });
         describe(name + " (EnumerableCollection)", function () { return test(function (e) { return new EnumerableCollectionBase(e); }); });
         describe(name + " (List)", function () { return test(function (e) { return new Collections_1.List(e); }); });
@@ -2017,6 +2051,7 @@ var IQueryableUnitTest;
         runTest("SkipWhile", skipWhile);
         runTest("Sum", sum);
         runTest("Take", take);
+        runTest("TakeWhile", takeWhile);
         runTest("ThenBy", thenBy);
         runTest("ThenByDescending", thenByDescending);
         runTest("Union", union);
@@ -2833,6 +2868,44 @@ var IQueryableUnitTest;
             Test_1.Test.isEqual(base.value(), -2);
             Test_1.Test.isFalse(base.next());
             Test_1.Test.throwsException(function () { return base.value(); });
+        });
+    }
+    function takeWhile(instancer) {
+        it("Empty if empty (true)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(base.takeWhile(function (e) { return true; }).toArray(), []);
+        });
+        it("Empty if empty (false)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(base.takeWhile(function (e) { return false; }).toArray(), []);
+        });
+        it("Empty if empty (true) (iterator)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(new Enumerables_1.Enumerable(base.takeWhile(function (e) { return true; })).toArray(), []);
+        });
+        it("Empty if empty (false) (iterator)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(new Enumerables_1.Enumerable(base.takeWhile(function (e) { return false; })).toArray(), []);
+        });
+        it("Value is correct (returns elements)", function () {
+            var base = instancer([39, 40, 21, 66, 20]);
+            var takeWhile = base.takeWhile(function (e) { return e >= 39; });
+            Test_1.Test.isArrayEqual(takeWhile.toArray(), [39, 40]);
+        });
+        it("Value is correct (no elements)", function () {
+            var base = instancer([39, 21, 66, 20]);
+            var takeWhile = base.takeWhile(function (e) { return e > 90; });
+            Test_1.Test.isArrayEqual(takeWhile.toArray(), []);
+        });
+        it("Value is correct (returns elements) (iterator)", function () {
+            var base = instancer([39, 40, 21, 66, 20]);
+            var takeWhile = new Enumerables_1.Enumerable(base.takeWhile(function (e) { return e >= 39; }));
+            Test_1.Test.isArrayEqual(takeWhile.toArray(), [39, 40]);
+        });
+        it("Value is correct (no elements) (iterator)", function () {
+            var base = instancer([39, 21, 66, 20]);
+            var takeWhile = new Enumerables_1.Enumerable(base.takeWhile(function (e) { return e > 90; }));
+            Test_1.Test.isArrayEqual(takeWhile.toArray(), []);
         });
     }
     function union(instancer) {
