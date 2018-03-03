@@ -5,10 +5,28 @@
 
 // region IMPORTS
 // tslint:disable-next-line:max-line-length
-import { RangeEnumerable, OrderedEnumerable, IOrderedEnumerable, UniqueEnumerable, ConcatEnumerable, TransformEnumerable, ConditionalEnumerable, ReverseEnumerable, Enumerable, IEnumerable, ArrayEnumerable, IQueryable, IKeyValue, IGrouping } from "./Enumerables";
-import { Action, Selector,  Aggregator, Predicate, Indexer, Type, Dynamic } from "./Types";
+
+import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector, Type } from "./Types";
+import {
+    ArrayEnumerable,
+    ConcatEnumerable,
+    ConditionalEnumerable,
+    Enumerable,
+    IEnumerable,
+    IGrouping,
+    IKeyValue,
+    IOrderedEnumerable,
+    IQueryable,
+    OrderedEnumerable,
+    RangeEnumerable,
+    ReverseEnumerable,
+    TransformEnumerable,
+    UniqueEnumerable,
+} from "./Enumerables";
 import { Comparer, createComparer } from "./Comparers";
+
 import { IIterable } from "./Iterators";
+
 // endregion
 
 // region EnumerableCollection
@@ -212,6 +230,11 @@ export abstract class EnumerableCollection<TElement>
     public skipWhile(predicate: Predicate<TElement>): IEnumerable<TElement>
     {
         return this.asEnumerable().skipWhile(predicate);
+    }
+
+    public takeWhile(predicate: Predicate<TElement>): IEnumerable<TElement>
+    {
+        return this.asEnumerable().takeWhile(predicate);
     }
 
     public distinct(): IEnumerable<TElement>;

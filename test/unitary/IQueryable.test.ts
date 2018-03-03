@@ -1,9 +1,25 @@
 // tslint:disable-next-line:max-line-length
-import { IQueryable, IEnumerable,  Enumerable,  ReverseEnumerable,  ConditionalEnumerable,  ConcatEnumerable,  UniqueEnumerable,  RangeEnumerable,  TransformEnumerable,  OrderedEnumerable,  ArrayEnumerable, SkipWhileEnumerable } from "../../src/Enumerables";
+
+import {
+    ArrayEnumerable,
+    ConcatEnumerable,
+    ConditionalEnumerable,
+    Enumerable,
+    IEnumerable,
+    IQueryable,
+    OrderedEnumerable,
+    RangeEnumerable,
+    ReverseEnumerable,
+    SkipWhileEnumerable,
+    TakeWhileEnumerable,
+    TransformEnumerable,
+    UniqueEnumerable,
+} from "../../src/Enumerables";
+import { Dictionary, EnumerableCollection, IDictionary, List, Stack } from "../../src/Collections";
+
 import { ArrayIterator } from "../../src/Iterators";
-import { List, Stack, Dictionary, EnumerableCollection, IDictionary } from "../../src/Collections";
-import { Test } from "../Test";
 import { Indexer } from "../../src/Types";
+import { Test } from "../Test";
 
 export namespace IQueryableUnitTest
 {
@@ -71,6 +87,9 @@ export namespace IQueryableUnitTest
         describe(`${name} (SkipWhileEnumerable)`, () => test(
             <T>(e: T[]) => new SkipWhileEnumerable(Enumerable.fromSource(e), x => false)));
 
+        describe(`${name} (TakeWhileEnumerable)`, () => test(
+            <T>(e: T[]) => new TakeWhileEnumerable(Enumerable.fromSource(e), x => true)));
+
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
 
@@ -123,6 +142,7 @@ export namespace IQueryableUnitTest
         runTest("SkipWhile", skipWhile);
         runTest("Sum", sum);
         runTest("Take", take);
+        runTest("TakeWhile", takeWhile);
         runTest("ThenBy", thenBy);
         runTest("ThenByDescending", thenByDescending);
         runTest("Union", union);
@@ -1283,6 +1303,61 @@ export namespace IQueryableUnitTest
             Test.throwsException(() => base.value());
             Test.isTrue(base.next()); Test.isEqual(base.value(), -2);
             Test.isFalse(base.next()); Test.throwsException(() => base.value());
+        });
+    }
+
+    function takeWhile(instancer: Instancer): void
+    {
+        it("Empty if empty (true)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(base.takeWhile(e => true).toArray(), []);
+        });
+
+        it("Empty if empty (false)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(base.takeWhile(e => false).toArray(), []);
+        });
+
+        it("Empty if empty (true) (iterator)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(new Enumerable(base.takeWhile(e => true)).toArray(), []);
+        });
+
+        it("Empty if empty (false) (iterator)", () =>
+        {
+            const base = instancer([]);
+            Test.isArrayEqual(new Enumerable(base.takeWhile(e => false)).toArray(), []);
+        });
+
+        it("Value is correct (returns elements)", () =>
+        {
+            const base = instancer([39, 40, 21, 66, 20]);
+            const takeWhile = base.takeWhile(e => e >= 39);
+            Test.isArrayEqual(takeWhile.toArray(), [39, 40]);
+        });
+
+        it("Value is correct (no elements)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const takeWhile = base.takeWhile(e => e > 90);
+            Test.isArrayEqual(takeWhile.toArray(), []);
+        });
+
+        it("Value is correct (returns elements) (iterator)", () =>
+        {
+            const base = instancer([39, 40, 21, 66, 20]);
+            const takeWhile = new Enumerable(base.takeWhile(e => e >= 39));
+            Test.isArrayEqual(takeWhile.toArray(), [39, 40]);
+        });
+
+        it("Value is correct (no elements) (iterator)", () =>
+        {
+            const base = instancer([39, 21, 66, 20]);
+            const takeWhile = new Enumerable(base.takeWhile(e => e > 90));
+            Test.isArrayEqual(takeWhile.toArray(), []);
         });
     }
 

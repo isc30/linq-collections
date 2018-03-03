@@ -4,11 +4,14 @@
 // -
 
 // region IMPORTS
-import { Selector, Predicate, Aggregator, Action, Dynamic, Indexer } from "./Types";
-import { IList,  List,  IDictionary,  Dictionary } from "./Collections";
-import { IIterable, ArrayIterator } from "./Iterators";
-import { Comparer, createComparer, combineComparers } from "./Comparers";
+
+import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector } from "./Types";
+import { ArrayIterator, IIterable } from "./Iterators";
+import { Comparer, combineComparers, createComparer } from "./Comparers";
+import { Dictionary, IDictionary, IList, List } from "./Collections";
+
 import { Cached } from "./Utils";
+
 // endregion
 
 // region Interfaces
@@ -130,6 +133,8 @@ export interface IQueryable<TOut>
     sum(selector: Selector<TOut, number>): number;
 
     take(amount: number): IEnumerable<TOut>;
+
+    takeWhile(predicate: Predicate<TOut>): IEnumerable<TOut>;
 
     union(other: IQueryable<TOut>): IEnumerable<TOut>;
 
@@ -672,6 +677,11 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return new RangeEnumerable<TOut>(this.copy(), undefined, amount);
     }
 
+    public takeWhile(predicate: Predicate<TOut>): IEnumerable<TOut>
+    {
+        return new TakeWhileEnumerable(this.copy(), predicate);
+    }
+
     public union(other: IQueryable<TOut>): IEnumerable<TOut>
     {
         return new UniqueEnumerable(this.concat(other));
@@ -849,6 +859,47 @@ export class SkipWhileEnumerable<TElement> extends Enumerable<TElement>
         this._shouldContinueChecking = false;
 
         return hasValue;
+    }
+}
+// endregion
+// region TakeWhileEnumerable
+export class TakeWhileEnumerable<TElement> extends Enumerable<TElement>
+{
+    protected source: IEnumerable<TElement>;
+    private _predicate: Predicate<TElement>;
+    private _shouldContinueTaking: boolean;
+
+    public constructor(source: IEnumerable<TElement>, predicate: Predicate<TElement>)
+    {
+        super(source);
+        this._predicate = predicate;
+        this._shouldContinueTaking = true;
+    }
+
+    public reset(): void
+    {
+        super.reset();
+        this._shouldContinueTaking = true;
+    }
+
+    public copy(): TakeWhileEnumerable<TElement>
+    {
+        return new TakeWhileEnumerable<TElement>(this.source.copy(), this._predicate);
+    }
+
+    public next(): boolean
+    {
+        if (super.next())
+        {
+            if (this._shouldContinueTaking && this._predicate(this.value()))
+            {
+                return true;
+            }
+        }
+
+        this._shouldContinueTaking = false;
+
+        return false;
     }
 }
 // endregion
