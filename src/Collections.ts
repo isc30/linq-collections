@@ -586,16 +586,16 @@ export abstract class ArrayQueryable<TElement>
     {
         if (other instanceof ArrayQueryable)
         {
-            if (this.count() != other.count())
-            {
-                return false;
-            }
-
             const thisArray = this.asArray();
             const otherArray = other.asArray();
 
             const thisCount = thisArray.length;
             const otherCount = otherArray.length;
+
+            if (thisCount != otherCount)
+            {
+                return false;
+            }
 
             if (!comparer)
             {
