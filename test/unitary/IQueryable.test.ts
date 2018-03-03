@@ -135,6 +135,7 @@ export namespace IQueryableUnitTest
         runTest("Reverse", reverse);
         runTest("Select", select);
         runTest("SelectMany", selectMany);
+        runTest("SequenceEqual", sequenceEqual);
         runTest("Single", single);
         runTest("SingleOrDefault", singleOrDefault);
         runTest("Skip", skip);
@@ -1042,6 +1043,116 @@ export namespace IQueryableUnitTest
             Test.isArrayEqual(
                 base.selectMany(e => e.numbers).toArray(),
                 [1, 2, 3, 4, 5, 6, 7, 8]);
+        });
+    }
+
+    function sequenceEqual(instancer: Instancer): void
+    {
+        class Person
+        {
+            constructor(public firstName: string, public lastName: string, public age: number) {}
+        }
+
+        it("Both empty return true", () => 
+        {
+            const first = instancer([]);
+            const second = instancer([]);
+            
+            Test.isTrue(first.sequenceEqual(second));
+        });
+
+        it("Different count return false (number)", () => 
+        {
+            const first = instancer<number>([]);
+            const second = instancer<number>([1]);
+            
+            Test.isFalse(first.sequenceEqual(second));
+        });
+
+        it("Same count different values return false (number)", () => 
+        {
+            const first = instancer<number>([2]);
+            const second = instancer<number>([1]);
+            
+            Test.isFalse(first.sequenceEqual(second));
+        });
+
+        it("Different count return false (string)", () => 
+        {
+            const first = instancer<string>([]);
+            const second = instancer<string>(["test1"]);
+            
+            Test.isFalse(first.sequenceEqual(second));
+        });
+
+        it("Same count different values return false (string)", () => 
+        {
+            const first = instancer<string>(["test1"]);
+            const second = instancer<string>(["test2"]);
+            
+            Test.isFalse(first.sequenceEqual(second));
+        });
+
+        it("Same object in both return true", () => 
+        {
+            const obj = {};
+
+            const first = instancer<any>([obj]);
+            const second = instancer<any>([obj]);
+            
+            Test.isTrue(first.sequenceEqual(second));
+        });
+
+        const stringLengthComparer = (left: string, right: string) => left.length === right.length;
+
+        it("Custom comparer; check lengths; should return true (string)", () => 
+        {
+            const first = instancer<string>(["one"]);
+            const second = instancer<string>(["two"]);
+            
+            Test.isTrue(first.sequenceEqual(second, stringLengthComparer));
+        });
+
+        it("Custom comparer; check lengths; should return false (string)", () => 
+        {
+            const first = instancer<string>(["three"]);
+            const second = instancer<string>(["four"]);
+            
+            Test.isFalse(first.sequenceEqual(second, stringLengthComparer));
+        });
+
+        const personAgeAndFirstNameComparer = (left: Person, right: Person) => left.age === right.age && left.firstName === right.firstName;
+
+        it("Custom comparer; same count; same objects; should return true (complex object)", () => 
+        {
+            const person = new Person("Ben", "Jerry", 42);
+
+            const first = instancer<Person>([person, person, person]);
+            const second = instancer<Person>([person, person, person]);
+            
+            Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+        });
+
+        it("Custom comparer; same count; different objects with same values; should return true (complex object)", () => 
+        {
+            const person1 = new Person("Ben", "Jerry", 42);
+            const person2 = new Person("Ben", "Smith", 42);
+
+            const first = instancer<Person>([person1, person2, person1]);
+            const second = instancer<Person>([person2, person1, person2]);
+            
+            Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+        });
+
+        it("Custom comparer; same count; different objects with different values; should return false (complex object)", () => 
+        {
+            const person1 = new Person("Ben", "Jerry", 42);
+            const person2 = new Person("John", "Smith", 42);
+
+            const first = instancer<Person>([person1, person2, person1]);
+            const second = instancer<Person>([person2, person1, person2]);
+            
+            Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
         });
     }
 

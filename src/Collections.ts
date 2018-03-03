@@ -7,7 +7,8 @@
 // tslint:disable-next-line:max-line-length
 
 import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector, Type } from "./Types";
-import {
+import
+{
     ArrayEnumerable,
     ConcatEnumerable,
     ConditionalEnumerable,
@@ -23,7 +24,7 @@ import {
     TransformEnumerable,
     UniqueEnumerable,
 } from "./Enumerables";
-import { Comparer, createComparer } from "./Comparers";
+import { Comparer, EqualityComparer, StrictEqualityComparer, createComparer } from "./Comparers";
 
 import { IIterable } from "./Iterators";
 
@@ -235,6 +236,11 @@ export abstract class EnumerableCollection<TElement>
     public takeWhile(predicate: Predicate<TElement>): IEnumerable<TElement>
     {
         return this.asEnumerable().takeWhile(predicate);
+    }
+
+    public sequenceEqual(other: IQueryable<TElement>, comparer?: EqualityComparer<TElement>): boolean
+    {
+        return this.asEnumerable().sequenceEqual(other, comparer);
     }
 
     public distinct(): IEnumerable<TElement>;
@@ -574,6 +580,40 @@ export abstract class ArrayQueryable<TElement>
         {
             action(this.source[i], i);
         }
+    }
+
+    public sequenceEqual(other: IQueryable<TElement>, comparer?: EqualityComparer<TElement>): boolean
+    {
+        if (other instanceof ArrayQueryable)
+        {
+            if (this.count() != other.count())
+            {
+                return false;
+            }
+
+            const thisArray = this.asArray();
+            const otherArray = other.asArray();
+
+            const thisCount = thisArray.length;
+            const otherCount = otherArray.length;
+
+            if (!comparer)
+            {
+                comparer = StrictEqualityComparer<TElement>();
+            }
+
+            for (let i = 0;i<thisCount;i++)
+            {
+                if (!comparer(thisArray[i], otherArray[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return this.asEnumerable().sequenceEqual(other, comparer);
     }
 }
 // endregion
