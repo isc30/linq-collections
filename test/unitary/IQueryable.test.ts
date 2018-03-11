@@ -1,6 +1,7 @@
 // tslint:disable-next-line:max-line-length
 
-import {
+import
+{
     ArrayEnumerable,
     ConcatEnumerable,
     ConditionalEnumerable,
@@ -1050,14 +1051,20 @@ export namespace IQueryableUnitTest
     {
         class Person
         {
-            constructor(public firstName: string, public lastName: string, public age: number) {}
+            constructor(
+                public firstName: string,
+                public lastName: string,
+                public age: number) 
+            {
+
+            }
         }
 
         it("Both empty return true", () => 
         {
             const first = instancer([]);
             const second = instancer([]);
-            
+
             Test.isTrue(first.sequenceEqual(second));
         });
 
@@ -1065,7 +1072,7 @@ export namespace IQueryableUnitTest
         {
             const first = instancer<number>([]);
             const second = instancer<number>([1]);
-            
+
             Test.isFalse(first.sequenceEqual(second));
         });
 
@@ -1073,7 +1080,7 @@ export namespace IQueryableUnitTest
         {
             const first = instancer<number>([2]);
             const second = instancer<number>([1]);
-            
+
             Test.isFalse(first.sequenceEqual(second));
         });
 
@@ -1081,7 +1088,7 @@ export namespace IQueryableUnitTest
         {
             const first = instancer<string>([]);
             const second = instancer<string>(["test1"]);
-            
+
             Test.isFalse(first.sequenceEqual(second));
         });
 
@@ -1089,7 +1096,7 @@ export namespace IQueryableUnitTest
         {
             const first = instancer<string>(["test1"]);
             const second = instancer<string>(["test2"]);
-            
+
             Test.isFalse(first.sequenceEqual(second));
         });
 
@@ -1099,7 +1106,7 @@ export namespace IQueryableUnitTest
 
             const first = instancer<any>([obj]);
             const second = instancer<any>([obj]);
-            
+
             Test.isTrue(first.sequenceEqual(second));
         });
 
@@ -1109,7 +1116,7 @@ export namespace IQueryableUnitTest
         {
             const first = instancer<string>(["one"]);
             const second = instancer<string>(["two"]);
-            
+
             Test.isTrue(first.sequenceEqual(second, stringLengthComparer));
         });
 
@@ -1117,11 +1124,12 @@ export namespace IQueryableUnitTest
         {
             const first = instancer<string>(["three"]);
             const second = instancer<string>(["four"]);
-            
+
             Test.isFalse(first.sequenceEqual(second, stringLengthComparer));
         });
 
-        const personAgeAndFirstNameComparer = (left: Person, right: Person) => left.age === right.age && left.firstName === right.firstName;
+        const personAgeAndFirstNameComparer = (left: Person, right: Person) =>
+            left.age === right.age && left.firstName === right.firstName;
 
         it("Custom comparer; same count; same objects; should return true (complex object)", () => 
         {
@@ -1129,7 +1137,7 @@ export namespace IQueryableUnitTest
 
             const first = instancer<Person>([person, person, person]);
             const second = instancer<Person>([person, person, person]);
-            
+
             Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
         });
 
@@ -1140,7 +1148,7 @@ export namespace IQueryableUnitTest
 
             const first = instancer<Person>([person1, person2, person1]);
             const second = instancer<Person>([person2, person1, person2]);
-            
+
             Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
         });
 
@@ -1151,7 +1159,7 @@ export namespace IQueryableUnitTest
 
             const first = instancer<Person>([person1, person2, person1]);
             const second = instancer<Person>([person2, person1, person2]);
-            
+
             Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
         });
     }
@@ -1608,11 +1616,11 @@ export namespace IQueryableUnitTest
         it("Simple order 1 (iterator)", () =>
         {
             const elements = [
-                {id: 1, day: 4}, // 0
-                {id: 2, day: 7}, // 1
-                {id: 3, day: 4}, // 2
-                {id: 4, day: 9}, // 3
-                {id: 5, day: 1}, // 4
+                { id: 1, day: 4 }, // 0
+                { id: 2, day: 7 }, // 1
+                { id: 3, day: 4 }, // 2
+                { id: 4, day: 9 }, // 3
+                { id: 5, day: 1 }, // 4
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = new Enumerable(base.orderBy(e => e.day).thenBy(e => e.id));
@@ -1628,11 +1636,11 @@ export namespace IQueryableUnitTest
         it("Simple order 2 (iterator)", () =>
         {
             const elements = [
-                {id: 5, day: 7},
-                {id: 2, day: 5},
-                {id: 3, day: 4},
-                {id: 1, day: 7},
-                {id: 4, day: 4},
+                { id: 5, day: 7 },
+                { id: 2, day: 5 },
+                { id: 3, day: 4 },
+                { id: 1, day: 7 },
+                { id: 4, day: 4 },
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = new Enumerable(base.orderBy(e => e.day).thenBy(e => e.id));
@@ -1648,11 +1656,11 @@ export namespace IQueryableUnitTest
         it("Simple order (custom comparer) (iterator)", () =>
         {
             const elements = [
-                {id: 1, day: 4}, // 0
-                {id: 2, day: 7}, // 1
-                {id: 3, day: 4}, // 2
-                {id: 4, day: 9}, // 3
-                {id: 5, day: 1}, // 4
+                { id: 1, day: 4 }, // 0
+                { id: 2, day: 7 }, // 1
+                { id: 3, day: 4 }, // 2
+                { id: 4, day: 9 }, // 3
+                { id: 5, day: 1 }, // 4
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = new Enumerable(base.orderBy(e => e.day).thenBy(e => e.id, (l, r) => l < 3 ? 1 : -1));
@@ -1675,11 +1683,11 @@ export namespace IQueryableUnitTest
         it("Simple order 1", () =>
         {
             const elements = [
-                {id: 1, day: 4}, // 0
-                {id: 2, day: 7}, // 1
-                {id: 3, day: 4}, // 2
-                {id: 4, day: 9}, // 3
-                {id: 5, day: 1}, // 4
+                { id: 1, day: 4 }, // 0
+                { id: 2, day: 7 }, // 1
+                { id: 3, day: 4 }, // 2
+                { id: 4, day: 9 }, // 3
+                { id: 5, day: 1 }, // 4
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = base.orderBy(e => e.day).thenBy(e => e.id);
@@ -1695,11 +1703,11 @@ export namespace IQueryableUnitTest
         it("Simple order 2", () =>
         {
             const elements = [
-                {id: 5, day: 7},
-                {id: 2, day: 5},
-                {id: 3, day: 4},
-                {id: 1, day: 7},
-                {id: 4, day: 4},
+                { id: 5, day: 7 },
+                { id: 2, day: 5 },
+                { id: 3, day: 4 },
+                { id: 1, day: 7 },
+                { id: 4, day: 4 },
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = base.orderBy(e => e.day).thenBy(e => e.id);
@@ -1715,11 +1723,11 @@ export namespace IQueryableUnitTest
         it("Simple order (custom comparer)", () =>
         {
             const elements = [
-                {id: 1, day: 4}, // 0
-                {id: 2, day: 7}, // 1
-                {id: 3, day: 4}, // 2
-                {id: 4, day: 9}, // 3
-                {id: 5, day: 1}, // 4
+                { id: 1, day: 4 }, // 0
+                { id: 2, day: 7 }, // 1
+                { id: 3, day: 4 }, // 2
+                { id: 4, day: 9 }, // 3
+                { id: 5, day: 1 }, // 4
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = base.orderBy(e => e.day).thenBy(e => e.id, (l, r) => l < 3 ? 1 : -1);
@@ -1745,11 +1753,11 @@ export namespace IQueryableUnitTest
         it("Simple order 1 (iterator)", () =>
         {
             const elements = [
-                {id: 1, day: 4}, // 0
-                {id: 2, day: 7}, // 1
-                {id: 3, day: 4}, // 2
-                {id: 4, day: 9}, // 3
-                {id: 5, day: 1}, // 4
+                { id: 1, day: 4 }, // 0
+                { id: 2, day: 7 }, // 1
+                { id: 3, day: 4 }, // 2
+                { id: 4, day: 9 }, // 3
+                { id: 5, day: 1 }, // 4
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = new Enumerable(base.orderBy(e => e.day).thenByDescending(e => e.id));
@@ -1765,11 +1773,11 @@ export namespace IQueryableUnitTest
         it("Simple order 2 (iterator)", () =>
         {
             const elements = [
-                {id: 5, day: 7},
-                {id: 2, day: 5},
-                {id: 3, day: 4},
-                {id: 1, day: 7},
-                {id: 4, day: 4},
+                { id: 5, day: 7 },
+                { id: 2, day: 5 },
+                { id: 3, day: 4 },
+                { id: 1, day: 7 },
+                { id: 4, day: 4 },
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = new Enumerable(base.orderBy(e => e.day).thenByDescending(e => e.id));
@@ -1792,11 +1800,11 @@ export namespace IQueryableUnitTest
         it("Simple order 1", () =>
         {
             const elements = [
-                {id: 1, day: 4}, // 0
-                {id: 2, day: 7}, // 1
-                {id: 3, day: 4}, // 2
-                {id: 4, day: 9}, // 3
-                {id: 5, day: 1}, // 4
+                { id: 1, day: 4 }, // 0
+                { id: 2, day: 7 }, // 1
+                { id: 3, day: 4 }, // 2
+                { id: 4, day: 9 }, // 3
+                { id: 5, day: 1 }, // 4
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = base.orderBy(e => e.day).thenByDescending(e => e.id);
@@ -1812,11 +1820,11 @@ export namespace IQueryableUnitTest
         it("Simple order 2", () =>
         {
             const elements = [
-                {id: 5, day: 7},
-                {id: 2, day: 5},
-                {id: 3, day: 4},
-                {id: 1, day: 7},
-                {id: 4, day: 4},
+                { id: 5, day: 7 },
+                { id: 2, day: 5 },
+                { id: 3, day: 4 },
+                { id: 1, day: 7 },
+                { id: 4, day: 4 },
             ];
             const base = instancer<IThenByTestClass>(elements);
             const ordered = base.orderBy(e => e.day).thenByDescending(e => e.id);

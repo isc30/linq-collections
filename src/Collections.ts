@@ -238,8 +238,15 @@ export abstract class EnumerableCollection<TElement>
         return this.asEnumerable().takeWhile(predicate);
     }
 
+    public sequenceEqual(other: IQueryable<TElement>): boolean
+    public sequenceEqual(other: IQueryable<TElement>, comparer: EqualityComparer<TElement>): boolean;
     public sequenceEqual(other: IQueryable<TElement>, comparer?: EqualityComparer<TElement>): boolean
     {
+        if (comparer === undefined || comparer === null)
+        {
+            return this.asEnumerable().sequenceEqual(other);
+        }
+
         return this.asEnumerable().sequenceEqual(other, comparer);
     }
 
@@ -582,27 +589,26 @@ export abstract class ArrayQueryable<TElement>
         }
     }
 
-    public sequenceEqual(other: IQueryable<TElement>, comparer?: EqualityComparer<TElement>): boolean
+    public sequenceEqual(other: IQueryable<TElement> | Array<TElement>): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | Array<TElement>, comparer: EqualityComparer<TElement>): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | Array<TElement>, comparer?: EqualityComparer<TElement>): boolean
     {
+        if (comparer === undefined || comparer === null)
+        {
+            comparer = StrictEqualityComparer<TElement>();
+        }
+
         if (other instanceof ArrayQueryable)
         {
             const thisArray = this.asArray();
             const otherArray = other.asArray();
 
-            const thisCount = thisArray.length;
-            const otherCount = otherArray.length;
-
-            if (thisCount != otherCount)
+            if (thisArray.length != otherArray.length)
             {
                 return false;
             }
 
-            if (!comparer)
-            {
-                comparer = StrictEqualityComparer<TElement>();
-            }
-
-            for (let i = 0;i<thisCount;i++)
+            for (let i = 0; i < thisArray.length; i++)
             {
                 if (!comparer(thisArray[i], otherArray[i]))
                 {

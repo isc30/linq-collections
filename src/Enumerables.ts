@@ -118,7 +118,8 @@ export interface IQueryable<TOut>
         selector: Selector<TOut, TSelectorOut[] | IQueryable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>;
 
-    sequenceEqual(other: IQueryable<TOut>, comparer?: EqualityComparer<TOut>): boolean;
+    sequenceEqual(other: IQueryable<TOut> | Array<TOut>): boolean;
+    sequenceEqual(other: IQueryable<TOut> | Array<TOut>, comparer: EqualityComparer<TOut>): boolean;
 
     single(): TOut;
     single(predicate: Predicate<TOut>): TOut;
@@ -162,7 +163,7 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 // region EnumerableBase
 export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
-    
+
     protected readonly source: IIterable<TElement> | IEnumerable<TElement>;
 
     protected constructor(source: IIterable<TElement>)
@@ -276,18 +277,25 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return this.any(e => e === element);
     }
 
+    public sequenceEqual(other: IQueryable<TOut>): boolean;
+    public sequenceEqual(other: IQueryable<TOut>, comparer: EqualityComparer<TOut>): boolean;
     public sequenceEqual(other: IQueryable<TOut>, comparer?: EqualityComparer<TOut>): boolean
     {
-        if (!comparer)
+        if (comparer === undefined || comparer === null)
         {
             comparer = StrictEqualityComparer<TOut>();
         }
 
-        const otherEnumerable = other.asEnumerable();
+        const otherEnumerable = Array.isArray(other)
+            ? new ArrayEnumerable(other)
+            : other.asEnumerable();
 
-        while(this.next())
+        this.reset();
+        otherEnumerable.reset();
+
+        while (this.next())
         {
-            if (!(otherEnumerable.next() && comparer(this.value(), otherEnumerable.value())))
+            if (!otherEnumerable.next() || !comparer(this.value(), otherEnumerable.value()))
             {
                 return false;
             }

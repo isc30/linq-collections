@@ -320,13 +320,13 @@ var ArrayQueryable = /** @class */ (function (_super) {
     };
     ArrayQueryable.prototype.sequenceEqual = function (other, comparer) {
         if (other instanceof ArrayQueryable) {
-            if (this.count() != other.count()) {
-                return false;
-            }
             var thisArray = this.asArray();
             var otherArray = other.asArray();
             var thisCount = thisArray.length;
             var otherCount = otherArray.length;
+            if (thisCount != otherCount) {
+                return false;
+            }
             if (!comparer) {
                 comparer = Comparers_1.StrictEqualityComparer();
             }
