@@ -220,6 +220,12 @@ var EnumerableCollection = /** @class */ (function () {
     EnumerableCollection.prototype.forEach = function (action) {
         return this.asEnumerable().forEach(action);
     };
+    EnumerableCollection.prototype.defaultIfEmpty = function (defaultValue) {
+        if (defaultValue !== undefined) {
+            return this.asEnumerable().defaultIfEmpty(defaultValue);
+        }
+        return this.asEnumerable().defaultIfEmpty();
+    };
     return EnumerableCollection;
 }());
 exports.EnumerableCollection = EnumerableCollection;
@@ -673,6 +679,9 @@ var EnumerableBase = /** @class */ (function () {
             result = new ConcatEnumerable(result, asEnumerable(others[i]).copy());
         }
         return result;
+    };
+    EnumerableBase.prototype.defaultIfEmpty = function (defaultValue) {
+        return new DefaultIfEmptyEnumerable(this, defaultValue);
     };
     EnumerableBase.prototype.elementAt = function (index) {
         var element = this.elementAtOrDefault(index);
@@ -1373,6 +1382,38 @@ var ArrayEnumerable = /** @class */ (function (_super) {
 }(Enumerable));
 exports.ArrayEnumerable = ArrayEnumerable;
 // endregion
+// region DefaultIfEmptyEnumerable
+var DefaultIfEmptyEnumerable = /** @class */ (function (_super) {
+    __extends(DefaultIfEmptyEnumerable, _super);
+    function DefaultIfEmptyEnumerable(source, defaultValue) {
+        var _this = _super.call(this, source) || this;
+        _this._mustUseDefaultValue = undefined;
+        _this._defaultValue = defaultValue;
+        return _this;
+    }
+    DefaultIfEmptyEnumerable.prototype.copy = function () {
+        return new DefaultIfEmptyEnumerable(this.source.copy(), this._defaultValue);
+    };
+    DefaultIfEmptyEnumerable.prototype.value = function () {
+        if (this._mustUseDefaultValue) {
+            return this._defaultValue;
+        }
+        return this.source.value();
+    };
+    DefaultIfEmptyEnumerable.prototype.next = function () {
+        var hasNextElement = _super.prototype.next.call(this);
+        // single default element
+        this._mustUseDefaultValue = this._mustUseDefaultValue === undefined && !hasNextElement;
+        return this._mustUseDefaultValue || hasNextElement;
+    };
+    DefaultIfEmptyEnumerable.prototype.reset = function () {
+        _super.prototype.reset.call(this);
+        this._mustUseDefaultValue = undefined;
+    };
+    return DefaultIfEmptyEnumerable;
+}(EnumerableBase));
+exports.DefaultIfEmptyEnumerable = DefaultIfEmptyEnumerable;
+// endregion
 
 },{"./Collections":1,"./Comparers":2,"./Iterators":4,"./Utils":5}],4:[function(require,module,exports){
 "use strict";
@@ -2010,6 +2051,7 @@ var IQueryableUnitTest;
         describe(name + " (ReverseEnumerable)", function () { return test(function (e) { return new Enumerables_1.ReverseEnumerable(new Enumerables_1.ReverseEnumerable(Enumerables_1.Enumerable.fromSource(e))); }); });
         describe(name + " (SkipWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.SkipWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return false; }); }); });
         describe(name + " (TakeWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.TakeWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return true; }); }); });
+        describe(name + " (DefaultIfEmptyEnumerable)", function () { return test(function (e) { return new Enumerables_1.DefaultIfEmptyEnumerable(Enumerables_1.Enumerable.fromSource(e)).where(function (e) { return e !== undefined; }); }); });
         describe(name + " (ArrayEnumerable)", function () { return test(function (e) { return new Enumerables_1.ArrayEnumerable(e); }); });
         describe(name + " (EnumerableCollection)", function () { return test(function (e) { return new EnumerableCollectionBase(e); }); });
         describe(name + " (List)", function () { return test(function (e) { return new Collections_1.List(e); }); });
@@ -2028,6 +2070,7 @@ var IQueryableUnitTest;
         runTest("Concat", concat);
         runTest("Contains", contains);
         runTest("Count", count);
+        runTest("DefaultIfEmpty", defaultIfEmpty);
         runTest("Distinct", distinct);
         runTest("ElementAt", elementAt);
         runTest("ElementAtOrDefault", elementAtOrDefault);
@@ -2301,6 +2344,52 @@ var IQueryableUnitTest;
             Test_1.Test.isEqual(base.count(function (e) { return e < 1; }), 0);
             Test_1.Test.isEqual(base.count(function (e) { return e > 20; }), 46);
             Test_1.Test.isEqual(base.count(function (e) { return e < 100; }), 66);
+        });
+    }
+    function defaultIfEmpty(instancer) {
+        it("Return normal array if not empty (no default value)", function () {
+            var base = instancer([1, 2, 3]);
+            Test_1.Test.isArrayEqual(base.defaultIfEmpty().toArray(), [1, 2, 3]);
+        });
+        it("Return normal array if not empty (with default value)", function () {
+            var base = instancer([1, 2, 3]);
+            Test_1.Test.isArrayEqual(base.defaultIfEmpty(666).toArray(), [1, 2, 3]);
+        });
+        it("Return single element (undefined) array if empty (no default value)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(base.defaultIfEmpty().toArray(), [undefined]);
+        });
+        it("Return single element (undefined) array if empty (with default value)", function () {
+            var base = instancer([]);
+            Test_1.Test.isArrayEqual(base.defaultIfEmpty(666).toArray(), [666]);
+        });
+        it("Multiple iterations (no default value)", function () {
+            var base = instancer([]).defaultIfEmpty();
+            Test_1.Test.isArrayEqual(base.toArray(), [undefined]);
+            Test_1.Test.isArrayEqual(base.toArray(), [undefined]);
+            Test_1.Test.isArrayEqual(base.toArray(), [undefined]);
+        });
+        it("Multiple iterations (with default value)", function () {
+            var base = instancer([]).defaultIfEmpty(666);
+            Test_1.Test.isArrayEqual(base.toArray(), [666]);
+            Test_1.Test.isArrayEqual(base.toArray(), [666]);
+            Test_1.Test.isArrayEqual(base.toArray(), [666]);
+        });
+        it("Using iterators (no default value)", function () {
+            var base = instancer([]).defaultIfEmpty();
+            Test_1.Test.throwsException(function () { return base.value(); });
+            Test_1.Test.isTrue(base.next());
+            Test_1.Test.isEqual(base.value(), undefined);
+            Test_1.Test.isEqual(base.value(), undefined);
+            Test_1.Test.isFalse(base.next());
+        });
+        it("Using iterators (with default value)", function () {
+            var base = instancer([]).defaultIfEmpty(666);
+            Test_1.Test.throwsException(function () { return base.value(); });
+            Test_1.Test.isTrue(base.next());
+            Test_1.Test.isEqual(base.value(), 666);
+            Test_1.Test.isEqual(base.value(), 666);
+            Test_1.Test.isFalse(base.next());
         });
     }
     function distinct(instancer) {

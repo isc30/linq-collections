@@ -14,6 +14,7 @@ import {
     TakeWhileEnumerable,
     TransformEnumerable,
     UniqueEnumerable,
+    DefaultIfEmptyEnumerable,
 } from "../../src/Enumerables";
 import { Dictionary, EnumerableCollection, IDictionary, List, Stack } from "../../src/Collections";
 
@@ -90,6 +91,10 @@ export namespace IQueryableUnitTest
         describe(`${name} (TakeWhileEnumerable)`, () => test(
             <T>(e: T[]) => new TakeWhileEnumerable(Enumerable.fromSource(e), x => true)));
 
+        describe(`${name} (DefaultIfEmptyEnumerable)`, () => test(
+            <T>(e: T[]) => new DefaultIfEmptyEnumerable(
+                Enumerable.fromSource(e)).where(i => i !== undefined) as IQueryable<T>));
+
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
 
@@ -119,6 +124,7 @@ export namespace IQueryableUnitTest
         runTest("Concat", concat);
         runTest("Contains", contains);
         runTest("Count", count);
+        runTest("DefaultIfEmpty", defaultIfEmpty);
         runTest("Distinct", distinct);
         runTest("ElementAt", elementAt);
         runTest("ElementAtOrDefault", elementAtOrDefault);
@@ -475,6 +481,71 @@ export namespace IQueryableUnitTest
             Test.isEqual(base.count(e => e < 1), 0);
             Test.isEqual(base.count(e => e > 20), 46);
             Test.isEqual(base.count(e => e < 100), 66);
+        });
+    }
+
+    function defaultIfEmpty(instancer: Instancer): void
+    {
+        it("Return normal array if not empty (no default value)", () =>
+        {
+            const base = instancer([1, 2, 3]);
+            Test.isArrayEqual(base.defaultIfEmpty().toArray(), [1, 2, 3]);
+        });
+
+        it("Return normal array if not empty (with default value)", () =>
+        {
+            const base = instancer([1, 2, 3]);
+            Test.isArrayEqual(base.defaultIfEmpty(666).toArray(), [1, 2, 3]);
+        });
+
+        it("Return single element (undefined) array if empty (no default value)", () =>
+        {
+            const base = instancer([] as number[]);
+            Test.isArrayEqual(base.defaultIfEmpty().toArray(), [ undefined ]);
+        });
+
+        it("Return single element (undefined) array if empty (with default value)", () =>
+        {
+            const base = instancer([] as number[]);
+            Test.isArrayEqual(base.defaultIfEmpty(666).toArray(), [ 666 ]);
+        });
+
+        it("Multiple iterations (no default value)", () =>
+        {
+            const base = instancer([] as number[]).defaultIfEmpty();
+            Test.isArrayEqual(base.toArray(), [ undefined ]);
+            Test.isArrayEqual(base.toArray(), [ undefined ]);
+            Test.isArrayEqual(base.toArray(), [ undefined ]);
+        });
+
+        it("Multiple iterations (with default value)", () =>
+        {
+            const base = instancer([] as number[]).defaultIfEmpty(666);
+            Test.isArrayEqual(base.toArray(), [ 666 ]);
+            Test.isArrayEqual(base.toArray(), [ 666 ]);
+            Test.isArrayEqual(base.toArray(), [ 666 ]);
+        });
+
+        it("Using iterators (no default value)", () =>
+        {
+            const base = instancer([] as number[]).defaultIfEmpty();
+
+            Test.throwsException(() => base.value());
+            Test.isTrue(base.next());
+            Test.isEqual(base.value(), undefined);
+            Test.isEqual(base.value(), undefined);
+            Test.isFalse(base.next());
+        });
+
+        it("Using iterators (with default value)", () =>
+        {
+            const base = instancer([] as number[]).defaultIfEmpty(666);
+
+            Test.throwsException(() => base.value());
+            Test.isTrue(base.next());
+            Test.isEqual(base.value(), 666);
+            Test.isEqual(base.value(), 666);
+            Test.isFalse(base.next());
         });
     }
 
