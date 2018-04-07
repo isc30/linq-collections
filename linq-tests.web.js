@@ -1471,7 +1471,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Test;
 (function (Test) {
     function isTrue(result) {
-        if (!result) {
+        if (result !== true) {
             throw new Error("Assertion failed");
         }
     }

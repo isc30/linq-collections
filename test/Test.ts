@@ -2,7 +2,7 @@ export namespace Test
 {
     export function isTrue(result: boolean): void
     {
-        if (!result)
+        if (result !== true)
         {
             throw new Error("Assertion failed");
         }
