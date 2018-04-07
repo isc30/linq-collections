@@ -2051,7 +2051,7 @@ var IQueryableUnitTest;
         describe(name + " (ReverseEnumerable)", function () { return test(function (e) { return new Enumerables_1.ReverseEnumerable(new Enumerables_1.ReverseEnumerable(Enumerables_1.Enumerable.fromSource(e))); }); });
         describe(name + " (SkipWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.SkipWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return false; }); }); });
         describe(name + " (TakeWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.TakeWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return true; }); }); });
-        describe(name + " (DefaultIfEmptyEnumerable)", function () { return test(function (e) { return new Enumerables_1.DefaultIfEmptyEnumerable(Enumerables_1.Enumerable.fromSource(e)).where(function (e) { return e !== undefined; }); }); });
+        describe(name + " (DefaultIfEmptyEnumerable)", function () { return test(function (e) { return new Enumerables_1.DefaultIfEmptyEnumerable(Enumerables_1.Enumerable.fromSource(e)).where(function (i) { return i !== undefined; }); }); });
         describe(name + " (ArrayEnumerable)", function () { return test(function (e) { return new Enumerables_1.ArrayEnumerable(e); }); });
         describe(name + " (EnumerableCollection)", function () { return test(function (e) { return new EnumerableCollectionBase(e); }); });
         describe(name + " (List)", function () { return test(function (e) { return new Collections_1.List(e); }); });
