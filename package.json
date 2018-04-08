@@ -46,7 +46,7 @@
     "browserify": "*",
     "tsify": "*",
     "ts-loader": "*",
-    "webpack": "*"
+    "webpack-cli": "*"
   },
   "directories": {
     "test": "test",
