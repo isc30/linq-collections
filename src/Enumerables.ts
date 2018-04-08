@@ -7,7 +7,7 @@
 
 import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector } from "./Types";
 import { ArrayIterator, IIterable } from "./Iterators";
-import { Comparer, combineComparers, createComparer } from "./Comparers";
+import { Comparer, EqualityComparer, strictEqualityComparer, combineComparers, createComparer } from "./Comparers";
 import { Dictionary, IDictionary, IList, List } from "./Collections";
 
 import { Cached } from "./Utils";
@@ -121,7 +121,8 @@ export interface IQueryable<TOut>
         selector: Selector<TOut, TSelectorOut[] | IQueryable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>;
 
-    // sequenceEquals
+    sequenceEqual(other: IQueryable<TOut> | TOut[]): boolean;
+    sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut>): boolean;
 
     single(): TOut;
     single(predicate: Predicate<TOut>): TOut;
@@ -165,6 +166,7 @@ export interface IOrderedEnumerable<TOut> extends IEnumerable<TOut>
 // region EnumerableBase
 export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut>
 {
+
     protected readonly source: IIterable<TElement> | IEnumerable<TElement>;
 
     protected constructor(source: IIterable<TElement>)
@@ -278,6 +280,28 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return this.any(e => e === element);
     }
 
+    public sequenceEqual(other: IQueryable<TOut> | TOut[]): boolean;
+    public sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut>): boolean;
+    public sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut> = strictEqualityComparer<TOut>()): boolean
+    {
+        const otherEnumerable = other instanceof Array
+            ? new ArrayEnumerable(other)
+            : other.asEnumerable();
+
+        this.reset();
+        otherEnumerable.reset();
+
+        while (this.next())
+        {
+            if (!otherEnumerable.next() || !comparer(this.value(), otherEnumerable.value()))
+            {
+                return false;
+            }
+        }
+
+        return !otherEnumerable.next();
+    }
+
     public where(predicate: Predicate<TOut>): IEnumerable<TOut>
     {
         return new ConditionalEnumerable<TOut>(this.copy(), predicate);
@@ -318,7 +342,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     {
         const asEnumerable = (e: TOut[] | IQueryable<TOut>): IIterable<TOut> =>
         {
-            return Array.isArray(e)
+            return e instanceof Array
                 ? new ArrayEnumerable(e)
                 : e.asEnumerable();
         };
@@ -705,7 +729,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 
     public static fromSource<TElement>(source: TElement[] | IIterable<TElement>): IEnumerable<TElement>
     {
-        if (Array.isArray(source))
+        if (source instanceof Array)
         {
             return new ArrayEnumerable<TElement>(source);
         }
@@ -981,7 +1005,7 @@ export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
     {
         super(source);
         this._keySelector = keySelector;
-        this._seen = { primitive: {number: {}, string: {}, boolean: {}}, complex: [] };
+        this._seen = { primitive: { number: {}, string: {}, boolean: {} }, complex: [] };
     }
 
     public copy(): UniqueEnumerable<TElement, TKey>
@@ -992,7 +1016,7 @@ export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
     public reset(): void
     {
         super.reset();
-        this._seen = { primitive: {number: {}, string: {}, boolean: {}}, complex: [] };
+        this._seen = { primitive: { number: {}, string: {}, boolean: {} }, complex: [] };
     }
 
     private isUnique(element: TElement): boolean
@@ -1070,7 +1094,7 @@ export class RangeEnumerable<TElement> extends Enumerable<TElement>
         const start = this._start !== undefined ? this._start : 0;
         let hasValue: boolean = true;
 
-        while (hasValue && this._currentIndex + 1 < start )
+        while (hasValue && this._currentIndex + 1 < start)
         {
             hasValue = super.next();
             ++this._currentIndex;

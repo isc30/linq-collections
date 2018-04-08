@@ -51,7 +51,7 @@ var EnumerableCollection = /** @class */ (function () {
     EnumerableCollection.prototype.selectMany = function (selector) {
         var selectToEnumerable = function (e) {
             var ie = selector(e);
-            return Array.isArray(ie)
+            return ie instanceof Array
                 ? new Enumerables_1.ArrayEnumerable(ie)
                 : ie.asEnumerable();
         };
@@ -134,6 +134,12 @@ var EnumerableCollection = /** @class */ (function () {
     };
     EnumerableCollection.prototype.takeWhile = function (predicate) {
         return this.asEnumerable().takeWhile(predicate);
+    };
+    EnumerableCollection.prototype.sequenceEqual = function (other, comparer) {
+        if (comparer !== undefined) {
+            return this.asEnumerable().sequenceEqual(other, comparer);
+        }
+        return this.asEnumerable().sequenceEqual(other);
     };
     EnumerableCollection.prototype.distinct = function (keySelector) {
         return new Enumerables_1.UniqueEnumerable(this.asEnumerable(), keySelector);
@@ -321,6 +327,26 @@ var ArrayQueryable = /** @class */ (function (_super) {
             action(this.source[i], i);
         }
     };
+    ArrayQueryable.prototype.sequenceEqual = function (other, comparer) {
+        if (comparer === void 0) { comparer = Comparers_1.strictEqualityComparer(); }
+        if (other instanceof ArrayQueryable
+            || other instanceof Array) {
+            var thisArray = this.asArray();
+            var otherArray = other instanceof ArrayQueryable
+                ? other.asArray()
+                : other;
+            if (thisArray.length != otherArray.length) {
+                return false;
+            }
+            for (var i = 0; i < thisArray.length; ++i) {
+                if (!comparer(thisArray[i], otherArray[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return this.asEnumerable().sequenceEqual(other, comparer);
+    };
     return ArrayQueryable;
 }(EnumerableCollection));
 exports.ArrayQueryable = ArrayQueryable;
@@ -360,7 +386,7 @@ var List = /** @class */ (function (_super) {
         return this.source.push(element);
     };
     List.prototype.pushRange = function (elements) {
-        if (!Array.isArray(elements)) {
+        if (!(elements instanceof Array)) {
             elements = elements.toArray();
         }
         return this.source.push.apply(this.source, elements);
@@ -528,6 +554,7 @@ exports.Dictionary = Dictionary;
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.strictEqualityComparer = function () { return function (left, right) { return left === right; }; };
 function combineComparers(left, right) {
     return function (l, r) { return left(l, r) || right(l, r); };
 }
@@ -644,6 +671,20 @@ var EnumerableBase = /** @class */ (function () {
     EnumerableBase.prototype.contains = function (element) {
         return this.any(function (e) { return e === element; });
     };
+    EnumerableBase.prototype.sequenceEqual = function (other, comparer) {
+        if (comparer === void 0) { comparer = Comparers_1.strictEqualityComparer(); }
+        var otherEnumerable = other instanceof Array
+            ? new ArrayEnumerable(other)
+            : other.asEnumerable();
+        this.reset();
+        otherEnumerable.reset();
+        while (this.next()) {
+            if (!otherEnumerable.next() || !comparer(this.value(), otherEnumerable.value())) {
+                return false;
+            }
+        }
+        return !otherEnumerable.next();
+    };
     EnumerableBase.prototype.where = function (predicate) {
         return new ConditionalEnumerable(this.copy(), predicate);
     };
@@ -670,7 +711,7 @@ var EnumerableBase = /** @class */ (function () {
             others[_i - 1] = arguments[_i];
         }
         var asEnumerable = function (e) {
-            return Array.isArray(e)
+            return e instanceof Array
                 ? new ArrayEnumerable(e)
                 : e.asEnumerable();
         };
@@ -894,7 +935,7 @@ var Enumerable = /** @class */ (function (_super) {
         return _this;
     }
     Enumerable.fromSource = function (source) {
-        if (Array.isArray(source)) {
+        if (source instanceof Array) {
             return new ArrayEnumerable(source);
         }
         return new Enumerable(source);
@@ -2087,6 +2128,7 @@ var IQueryableUnitTest;
         runTest("Reverse", reverse);
         runTest("Select", select);
         runTest("SelectMany", selectMany);
+        runTest("SequenceEqual", sequenceEqual);
         runTest("Single", single);
         runTest("SingleOrDefault", singleOrDefault);
         runTest("Skip", skip);
@@ -2772,6 +2814,101 @@ var IQueryableUnitTest;
                 new SelectManyTestClass(instancer([7, 8])),
             ]);
             Test_1.Test.isArrayEqual(base.selectMany(function (e) { return e.numbers; }).toArray(), [1, 2, 3, 4, 5, 6, 7, 8]);
+        });
+    }
+    function sequenceEqual(instancer) {
+        var Person = /** @class */ (function () {
+            function Person(firstName, lastName, age) {
+                this.firstName = firstName;
+                this.lastName = lastName;
+                this.age = age;
+            }
+            return Person;
+        }());
+        it("Both empty return true", function () {
+            var first = instancer([]);
+            var second = instancer([]);
+            Test_1.Test.isTrue(first.sequenceEqual(second));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray()));
+        });
+        it("Different count return false (number)", function () {
+            var first = instancer([]);
+            var second = instancer([1]);
+            Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
+        });
+        it("Same count different values return false (number)", function () {
+            var first = instancer([2]);
+            var second = instancer([1]);
+            Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
+        });
+        it("Different count return false (string)", function () {
+            var first = instancer([]);
+            var second = instancer(["test1"]);
+            Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
+        });
+        it("Same count different values return false (string)", function () {
+            var first = instancer(["test1"]);
+            var second = instancer(["test2"]);
+            Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
+        });
+        it("Same object in both return true", function () {
+            var obj = {};
+            var first = instancer([obj]);
+            var second = instancer([obj]);
+            Test_1.Test.isTrue(first.sequenceEqual(second));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray()));
+        });
+        var stringLengthComparer = function (left, right) { return left.length === right.length; };
+        it("Custom comparer; check lengths; should return true (string)", function () {
+            var first = instancer(["one"]);
+            var second = instancer(["two"]);
+            Test_1.Test.isTrue(first.sequenceEqual(second, stringLengthComparer));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray(), stringLengthComparer));
+        });
+        it("Custom comparer; check lengths; should return false (string)", function () {
+            var first = instancer(["three"]);
+            var second = instancer(["four"]);
+            Test_1.Test.isFalse(first.sequenceEqual(second, stringLengthComparer));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray(), stringLengthComparer));
+        });
+        var personAgeAndFirstNameComparer = function (left, right) {
+            return left.age === right.age && left.firstName === right.firstName;
+        };
+        it("Custom comparer; same count; same objects; should return true (complex object)", function () {
+            var person = new Person("Ben", "Jerry", 42);
+            var first = instancer([person, person, person]);
+            var second = instancer([person, person, person]);
+            Test_1.Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
+        });
+        it("Custom comparer; same count; different objects with same values; should return true (complex object)", function () {
+            var person1 = new Person("Ben", "Jerry", 42);
+            var person2 = new Person("Ben", "Smith", 42);
+            var first = instancer([person1, person2, person1]);
+            var second = instancer([person2, person1, person2]);
+            Test_1.Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
+        });
+        it("Custom comparer; same count; different objects with different values; should return false (complex object)", function () {
+            var person1 = new Person("Ben", "Jerry", 42);
+            var person2 = new Person("John", "Smith", 42);
+            var first = instancer([person1, person2, person1]);
+            var second = instancer([person2, person1, person2]);
+            Test_1.Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
+        });
+        it("ArrayQueryable<T> vs different IQueryable<T> must fallback to iterator approach", function () {
+            var person1 = new Person("Ben", "Jerry", 42);
+            var person2 = new Person("John", "Smith", 42);
+            // always ArrayQueryable<T>
+            var first = new Collections_1.List([person1, person2, person1]);
+            var second = instancer([person2, person1, person2]);
+            Test_1.Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
         });
     }
     function single(instancer) {
