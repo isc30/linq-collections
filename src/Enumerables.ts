@@ -56,6 +56,9 @@ export interface IQueryable<TOut>
     count(): number;
     count(predicate: Predicate<TOut>): number;
 
+    defaultIfEmpty(): IEnumerable<TOut | undefined>;
+    defaultIfEmpty(defaultValue: TOut): IEnumerable<TOut>;
+
     distinct(): IEnumerable<TOut>;
     distinct<TKey>(keySelector: Selector<TOut, TKey>): IEnumerable<TOut>;
 
@@ -357,6 +360,13 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         }
 
         return result;
+    }
+
+    public defaultIfEmpty(): IEnumerable<TOut | undefined>;
+    public defaultIfEmpty(defaultValue: TOut): IEnumerable<TOut>;
+    public defaultIfEmpty(defaultValue?: TOut): IEnumerable<TOut | undefined>
+    {
+        return new DefaultIfEmptyEnumerable<TOut>(this, defaultValue);
     }
 
     public elementAt(index: number): TOut
@@ -1493,6 +1503,52 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
         }
 
         return this.list.lastOrDefault();
+    }
+}
+// endregion
+// region DefaultIfEmptyEnumerable
+export class DefaultIfEmptyEnumerable<TOut> extends EnumerableBase<TOut, TOut | undefined>
+{
+    protected source: IEnumerable<TOut>;
+    private _mustUseDefaultValue: boolean | undefined;
+    private _defaultValue: TOut | undefined;
+
+    public constructor(source: IEnumerable<TOut>, defaultValue?: TOut)
+    {
+        super(source);
+        this._mustUseDefaultValue = undefined;
+        this._defaultValue = defaultValue;
+    }
+
+    public copy(): DefaultIfEmptyEnumerable<TOut>
+    {
+        return new DefaultIfEmptyEnumerable<TOut>(this.source.copy(), this._defaultValue);
+    }
+
+    public value(): TOut | undefined
+    {
+        if (this._mustUseDefaultValue)
+        {
+            return this._defaultValue;
+        }
+
+        return this.source.value();
+    }
+
+    public next(): boolean
+    {
+        const hasNextElement = super.next();
+
+        // single default element
+        this._mustUseDefaultValue = this._mustUseDefaultValue === undefined && !hasNextElement;
+
+        return this._mustUseDefaultValue || hasNextElement;
+    }
+
+    public reset(): void
+    {
+        super.reset();
+        this._mustUseDefaultValue = undefined;
     }
 }
 // endregion

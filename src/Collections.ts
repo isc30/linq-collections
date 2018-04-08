@@ -412,6 +412,18 @@ export abstract class EnumerableCollection<TElement>
     {
         return this.asEnumerable().forEach(action);
     }
+
+    public defaultIfEmpty(): IEnumerable<TElement | undefined>;
+    public defaultIfEmpty(defaultValue: TElement): IEnumerable<TElement>;
+    public defaultIfEmpty(defaultValue?: TElement): IEnumerable<TElement | undefined>
+    {
+        if (defaultValue !== undefined)
+        {
+            return this.asEnumerable().defaultIfEmpty(defaultValue);
+        }
+
+        return this.asEnumerable().defaultIfEmpty();
+    }
 }
 // endregion
 // region ArrayQueryable
