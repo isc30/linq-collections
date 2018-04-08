@@ -9,7 +9,7 @@ export type ComparerResult = -1 | 0 | 1;
 export type Comparer<T> = (left: T, right: T) => ComparerResult;
 
 export type EqualityComparer<T> = (left: T, right: T) => boolean;
-export const StrictEqualityComparer = <T>() => (left: T, right: T) => left === right;
+export const strictEqualityComparer = <T>() => (left: T, right: T) => left === right;
 
 export function combineComparers<T>(left: Comparer<T>, right: Comparer<T>): Comparer<T>
 {

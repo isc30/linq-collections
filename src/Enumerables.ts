@@ -7,7 +7,7 @@
 
 import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector } from "./Types";
 import { ArrayIterator, IIterable } from "./Iterators";
-import { Comparer, EqualityComparer, StrictEqualityComparer, combineComparers, createComparer } from "./Comparers";
+import { Comparer, EqualityComparer, strictEqualityComparer, combineComparers, createComparer } from "./Comparers";
 import { Dictionary, IDictionary, IList, List } from "./Collections";
 
 import { Cached } from "./Utils";
@@ -282,7 +282,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
 
     public sequenceEqual(other: IQueryable<TOut> | TOut[]): boolean;
     public sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut>): boolean;
-    public sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut> = StrictEqualityComparer<TOut>()): boolean
+    public sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut> = strictEqualityComparer<TOut>()): boolean
     {
         const otherEnumerable = other instanceof Array
             ? new ArrayEnumerable(other)

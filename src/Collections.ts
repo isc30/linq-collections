@@ -24,7 +24,7 @@ import
     TransformEnumerable,
     UniqueEnumerable,
 } from "./Enumerables";
-import { Comparer, EqualityComparer, StrictEqualityComparer, createComparer } from "./Comparers";
+import { Comparer, EqualityComparer, strictEqualityComparer, createComparer } from "./Comparers";
 
 import { IIterable, ArrayIterator } from "./Iterators";
 
@@ -603,7 +603,7 @@ export abstract class ArrayQueryable<TElement>
 
     public sequenceEqual(other: IQueryable<TElement> | TElement[]): boolean;
     public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement>): boolean;
-    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement> = StrictEqualityComparer<TElement>()): boolean
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement> = strictEqualityComparer<TElement>()): boolean
     {
         if (other instanceof ArrayQueryable
             || other instanceof Array)

@@ -328,7 +328,7 @@ var ArrayQueryable = /** @class */ (function (_super) {
         }
     };
     ArrayQueryable.prototype.sequenceEqual = function (other, comparer) {
-        if (comparer === void 0) { comparer = Comparers_1.StrictEqualityComparer(); }
+        if (comparer === void 0) { comparer = Comparers_1.strictEqualityComparer(); }
         if (other instanceof ArrayQueryable
             || other instanceof Array) {
             var thisArray = this.asArray();
@@ -554,7 +554,7 @@ exports.Dictionary = Dictionary;
  * Copyright © 2017 Ivan Sanz Carasa. All rights reserved.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StrictEqualityComparer = function () { return function (left, right) { return left === right; }; };
+exports.strictEqualityComparer = function () { return function (left, right) { return left === right; }; };
 function combineComparers(left, right) {
     return function (l, r) { return left(l, r) || right(l, r); };
 }
@@ -672,7 +672,7 @@ var EnumerableBase = /** @class */ (function () {
         return this.any(function (e) { return e === element; });
     };
     EnumerableBase.prototype.sequenceEqual = function (other, comparer) {
-        if (comparer === void 0) { comparer = Comparers_1.StrictEqualityComparer(); }
+        if (comparer === void 0) { comparer = Comparers_1.strictEqualityComparer(); }
         var otherEnumerable = other instanceof Array
             ? new ArrayEnumerable(other)
             : other.asEnumerable();
