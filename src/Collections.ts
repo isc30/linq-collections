@@ -7,7 +7,8 @@
 // tslint:disable-next-line:max-line-length
 
 import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector, Type } from "./Types";
-import {
+import
+{
     ArrayEnumerable,
     ConcatEnumerable,
     ConditionalEnumerable,
@@ -23,9 +24,9 @@ import {
     TransformEnumerable,
     UniqueEnumerable,
 } from "./Enumerables";
-import { Comparer, createComparer } from "./Comparers";
+import { Comparer, EqualityComparer, strictEqualityComparer, createComparer } from "./Comparers";
 
-import { IIterable } from "./Iterators";
+import { IIterable, ArrayIterator } from "./Iterators";
 
 // endregion
 
@@ -86,7 +87,7 @@ export abstract class EnumerableCollection<TElement>
         {
             const ie = selector(e);
 
-            return Array.isArray(ie)
+            return ie instanceof Array
                 ? new ArrayEnumerable(ie)
                 : ie.asEnumerable();
         };
@@ -235,6 +236,18 @@ export abstract class EnumerableCollection<TElement>
     public takeWhile(predicate: Predicate<TElement>): IEnumerable<TElement>
     {
         return this.asEnumerable().takeWhile(predicate);
+    }
+
+    public sequenceEqual(other: IQueryable<TElement> | TElement[]): boolean
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement>): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer?: EqualityComparer<TElement>): boolean
+    {
+        if (comparer !== undefined)
+        {
+            return this.asEnumerable().sequenceEqual(other, comparer);
+        }
+
+        return this.asEnumerable().sequenceEqual(other);
     }
 
     public distinct(): IEnumerable<TElement>;
@@ -587,6 +600,37 @@ export abstract class ArrayQueryable<TElement>
             action(this.source[i], i);
         }
     }
+
+    public sequenceEqual(other: IQueryable<TElement> | TElement[]): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement>): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement> = strictEqualityComparer<TElement>()): boolean
+    {
+        if (other instanceof ArrayQueryable
+            || other instanceof Array)
+        {
+            const thisArray = this.asArray();
+            const otherArray = other instanceof ArrayQueryable
+                ? other.asArray() as TElement[]
+                : other;
+
+            if (thisArray.length != otherArray.length)
+            {
+                return false;
+            }
+
+            for (let i = 0; i < thisArray.length; ++i)
+            {
+                if (!comparer(thisArray[i], otherArray[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return this.asEnumerable().sequenceEqual(other, comparer);
+    }
 }
 // endregion
 // region List
@@ -673,7 +717,7 @@ export class List<TElement>
 
     public pushRange(elements: TElement[] | IQueryable<TElement>): number
     {
-        if (!Array.isArray(elements))
+        if (!(elements instanceof Array))
         {
             elements = elements.toArray();
         }
