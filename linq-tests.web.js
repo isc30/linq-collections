@@ -1,4 +1,4 @@
-(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 // -
 // Created by Ivan Sanz (@isc30)
@@ -51,7 +51,7 @@ var EnumerableCollection = /** @class */ (function () {
     EnumerableCollection.prototype.selectMany = function (selector) {
         var selectToEnumerable = function (e) {
             var ie = selector(e);
-            return Array.isArray(ie)
+            return ie instanceof Array
                 ? new Enumerables_1.ArrayEnumerable(ie)
                 : ie.asEnumerable();
         };
@@ -136,7 +136,10 @@ var EnumerableCollection = /** @class */ (function () {
         return this.asEnumerable().takeWhile(predicate);
     };
     EnumerableCollection.prototype.sequenceEqual = function (other, comparer) {
-        return this.asEnumerable().sequenceEqual(other, comparer);
+        if (comparer !== undefined) {
+            return this.asEnumerable().sequenceEqual(other, comparer);
+        }
+        return this.asEnumerable().sequenceEqual(other);
     };
     EnumerableCollection.prototype.distinct = function (keySelector) {
         return new Enumerables_1.UniqueEnumerable(this.asEnumerable(), keySelector);
@@ -325,18 +328,17 @@ var ArrayQueryable = /** @class */ (function (_super) {
         }
     };
     ArrayQueryable.prototype.sequenceEqual = function (other, comparer) {
-        if (other instanceof ArrayQueryable) {
+        if (comparer === void 0) { comparer = Comparers_1.StrictEqualityComparer(); }
+        if (other instanceof ArrayQueryable
+            || other instanceof Array) {
             var thisArray = this.asArray();
-            var otherArray = other.asArray();
-            var thisCount = thisArray.length;
-            var otherCount = otherArray.length;
-            if (thisCount != otherCount) {
+            var otherArray = other instanceof ArrayQueryable
+                ? other.asArray()
+                : other;
+            if (thisArray.length != otherArray.length) {
                 return false;
             }
-            if (!comparer) {
-                comparer = Comparers_1.StrictEqualityComparer();
-            }
-            for (var i = 0; i < thisCount; i++) {
+            for (var i = 0; i < thisArray.length; ++i) {
                 if (!comparer(thisArray[i], otherArray[i])) {
                     return false;
                 }
@@ -384,7 +386,7 @@ var List = /** @class */ (function (_super) {
         return this.source.push(element);
     };
     List.prototype.pushRange = function (elements) {
-        if (!Array.isArray(elements)) {
+        if (!(elements instanceof Array)) {
             elements = elements.toArray();
         }
         return this.source.push.apply(this.source, elements);
@@ -670,12 +672,14 @@ var EnumerableBase = /** @class */ (function () {
         return this.any(function (e) { return e === element; });
     };
     EnumerableBase.prototype.sequenceEqual = function (other, comparer) {
-        if (!comparer) {
-            comparer = Comparers_1.StrictEqualityComparer();
-        }
-        var otherEnumerable = other.asEnumerable();
+        if (comparer === void 0) { comparer = Comparers_1.StrictEqualityComparer(); }
+        var otherEnumerable = other instanceof Array
+            ? new ArrayEnumerable(other)
+            : other.asEnumerable();
+        this.reset();
+        otherEnumerable.reset();
         while (this.next()) {
-            if (!(otherEnumerable.next() && comparer(this.value(), otherEnumerable.value()))) {
+            if (!otherEnumerable.next() || !comparer(this.value(), otherEnumerable.value())) {
                 return false;
             }
         }
@@ -707,7 +711,7 @@ var EnumerableBase = /** @class */ (function () {
             others[_i - 1] = arguments[_i];
         }
         var asEnumerable = function (e) {
-            return Array.isArray(e)
+            return e instanceof Array
                 ? new ArrayEnumerable(e)
                 : e.asEnumerable();
         };
@@ -931,7 +935,7 @@ var Enumerable = /** @class */ (function (_super) {
         return _this;
     }
     Enumerable.fromSource = function (source) {
-        if (Array.isArray(source)) {
+        if (source instanceof Array) {
             return new ArrayEnumerable(source);
         }
         return new Enumerable(source);
@@ -2825,50 +2829,61 @@ var IQueryableUnitTest;
             var first = instancer([]);
             var second = instancer([]);
             Test_1.Test.isTrue(first.sequenceEqual(second));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray()));
         });
         it("Different count return false (number)", function () {
             var first = instancer([]);
             var second = instancer([1]);
             Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
         });
         it("Same count different values return false (number)", function () {
             var first = instancer([2]);
             var second = instancer([1]);
             Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
         });
         it("Different count return false (string)", function () {
             var first = instancer([]);
             var second = instancer(["test1"]);
             Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
         });
         it("Same count different values return false (string)", function () {
             var first = instancer(["test1"]);
             var second = instancer(["test2"]);
             Test_1.Test.isFalse(first.sequenceEqual(second));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray()));
         });
         it("Same object in both return true", function () {
             var obj = {};
             var first = instancer([obj]);
             var second = instancer([obj]);
             Test_1.Test.isTrue(first.sequenceEqual(second));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray()));
         });
         var stringLengthComparer = function (left, right) { return left.length === right.length; };
         it("Custom comparer; check lengths; should return true (string)", function () {
             var first = instancer(["one"]);
             var second = instancer(["two"]);
             Test_1.Test.isTrue(first.sequenceEqual(second, stringLengthComparer));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray(), stringLengthComparer));
         });
         it("Custom comparer; check lengths; should return false (string)", function () {
             var first = instancer(["three"]);
             var second = instancer(["four"]);
             Test_1.Test.isFalse(first.sequenceEqual(second, stringLengthComparer));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray(), stringLengthComparer));
         });
-        var personAgeAndFirstNameComparer = function (left, right) { return left.age === right.age && left.firstName === right.firstName; };
+        var personAgeAndFirstNameComparer = function (left, right) {
+            return left.age === right.age && left.firstName === right.firstName;
+        };
         it("Custom comparer; same count; same objects; should return true (complex object)", function () {
             var person = new Person("Ben", "Jerry", 42);
             var first = instancer([person, person, person]);
             var second = instancer([person, person, person]);
             Test_1.Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
         });
         it("Custom comparer; same count; different objects with same values; should return true (complex object)", function () {
             var person1 = new Person("Ben", "Jerry", 42);
@@ -2876,6 +2891,7 @@ var IQueryableUnitTest;
             var first = instancer([person1, person2, person1]);
             var second = instancer([person2, person1, person2]);
             Test_1.Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isTrue(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
         });
         it("Custom comparer; same count; different objects with different values; should return false (complex object)", function () {
             var person1 = new Person("Ben", "Jerry", 42);
@@ -2883,6 +2899,16 @@ var IQueryableUnitTest;
             var first = instancer([person1, person2, person1]);
             var second = instancer([person2, person1, person2]);
             Test_1.Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
+        });
+        it("ArrayQueryable<T> vs different IQueryable<T> must fallback to iterator approach", function () {
+            var person1 = new Person("Ben", "Jerry", 42);
+            var person2 = new Person("John", "Smith", 42);
+            // always ArrayQueryable<T>
+            var first = Enumerables_1.Enumerable.fromSource([person1, person2, person1]);
+            var second = instancer([person2, person1, person2]);
+            Test_1.Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test_1.Test.isFalse(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
         });
     }
     function single(instancer) {

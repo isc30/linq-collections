@@ -26,7 +26,7 @@ import
 } from "./Enumerables";
 import { Comparer, EqualityComparer, StrictEqualityComparer, createComparer } from "./Comparers";
 
-import { IIterable } from "./Iterators";
+import { IIterable, ArrayIterator } from "./Iterators";
 
 // endregion
 
@@ -87,7 +87,7 @@ export abstract class EnumerableCollection<TElement>
         {
             const ie = selector(e);
 
-            return Array.isArray(ie)
+            return ie instanceof Array
                 ? new ArrayEnumerable(ie)
                 : ie.asEnumerable();
         };
@@ -238,16 +238,16 @@ export abstract class EnumerableCollection<TElement>
         return this.asEnumerable().takeWhile(predicate);
     }
 
-    public sequenceEqual(other: IQueryable<TElement>): boolean
-    public sequenceEqual(other: IQueryable<TElement>, comparer: EqualityComparer<TElement>): boolean;
-    public sequenceEqual(other: IQueryable<TElement>, comparer?: EqualityComparer<TElement>): boolean
+    public sequenceEqual(other: IQueryable<TElement> | TElement[]): boolean
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement>): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer?: EqualityComparer<TElement>): boolean
     {
-        if (comparer === undefined || comparer === null)
+        if (comparer !== undefined)
         {
-            return this.asEnumerable().sequenceEqual(other);
+            return this.asEnumerable().sequenceEqual(other, comparer);
         }
 
-        return this.asEnumerable().sequenceEqual(other, comparer);
+        return this.asEnumerable().sequenceEqual(other);
     }
 
     public distinct(): IEnumerable<TElement>;
@@ -601,26 +601,24 @@ export abstract class ArrayQueryable<TElement>
         }
     }
 
-    public sequenceEqual(other: IQueryable<TElement> | Array<TElement>): boolean;
-    public sequenceEqual(other: IQueryable<TElement> | Array<TElement>, comparer: EqualityComparer<TElement>): boolean;
-    public sequenceEqual(other: IQueryable<TElement> | Array<TElement>, comparer?: EqualityComparer<TElement>): boolean
+    public sequenceEqual(other: IQueryable<TElement> | TElement[]): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement>): boolean;
+    public sequenceEqual(other: IQueryable<TElement> | TElement[], comparer: EqualityComparer<TElement> = StrictEqualityComparer<TElement>()): boolean
     {
-        if (comparer === undefined || comparer === null)
-        {
-            comparer = StrictEqualityComparer<TElement>();
-        }
-
-        if (other instanceof ArrayQueryable)
+        if (other instanceof ArrayQueryable
+            || other instanceof Array)
         {
             const thisArray = this.asArray();
-            const otherArray = other.asArray();
+            const otherArray = other instanceof ArrayQueryable
+                ? other.asArray() as TElement[]
+                : other;
 
             if (thisArray.length != otherArray.length)
             {
                 return false;
             }
 
-            for (let i = 0; i < thisArray.length; i++)
+            for (let i = 0; i < thisArray.length; ++i)
             {
                 if (!comparer(thisArray[i], otherArray[i]))
                 {
@@ -719,7 +717,7 @@ export class List<TElement>
 
     public pushRange(elements: TElement[] | IQueryable<TElement>): number
     {
-        if (!Array.isArray(elements))
+        if (!(elements instanceof Array))
         {
             elements = elements.toArray();
         }

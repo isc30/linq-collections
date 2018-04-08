@@ -1127,7 +1127,6 @@ export namespace IQueryableUnitTest
                 public lastName: string,
                 public age: number) 
             {
-
             }
         }
 
@@ -1137,6 +1136,7 @@ export namespace IQueryableUnitTest
             const second = instancer([]);
 
             Test.isTrue(first.sequenceEqual(second));
+            Test.isTrue(first.sequenceEqual(second.toArray()));
         });
 
         it("Different count return false (number)", () => 
@@ -1145,6 +1145,7 @@ export namespace IQueryableUnitTest
             const second = instancer<number>([1]);
 
             Test.isFalse(first.sequenceEqual(second));
+            Test.isFalse(first.sequenceEqual(second.toArray()));
         });
 
         it("Same count different values return false (number)", () => 
@@ -1153,6 +1154,7 @@ export namespace IQueryableUnitTest
             const second = instancer<number>([1]);
 
             Test.isFalse(first.sequenceEqual(second));
+            Test.isFalse(first.sequenceEqual(second.toArray()));
         });
 
         it("Different count return false (string)", () => 
@@ -1161,6 +1163,7 @@ export namespace IQueryableUnitTest
             const second = instancer<string>(["test1"]);
 
             Test.isFalse(first.sequenceEqual(second));
+            Test.isFalse(first.sequenceEqual(second.toArray()));
         });
 
         it("Same count different values return false (string)", () => 
@@ -1169,6 +1172,7 @@ export namespace IQueryableUnitTest
             const second = instancer<string>(["test2"]);
 
             Test.isFalse(first.sequenceEqual(second));
+            Test.isFalse(first.sequenceEqual(second.toArray()));
         });
 
         it("Same object in both return true", () => 
@@ -1179,6 +1183,7 @@ export namespace IQueryableUnitTest
             const second = instancer<any>([obj]);
 
             Test.isTrue(first.sequenceEqual(second));
+            Test.isTrue(first.sequenceEqual(second.toArray()));
         });
 
         const stringLengthComparer = (left: string, right: string) => left.length === right.length;
@@ -1189,6 +1194,7 @@ export namespace IQueryableUnitTest
             const second = instancer<string>(["two"]);
 
             Test.isTrue(first.sequenceEqual(second, stringLengthComparer));
+            Test.isTrue(first.sequenceEqual(second.toArray(), stringLengthComparer));
         });
 
         it("Custom comparer; check lengths; should return false (string)", () => 
@@ -1197,6 +1203,7 @@ export namespace IQueryableUnitTest
             const second = instancer<string>(["four"]);
 
             Test.isFalse(first.sequenceEqual(second, stringLengthComparer));
+            Test.isFalse(first.sequenceEqual(second.toArray(), stringLengthComparer));
         });
 
         const personAgeAndFirstNameComparer = (left: Person, right: Person) =>
@@ -1210,6 +1217,7 @@ export namespace IQueryableUnitTest
             const second = instancer<Person>([person, person, person]);
 
             Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test.isTrue(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
         });
 
         it("Custom comparer; same count; different objects with same values; should return true (complex object)", () => 
@@ -1221,6 +1229,7 @@ export namespace IQueryableUnitTest
             const second = instancer<Person>([person2, person1, person2]);
 
             Test.isTrue(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test.isTrue(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
         });
 
         it("Custom comparer; same count; different objects with different values; should return false (complex object)", () => 
@@ -1232,6 +1241,20 @@ export namespace IQueryableUnitTest
             const second = instancer<Person>([person2, person1, person2]);
 
             Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test.isFalse(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
+        });
+
+        it("ArrayQueryable<T> vs different IQueryable<T> must fallback to iterator approach", () => 
+        {
+            const person1 = new Person("Ben", "Jerry", 42);
+            const person2 = new Person("John", "Smith", 42);
+
+            // always ArrayQueryable<T>
+            const first = Enumerable.fromSource([person1, person2, person1]);
+            const second = instancer<Person>([person2, person1, person2]);
+
+            Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
+            Test.isFalse(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
         });
     }
 

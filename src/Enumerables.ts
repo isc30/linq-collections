@@ -121,8 +121,8 @@ export interface IQueryable<TOut>
         selector: Selector<TOut, TSelectorOut[] | IQueryable<TSelectorOut>>)
         : IEnumerable<TSelectorOut>;
 
-    sequenceEqual(other: IQueryable<TOut> | Array<TOut>): boolean;
-    sequenceEqual(other: IQueryable<TOut> | Array<TOut>, comparer: EqualityComparer<TOut>): boolean;
+    sequenceEqual(other: IQueryable<TOut> | TOut[]): boolean;
+    sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut>): boolean;
 
     single(): TOut;
     single(predicate: Predicate<TOut>): TOut;
@@ -280,16 +280,11 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return this.any(e => e === element);
     }
 
-    public sequenceEqual(other: IQueryable<TOut>): boolean;
-    public sequenceEqual(other: IQueryable<TOut>, comparer: EqualityComparer<TOut>): boolean;
-    public sequenceEqual(other: IQueryable<TOut>, comparer?: EqualityComparer<TOut>): boolean
+    public sequenceEqual(other: IQueryable<TOut> | TOut[]): boolean;
+    public sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut>): boolean;
+    public sequenceEqual(other: IQueryable<TOut> | TOut[], comparer: EqualityComparer<TOut> = StrictEqualityComparer<TOut>()): boolean
     {
-        if (comparer === undefined || comparer === null)
-        {
-            comparer = StrictEqualityComparer<TOut>();
-        }
-
-        const otherEnumerable = Array.isArray(other)
+        const otherEnumerable = other instanceof Array
             ? new ArrayEnumerable(other)
             : other.asEnumerable();
 
@@ -347,7 +342,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     {
         const asEnumerable = (e: TOut[] | IQueryable<TOut>): IIterable<TOut> =>
         {
-            return Array.isArray(e)
+            return e instanceof Array
                 ? new ArrayEnumerable(e)
                 : e.asEnumerable();
         };
@@ -734,7 +729,7 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 
     public static fromSource<TElement>(source: TElement[] | IIterable<TElement>): IEnumerable<TElement>
     {
-        if (Array.isArray(source))
+        if (source instanceof Array)
         {
             return new ArrayEnumerable<TElement>(source);
         }
