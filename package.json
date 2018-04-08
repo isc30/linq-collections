@@ -28,7 +28,7 @@
   "homepage": "https://github.com/isc30/linq-collections#readme",
   "scripts": {
     "node-compile": "tsc",
-    "web-tests-compile": "browserify ./test/TestSuite.ts -p [tsify] > linq-tests.web.js",
+    "web-tests-compile": "webpack && browserify ./test/TestSuite.ts -p [tsify] > linq-tests.web.js",
     "pretest": "npm run node-compile && npm run web-tests-compile",
     "test": "nyc mocha ./build/test/TestSuite.js --slow 0",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -44,7 +44,9 @@
     "coveralls": "*",
     "nyc": "*",
     "browserify": "*",
-    "tsify": "*"
+    "tsify": "*",
+    "ts-loader": "*",
+    "webpack": "*"
   },
   "directories": {
     "test": "test",
@@ -89,7 +91,8 @@
   ],
   "nyc": {
     "exclude": [
-      "build/test"
+      "build/test",
+      "dist"
     ]
   }
 }

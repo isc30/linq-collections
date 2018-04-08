@@ -28,7 +28,7 @@ interface Iterator<T>
 export class ArrayIterator<TElement> implements IIterable<TElement>
 {
     protected readonly source: TElement[];
-    private _index: number;
+    private _index: number = -1;
 
     public constructor(source: TElement[])
     {

@@ -1080,11 +1080,9 @@ export namespace IQueryableUnitTest
 
     class SelectManyTestClass
     {
-        public numbers: IQueryable<number>;
-
-        public constructor(numbers: IQueryable<number>)
+        public constructor(
+            public numbers: IQueryable<number>)
         {
-            this.numbers = numbers;
         }
     }
 
@@ -1692,10 +1690,10 @@ export namespace IQueryableUnitTest
         });
     }
 
-    class IThenByTestClass
+    interface IThenByTestClass
     {
-        public id: number;
-        public day: number;
+        id: number;
+        day: number;
     }
 
     function thenBy(instancer: Instancer): void

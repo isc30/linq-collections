@@ -997,6 +997,7 @@ var ConditionalEnumerable = /** @class */ (function (_super) {
     __extends(ConditionalEnumerable, _super);
     function ConditionalEnumerable(source, predicate) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._predicate = predicate;
         return _this;
     }
@@ -1019,6 +1020,7 @@ var SkipWhileEnumerable = /** @class */ (function (_super) {
     __extends(SkipWhileEnumerable, _super);
     function SkipWhileEnumerable(source, predicate) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._predicate = predicate;
         _this._shouldContinueChecking = true;
         return _this;
@@ -1050,6 +1052,7 @@ var TakeWhileEnumerable = /** @class */ (function (_super) {
     __extends(TakeWhileEnumerable, _super);
     function TakeWhileEnumerable(source, predicate) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._predicate = predicate;
         _this._shouldContinueTaking = true;
         return _this;
@@ -1120,6 +1123,7 @@ var UniqueEnumerable = /** @class */ (function (_super) {
     __extends(UniqueEnumerable, _super);
     function UniqueEnumerable(source, keySelector) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._keySelector = keySelector;
         _this._seen = { primitive: { number: {}, string: {}, boolean: {} }, complex: [] };
         return _this;
@@ -1159,11 +1163,11 @@ exports.UniqueEnumerable = UniqueEnumerable;
 var RangeEnumerable = /** @class */ (function (_super) {
     __extends(RangeEnumerable, _super);
     function RangeEnumerable(source, start, count) {
-        var _this = this;
+        var _this = _super.call(this, source) || this;
+        _this.source = source;
         if ((start !== undefined && start < 0) || (count !== undefined && count < 0)) {
             throw new Error("Incorrect parameters");
         }
-        _this = _super.call(this, source) || this;
         _this._start = start;
         _this._count = count;
         _this._currentIndex = -1;
@@ -1212,6 +1216,7 @@ var TransformEnumerable = /** @class */ (function (_super) {
     __extends(TransformEnumerable, _super);
     function TransformEnumerable(source, transform) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._transform = transform;
         _this._currentValue = new Utils_1.Cached();
         return _this;
@@ -1242,6 +1247,7 @@ var ReverseEnumerable = /** @class */ (function (_super) {
     __extends(ReverseEnumerable, _super);
     function ReverseEnumerable(source) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._elements = new Utils_1.Cached();
         _this._currentIndex = -1;
         return _this;
@@ -1315,6 +1321,7 @@ var OrderedEnumerable = /** @class */ (function (_super) {
     __extends(OrderedEnumerable, _super);
     function OrderedEnumerable(source, comparer) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._comparer = comparer;
         _this._elements = new Utils_1.Cached();
         _this._currentIndex = -1;
@@ -1428,6 +1435,7 @@ var DefaultIfEmptyEnumerable = /** @class */ (function (_super) {
     __extends(DefaultIfEmptyEnumerable, _super);
     function DefaultIfEmptyEnumerable(source, defaultValue) {
         var _this = _super.call(this, source) || this;
+        _this.source = source;
         _this._mustUseDefaultValue = undefined;
         _this._defaultValue = defaultValue;
         return _this;
@@ -1444,7 +1452,8 @@ var DefaultIfEmptyEnumerable = /** @class */ (function (_super) {
     DefaultIfEmptyEnumerable.prototype.next = function () {
         var hasNextElement = _super.prototype.next.call(this);
         // single default element
-        this._mustUseDefaultValue = this._mustUseDefaultValue === undefined && !hasNextElement;
+        this._mustUseDefaultValue = !hasNextElement
+            && this._mustUseDefaultValue === undefined;
         return this._mustUseDefaultValue || hasNextElement;
     };
     DefaultIfEmptyEnumerable.prototype.reset = function () {
@@ -1478,6 +1487,7 @@ interface Iterator<T>
 }*/
 var ArrayIterator = /** @class */ (function () {
     function ArrayIterator(source) {
+        this._index = -1;
         this.source = source;
         this.reset();
     }
@@ -3214,11 +3224,6 @@ var IQueryableUnitTest;
             Test_1.Test.isArrayEqual(where.toArray(), []);
         });
     }
-    var IThenByTestClass = /** @class */ (function () {
-        function IThenByTestClass() {
-        }
-        return IThenByTestClass;
-    }());
     function thenBy(instancer) {
         it("Return empty if empty source (iterator)", function () {
             var base = instancer([]);

@@ -822,10 +822,11 @@ export class Enumerable<TElement> extends EnumerableBase<TElement, TElement>
 // region ConditionalEnumerable
 export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement>;
     private _predicate: Predicate<TElement>;
 
-    public constructor(source: IEnumerable<TElement>, predicate: Predicate<TElement>)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>,
+        predicate: Predicate<TElement>)
     {
         super(source);
         this._predicate = predicate;
@@ -853,11 +854,12 @@ export class ConditionalEnumerable<TElement> extends Enumerable<TElement>
 // region SkipWhileEnumerable
 export class SkipWhileEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement>;
     private _predicate: Predicate<TElement>;
     private _shouldContinueChecking: boolean;
 
-    public constructor(source: IEnumerable<TElement>, predicate: Predicate<TElement>)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>,
+        predicate: Predicate<TElement>)
     {
         super(source);
         this._predicate = predicate;
@@ -899,11 +901,12 @@ export class SkipWhileEnumerable<TElement> extends Enumerable<TElement>
 // region TakeWhileEnumerable
 export class TakeWhileEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement>;
     private _predicate: Predicate<TElement>;
     private _shouldContinueTaking: boolean;
 
-    public constructor(source: IEnumerable<TElement>, predicate: Predicate<TElement>)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>,
+        predicate: Predicate<TElement>)
     {
         super(source);
         this._predicate = predicate;
@@ -997,11 +1000,12 @@ export class ConcatEnumerable<TElement> extends Enumerable<TElement>
 // region UniqueEnumerable
 export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement>;
     private _seen: { primitive: Dynamic, complex: Array<TElement | TKey> };
     private _keySelector: Selector<TElement, TKey> | undefined;
 
-    public constructor(source: IEnumerable<TElement>, keySelector?: Selector<TElement, TKey>)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>,
+        keySelector?: Selector<TElement, TKey>)
     {
         super(source);
         this._keySelector = keySelector;
@@ -1052,19 +1056,21 @@ export class UniqueEnumerable<TElement, TKey> extends Enumerable<TElement>
 // region RangeEnumerable
 export class RangeEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement>;
     private _start: number | undefined;
     private _count: number | undefined;
     private _currentIndex: number;
 
-    public constructor(source: IEnumerable<TElement>, start: number | undefined, count: number | undefined)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>,
+        start: number | undefined, count: number | undefined)
     {
+        super(source);
+
         if ((start !== undefined && start < 0) || (count !== undefined && count < 0))
         {
             throw new Error("Incorrect parameters");
         }
 
-        super(source);
         this._start = start;
         this._count = count;
         this._currentIndex = -1;
@@ -1129,11 +1135,12 @@ export class RangeEnumerable<TElement> extends Enumerable<TElement>
 // region TransformEnumerable
 export class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement, TOut>
 {
-    protected source: IEnumerable<TElement>;
     private _transform: Selector<TElement, TOut>;
     private _currentValue: Cached<TOut>;
 
-    public constructor(source: IEnumerable<TElement>, transform: Selector<TElement, TOut>)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>,
+        transform: Selector<TElement, TOut>)
     {
         super(source);
         this._transform = transform;
@@ -1172,11 +1179,11 @@ export class TransformEnumerable<TElement, TOut> extends EnumerableBase<TElement
 // region ReverseEnumerable
 export class ReverseEnumerable<TElement> extends Enumerable<TElement>
 {
-    protected source: IEnumerable<TElement>;
     private _elements: Cached<TElement[]>;
     private _currentIndex: number;
 
-    public constructor(source: IEnumerable<TElement>)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>)
     {
         super(source);
         this._elements = new Cached<TElement[]>();
@@ -1296,12 +1303,13 @@ export class OrderedEnumerable<TElement>
     extends EnumerableBase<TElement, TElement>
     implements IOrderedEnumerable<TElement>
 {
-    protected source: IEnumerable<TElement>;
     private _comparer: Comparer<TElement>;
     private _elements: Cached<TElement[]>;
     private _currentIndex: number;
 
-    public constructor(source: IEnumerable<TElement>, comparer: Comparer<TElement>)
+    public constructor(
+        protected readonly source: IEnumerable<TElement>,
+        comparer: Comparer<TElement>)
     {
         super(source);
 
@@ -1504,11 +1512,12 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 // region DefaultIfEmptyEnumerable
 export class DefaultIfEmptyEnumerable<TOut> extends EnumerableBase<TOut, TOut | undefined>
 {
-    protected source: IEnumerable<TOut>;
-    private _mustUseDefaultValue: boolean | undefined;
-    private _defaultValue: TOut | undefined;
+    private _mustUseDefaultValue?: boolean;
+    private _defaultValue?: TOut;
 
-    public constructor(source: IEnumerable<TOut>, defaultValue?: TOut)
+    public constructor(
+        protected readonly source: IEnumerable<TOut>,
+        defaultValue?: TOut)
     {
         super(source);
         this._mustUseDefaultValue = undefined;
@@ -1535,7 +1544,8 @@ export class DefaultIfEmptyEnumerable<TOut> extends EnumerableBase<TOut, TOut | 
         const hasNextElement = super.next();
 
         // single default element
-        this._mustUseDefaultValue = this._mustUseDefaultValue === undefined && !hasNextElement;
+        this._mustUseDefaultValue = !hasNextElement
+            && this._mustUseDefaultValue === undefined;
 
         return this._mustUseDefaultValue || hasNextElement;
     }
