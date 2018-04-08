@@ -1250,7 +1250,7 @@ export namespace IQueryableUnitTest
             const person2 = new Person("John", "Smith", 42);
 
             // always ArrayQueryable<T>
-            const first = Enumerable.fromSource([person1, person2, person1]);
+            const first = new List([person1, person2, person1]);
             const second = instancer<Person>([person2, person1, person2]);
 
             Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));

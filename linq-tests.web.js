@@ -2905,7 +2905,7 @@ var IQueryableUnitTest;
             var person1 = new Person("Ben", "Jerry", 42);
             var person2 = new Person("John", "Smith", 42);
             // always ArrayQueryable<T>
-            var first = Enumerables_1.Enumerable.fromSource([person1, person2, person1]);
+            var first = new Collections_1.List([person1, person2, person1]);
             var second = instancer([person2, person1, person2]);
             Test_1.Test.isFalse(first.sequenceEqual(second, personAgeAndFirstNameComparer));
             Test_1.Test.isFalse(first.sequenceEqual(second.toArray(), personAgeAndFirstNameComparer));
