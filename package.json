@@ -30,7 +30,7 @@
     "compile": "webpack",
     "pretest": "npm run compile",
     "prepublish": "npm run compile",
-    "test": "ts-mocha ./test/TestSuite.ts --slow 0 && nyc --include src/** ts-mocha ./test/TestSuite.ts --slow 0",
+    "test": "nyc --cdw . --include src/** ts-mocha test/TestSuite.ts --slow 0",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {},
