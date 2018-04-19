@@ -15,7 +15,7 @@
 export class Cached<T>
 {
     private _isValid: boolean;
-    private _value: T;
+    private _value?: T;
 
     public constructor()
     {
@@ -39,7 +39,7 @@ export class Cached<T>
             throw new Error("Trying to get value of invalid cache");
         }
 
-        return this._value;
+        return this._value!;
     }
 
     public set value(value: T)

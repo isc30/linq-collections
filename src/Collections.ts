@@ -865,7 +865,7 @@ export class Dictionary<TKey extends Indexer, TValue>
     }
 
     protected dictionary: Dynamic;
-    protected keyType: Type;
+    protected keyType?: Type;
 
     public constructor();
     public constructor(keyValuePairs: Array<IKeyValue<TKey, TValue>>);

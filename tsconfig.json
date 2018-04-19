@@ -19,13 +19,10 @@
         "strictNullChecks": true,
         "allowUnreachableCode": false,
         "strictFunctionTypes": true,
-        "types": ["mocha"],
-        "outDir": "build",
-        "strictPropertyInitialization": false
+        "types": ["mocha"]
     },
     "exclude": [
         "node_modules",
-        "!node_modules/@types",
-        "build"
+        "!node_modules/@types"
     ]
 }

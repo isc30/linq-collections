@@ -12,6 +12,7 @@ assets/
 *.map
 *.config
 *.html
+*.d.ts
 
 # User-specific files
 *.suo

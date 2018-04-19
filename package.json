@@ -2,17 +2,17 @@
   "name": "linq-collections",
   "version": "1.0.253",
   "description": "Linq-Collections (ES5): [IEnumerable, IQueryable, ...] + [List, Dictionary, Stack, ... + readonly]",
-  "main": "./build/src/Linq.js",
+  "main": "./dist/linq-collections.js",
   "files": [
-    "build/src",
+    "./dist",
     "README.md",
     "LICENSE"
   ],
   "typescript": {
-    "definition": "./build/src/Linq.d.ts"
+    "definition": "./dist/src/Linq.d.ts"
   },
-  "typings": "./build/src/Linq.d.ts",
-  "types": "./build/src/Linq.d.ts",
+  "typings": "./dist/src/Linq.d.ts",
+  "types": "./dist/src/Linq.d.ts",
   "author": {
     "name": "Ivan Sanz",
     "email": "ivansanzcarasa@gmail.com",
@@ -27,24 +27,23 @@
   },
   "homepage": "https://github.com/isc30/linq-collections#readme",
   "scripts": {
-    "node-compile": "tsc",
-    "web-tests-compile": "browserify ./test/TestSuite.ts -p [tsify] > linq-tests.web.js",
-    "pretest": "npm run node-compile && npm run web-tests-compile",
-    "test": "nyc mocha ./build/test/TestSuite.js --slow 0",
-    "report-coverage": "nyc report --reporter=text-lcov | coveralls",
-    "publish-node": "npm run node-compile",
-    "publish-web": "browserify ./src/Linq.ts -p [tsify] > ./build/src/linq.web.js",
-    "prepublish": "npm run node-compile"
+    "compile": "webpack",
+    "pretest": "npm run compile",
+    "prepublish": "npm run compile",
+    "test": "nyc mocha ./linq-collections-test.js --slow 0",
+    "report-coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {},
   "devDependencies": {
-    "typescript": "*",
     "@types/mocha": "*",
-    "mocha": "*",
     "coveralls": "*",
+    "mocha": "*",
+    "ts-node": "*",
     "nyc": "*",
-    "browserify": "*",
-    "tsify": "*"
+    "ts-loader": "*",
+    "typescript": "*",
+    "webpack": "*",
+    "webpack-cli": "*"
   },
   "directories": {
     "test": "test",
@@ -89,7 +88,7 @@
   ],
   "nyc": {
     "exclude": [
-      "build/test"
+      "**/*test.*"
     ]
   }
 }
