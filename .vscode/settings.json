@@ -13,7 +13,6 @@
         "**/.git": true,
         "**/.svn": true,
         "**/.hg": true,
-        "**/*.js": true,
         "**/*.map": true,
         "**/node_modules": true,
         "**/.nyc_output": true,
