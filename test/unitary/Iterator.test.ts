@@ -2,7 +2,8 @@ import { Test } from "../Test";
 import { ArrayIterator, IIterable } from "../../src/Iterators";
 import { Enumerable, ArrayEnumerable, ConditionalEnumerable,
     ConcatEnumerable, UniqueEnumerable, RangeEnumerable,
-    TransformEnumerable, ReverseEnumerable, OrderedEnumerable} from "../../src/Enumerables";
+    TransformEnumerable, ReverseEnumerable, OrderedEnumerable,
+    ZippedEnumerable } from "../../src/Enumerables";
 
 export namespace IteratorUnitTest
 {
@@ -45,6 +46,9 @@ export namespace IteratorUnitTest
 
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
+
+        describe(`${name} (ZippedEnumerable)`, () => test(
+            <T>(e: T[]) => new ZippedEnumerable(Enumerable.fromSource(e), Enumerable.fromSource(e), (x, y) => x)));
     }
 
     export function run(): void

@@ -16,6 +16,7 @@ import
     TransformEnumerable,
     UniqueEnumerable,
     DefaultIfEmptyEnumerable,
+    ZippedEnumerable
 } from "../../src/Enumerables";
 import { Dictionary, EnumerableCollection, IDictionary, List, Stack } from "../../src/Collections";
 
@@ -96,6 +97,9 @@ export namespace IQueryableUnitTest
             <T>(e: T[]) => new DefaultIfEmptyEnumerable(
                 Enumerable.fromSource(e)).where(i => i !== undefined) as IQueryable<T>));
 
+        describe(`${name} (ZippedEnumerable)`, () => test(
+            <T>(e: T[]) => new ZippedEnumerable(Enumerable.fromSource(e), Enumerable.fromSource(e), (x, y) => x)));
+
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
 
@@ -133,6 +137,7 @@ export namespace IQueryableUnitTest
         runTest("First", first);
         runTest("FirstOrDefault", firstOrDefault);
         runTest("ForEach", forEach);
+        runTest("GroupBy", groupBy);
         runTest("Last", last);
         runTest("LastOrDefault", lastOrDefault);
         runTest("Max", max);
@@ -155,7 +160,7 @@ export namespace IQueryableUnitTest
         runTest("ThenByDescending", thenByDescending);
         runTest("Union", union);
         runTest("Where", where);
-        runTest("GroupBy", groupBy);
+        runTest("Zip", zip);
     }
 
     function toArray(instancer: Instancer): void
@@ -2002,6 +2007,37 @@ export namespace IQueryableUnitTest
             Test.isArrayEqual(grouped.single(g => g.key === 1).value.toArray(), ["Juanito"]);
             Test.isArrayEqual(grouped.single(g => g.key === 2).value.toArray(), ["Juanmari", "Begoña"]);
             Test.isArrayEqual(grouped.single(g => g.key === 3).value.toArray(), ["Ivan", "Uxue"]);
+        });
+    }
+
+    function zip(instancer: Instancer): void
+    {
+        it("Empty zip if empty sources", () =>
+        {
+            const numbers = [1, 2, 3];
+            const selector = (x: number, y: number) => x + y;
+
+            Test.isArrayEqual(instancer<number>([]).zip(<number[]>[], selector).toArray(), []);
+            Test.isArrayEqual(instancer<number>([]).zip(numbers, selector).toArray(), []);
+            Test.isArrayEqual(instancer<number>(numbers).zip(<number[]>[], selector).toArray(), []);
+        });
+
+        it("Simple zipping", () =>
+        {
+            const numbers = [1, 2, 3];
+            const letters = ["one", "two", "three"];
+
+            Test.isArrayEqual(instancer<number>(numbers).zip(letters, (x, y) => `${x}: ${y}`).toArray(), ["1: one", "2: two", "3: three"]);
+            Test.isArrayEqual(instancer<string>(letters).zip(numbers, (x, y) => x.length + y).toArray(), [4, 5, 8]);
+        });
+
+        it("Zipping of collections with unequal number of elements", () =>
+        {
+            const odd = [1, 3, 5, 7, 9];
+            const even = [2, 4, 6];
+
+            Test.isArrayEqual(instancer<number>(odd).zip(even, (x, y) => y - x).toArray(), [1, 1, 1]);
+            Test.isArrayEqual(instancer<number>(even).zip(odd, (x, y) => x * y).toArray(), [2, 12, 30]);
         });
     }
 }
