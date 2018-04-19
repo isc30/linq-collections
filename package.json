@@ -30,7 +30,7 @@
     "compile": "webpack",
     "pretest": "npm run compile",
     "prepublish": "npm run compile",
-    "test": "nyc --cdw . --include src/** mocha --compilers ts:ts-node/register ./test/TestSuite.ts --slow 0",
+    "test": "nyc mocha ./linq-collections-test.js --slow 0",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {},
@@ -88,8 +88,7 @@
   ],
   "nyc": {
     "exclude": [
-      "dist/test",
-      "dist"
+      "**/*test.*"
     ]
   }
 }
