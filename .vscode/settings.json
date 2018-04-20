@@ -9,7 +9,6 @@
     "editor.quickSuggestionsDelay": 0,
     "typescript.referencesCodeLens.enabled": true,
     "files.exclude": {
-        ".gitignore": true,
         "**/.git": true,
         "**/.svn": true,
         "**/.hg": true,

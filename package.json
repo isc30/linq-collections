@@ -27,8 +27,7 @@
   },
   "homepage": "https://github.com/isc30/linq-collections#readme",
   "scripts": {
-    "build-web": "webpack-cli --mode=development",
-    "build-web-prod": "webpack-cli --mode=production",
+    "build-web": "webpack-cli",
     "test": "nyc mocha -r ts-node/register ./test/TestSuite.ts",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls"
   },
@@ -39,9 +38,10 @@
     "coveralls": "*",
     "mocha": "*",
     "nyc": "*",
-    "source-map-support": "^0.5.4",
     "ts-node": "^6.0.0",
-    "typescript": "*",
+    "tslint": "^5.9.1",
+    "tslint-loader": "^3.6.0",
+    "typescript": "^2.8.1",
     "webpack": "^4.6.0",
     "webpack-cli": "^2.0.14"
   },
