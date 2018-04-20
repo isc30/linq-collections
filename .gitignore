@@ -6,7 +6,7 @@
 build/
 .vscode/
 assets/
-
+dist/
 *.csproj
 *.map
 *.config
