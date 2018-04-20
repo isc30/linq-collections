@@ -6,9 +6,8 @@
 build/
 .vscode/
 assets/
-
+dist/
 *.csproj
-*.js
 *.map
 *.config
 *.html
