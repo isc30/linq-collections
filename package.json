@@ -29,15 +29,13 @@
   "scripts": {
     "build-web": "webpack-cli --mode=development",
     "build-web-prod": "webpack-cli --mode=production",
-    "test": "nyc mocha -r ts-node/register test/**/*.test.ts",
+    "test": "nyc mocha -r ts-node/register ./test/TestSuite.ts",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/chai": "^4.1.2",
     "@types/mocha": "*",
     "awesome-typescript-loader": "^5.0.0",
-    "chai": "^4.1.2",
     "coveralls": "*",
     "mocha": "*",
     "nyc": "*",
@@ -94,7 +92,8 @@
       ".tsx"
     ],
     "exclude": [
-      "**/*.test.ts"
+      "**/*.test.ts",
+      "test/"
     ]
   }
 }
