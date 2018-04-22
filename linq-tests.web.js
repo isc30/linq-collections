@@ -3523,7 +3523,7 @@ var IQueryableUnitTest;
         });
     }
     function zip(instancer) {
-        it("Return empty if empty sources", function () {
+        it("Empty zip if empty sources", function () {
             var numbers = [1, 2, 3];
             var selector = function (x, y) { return x + y; };
             Test_1.Test.isArrayEqual(instancer([]).zip([], selector).toArray(), []);
@@ -3532,15 +3532,23 @@ var IQueryableUnitTest;
         });
         it("Simple zipping", function () {
             var numbers = [1, 2, 3];
-            var letters = ["a", "b", "c"];
-            Test_1.Test.isArrayEqual(instancer(numbers).zip(letters, function (x, y) { return "" + y + x; }).toArray(), ["a1", "b2", "c3"]);
-            Test_1.Test.isArrayEqual(instancer(letters).zip(numbers, function (x, y) { return x.length + y; }).toArray(), [2, 3, 4]);
+            var words = ["one", "two", "three"];
+            Test_1.Test.isArrayEqual(instancer(numbers).zip(words, function (x, y) { return x + ": " + y; }).toArray(), ["1: one", "2: two", "3: three"]);
+            Test_1.Test.isArrayEqual(instancer(words).zip(numbers, function (x, y) { return x.length + y; }).toArray(), [4, 5, 8]);
         });
         it("Zipping of collections with unequal number of elements", function () {
             var odd = [1, 3, 5, 7, 9];
             var even = [2, 4, 6];
             Test_1.Test.isArrayEqual(instancer(odd).zip(even, function (x, y) { return y - x; }).toArray(), [1, 1, 1]);
             Test_1.Test.isArrayEqual(instancer(even).zip(odd, function (x, y) { return x * y; }).toArray(), [2, 12, 30]);
+        });
+        it("Deffered zipping", function () {
+            var letterList = new Collections_1.List();
+            var numberList = new Collections_1.List();
+            var zipped = letterList.zip(numberList, function (x, y) { return "" + x + y; });
+            letterList.pushRange(["a", "b", "c"]);
+            numberList.pushRange([1, 2, 3]);
+            Test_1.Test.isArrayEqual(zipped.toArray(), ["a1", "b2", "c3"]);
         });
     }
 })(IQueryableUnitTest = exports.IQueryableUnitTest || (exports.IQueryableUnitTest = {}));

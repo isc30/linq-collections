@@ -2025,10 +2025,10 @@ export namespace IQueryableUnitTest
         it("Simple zipping", () =>
         {
             const numbers = [1, 2, 3];
-            const letters = ["one", "two", "three"];
+            const words = ["one", "two", "three"];
 
-            Test.isArrayEqual(instancer<number>(numbers).zip(letters, (x, y) => `${x}: ${y}`).toArray(), ["1: one", "2: two", "3: three"]);
-            Test.isArrayEqual(instancer<string>(letters).zip(numbers, (x, y) => x.length + y).toArray(), [4, 5, 8]);
+            Test.isArrayEqual(instancer<number>(numbers).zip(words, (x, y) => `${x}: ${y}`).toArray(), ["1: one", "2: two", "3: three"]);
+            Test.isArrayEqual(instancer<string>(words).zip(numbers, (x, y) => x.length + y).toArray(), [4, 5, 8]);
         });
 
         it("Zipping of collections with unequal number of elements", () =>
@@ -2038,6 +2038,19 @@ export namespace IQueryableUnitTest
 
             Test.isArrayEqual(instancer<number>(odd).zip(even, (x, y) => y - x).toArray(), [1, 1, 1]);
             Test.isArrayEqual(instancer<number>(even).zip(odd, (x, y) => x * y).toArray(), [2, 12, 30]);
+        });
+
+        it("Deffered zipping", () =>
+        {
+            const letterList = new List<string>();
+            const numberList = new List<number>();
+
+            const zipped = letterList.zip(numberList, (x, y) => `${x}${y}`);
+
+            letterList.pushRange(["a", "b", "c"]);
+            numberList.pushRange([1, 2, 3]);
+
+            Test.isArrayEqual(zipped.toArray(), ["a1", "b2", "c3"]);
         });
     }
 }
