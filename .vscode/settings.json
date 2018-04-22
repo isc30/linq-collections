@@ -9,26 +9,12 @@
     "editor.quickSuggestionsDelay": 0,
     "typescript.referencesCodeLens.enabled": true,
     "files.exclude": {
-        ".gitignore": true,
         "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/*.js": true,
         "**/*.map": true,
         "**/node_modules": true,
         "**/.nyc_output": true,
         "**/coverage": true,
         "**/etc": true
     },
-    "files.insertFinalNewline": true,
-    "window.zoomLevel": 0,
-    "emeraldwalk.runonsave": {
-        "autoClearConsole": true,
-        "commands": [
-            {
-                "match": "\\.ts$",
-                "cmd": "npm run browser-tests-compile --prefix ${workspaceRoot}"
-            }
-        ]
-    }
+    "files.insertFinalNewline": true
 }
