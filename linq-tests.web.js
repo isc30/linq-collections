@@ -3574,6 +3574,10 @@ var IteratorUnitTest;
         describe(name + " (ReverseEnumerable)", function () { return test(function (e) { return new Enumerables_1.ReverseEnumerable(new Enumerables_1.ReverseEnumerable(Enumerables_1.Enumerable.fromSource(e))); }); });
         describe(name + " (OrderedEnumerable)", function () { return test(function (e) { return new Enumerables_1.OrderedEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x, y) { return 0; }); }); });
         describe(name + " (ArrayEnumerable)", function () { return test(function (e) { return new Enumerables_1.ArrayEnumerable(e); }); });
+        describe(name + " (DefaultIfEmptyEnumerable)", function () { return test(function (e) { return new Enumerables_1.DefaultIfEmptyEnumerable(Enumerables_1.Enumerable.fromSource(e))
+            .where(function (p) { return p !== undefined; }); }); });
+        describe(name + " (TakeWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.TakeWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (e) { return true; }); }); });
+        describe(name + " (SkipWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.SkipWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (e) { return false; }); }); });
         describe(name + " (ZippedEnumerable)", function () { return test(function (e) { return new Enumerables_1.ZippedEnumerable(Enumerables_1.Enumerable.fromSource(e), Enumerables_1.Enumerable.fromSource(e), function (x, y) { return x; }); }); });
     }
     function run() {

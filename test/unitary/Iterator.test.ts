@@ -3,6 +3,7 @@ import { ArrayIterator, IIterable } from "../../src/Iterators";
 import { Enumerable, ArrayEnumerable, ConditionalEnumerable,
     ConcatEnumerable, UniqueEnumerable, RangeEnumerable,
     TransformEnumerable, ReverseEnumerable, OrderedEnumerable,
+    DefaultIfEmptyEnumerable, TakeWhileEnumerable, SkipWhileEnumerable,
     ZippedEnumerable } from "../../src/Enumerables";
 
 export namespace IteratorUnitTest
@@ -47,6 +48,16 @@ export namespace IteratorUnitTest
         describe(`${name} (ArrayEnumerable)`, () => test(
             <T>(e: T[]) => new ArrayEnumerable(e)));
 
+        describe(`${name} (DefaultIfEmptyEnumerable)`, () => test(
+            <T>(e: T[]) => new DefaultIfEmptyEnumerable(Enumerable.fromSource(e))
+                .where(p => p !== undefined) as IIterable<T>));
+
+        describe(`${name} (TakeWhileEnumerable)`, () => test(
+            <T>(e: T[]) => new TakeWhileEnumerable(Enumerable.fromSource(e), e => true)));
+
+        describe(`${name} (SkipWhileEnumerable)`, () => test(
+            <T>(e: T[]) => new SkipWhileEnumerable(Enumerable.fromSource(e), e => false)));
+      
         describe(`${name} (ZippedEnumerable)`, () => test(
             <T>(e: T[]) => new ZippedEnumerable(Enumerable.fromSource(e), Enumerable.fromSource(e), (x, y) => x)));
     }
