@@ -426,7 +426,7 @@ export abstract class EnumerableCollection<TElement>
         return this.asEnumerable().defaultIfEmpty();
     }
 
-    public zip<TOther, TSelectorOut>(other: TOther[] | IQueryable<TOther>, selector: ZipSelector<TElement, TOther, TSelectorOut>): IEnumerable<TSelectorOut>
+    public zip<TOther, TSelectorOut>(other: IQueryable<TOther> | TOther[], selector: ZipSelector<TElement, TOther, TSelectorOut>): IEnumerable<TSelectorOut>
     {
         return this.asEnumerable().zip(other, selector);
     }

@@ -144,7 +144,7 @@ export interface IQueryable<TOut>
 
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
 
-    zip<TOther, TSelectorOut>(other: TOther[] | IQueryable<TOther>, selector: ZipSelector<TOut, TOther, TSelectorOut>): IEnumerable<TSelectorOut>;
+    zip<TOther, TSelectorOut>(other: IQueryable<TOther> | TOther[], selector: ZipSelector<TOut, TOther, TSelectorOut>): IEnumerable<TSelectorOut>;
 }
 
 export interface IEnumerable<TOut> extends IQueryable<TOut>, IIterable<TOut>
@@ -723,7 +723,7 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
         return new UniqueEnumerable(this.concat(other));
     }
 
-    public zip<TOther, TSelectorOut>(other: TOther[] | IQueryable<TOther>, selector: ZipSelector<TOut, TOther, TSelectorOut>): IEnumerable<TSelectorOut>
+    public zip<TOther, TSelectorOut>(other: IQueryable<TOther> | TOther[], selector: ZipSelector<TOut, TOther, TSelectorOut>): IEnumerable<TSelectorOut>
     {
         const otherAsEnumerable = other instanceof Array
             ? new ArrayEnumerable(other)
