@@ -2042,8 +2042,8 @@ export namespace IQueryableUnitTest
 
         it("Deferred zipping", () =>
         {
-            const letterList = new List<string>();
-            const numberList = new List<number>();
+            const letterList = instancer<string>([]).toList();
+            const numberList = instancer<number>([]).toList();
 
             const deferredZipping = letterList.zip(numberList, (x, y) => `${x}${y}`);
 

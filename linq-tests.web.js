@@ -3542,13 +3542,13 @@ var IQueryableUnitTest;
             Test_1.Test.isArrayEqual(instancer(odd).zip(even, function (x, y) { return y - x; }).toArray(), [1, 1, 1]);
             Test_1.Test.isArrayEqual(instancer(even).zip(odd, function (x, y) { return x * y; }).toArray(), [2, 12, 30]);
         });
-        it("Deffered zipping", function () {
-            var letterList = new Collections_1.List();
-            var numberList = new Collections_1.List();
-            var zipped = letterList.zip(numberList, function (x, y) { return "" + x + y; });
+        it("Deferred zipping", function () {
+            var letterList = instancer([]).toList();
+            var numberList = instancer([]).toList();
+            var deferredZipping = letterList.zip(numberList, function (x, y) { return "" + x + y; });
             letterList.pushRange(["a", "b", "c"]);
             numberList.pushRange([1, 2, 3]);
-            Test_1.Test.isArrayEqual(zipped.toArray(), ["a1", "b2", "c3"]);
+            Test_1.Test.isArrayEqual(deferredZipping.toArray(), ["a1", "b2", "c3"]);
         });
     }
 })(IQueryableUnitTest = exports.IQueryableUnitTest || (exports.IQueryableUnitTest = {}));
