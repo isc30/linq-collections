@@ -2040,17 +2040,17 @@ export namespace IQueryableUnitTest
             Test.isArrayEqual(instancer<number>(even).zip(odd, (x, y) => x * y).toArray(), [2, 12, 30]);
         });
 
-        it("Deffered zipping", () =>
+        it("Deferred zipping", () =>
         {
             const letterList = new List<string>();
             const numberList = new List<number>();
 
-            const zipped = letterList.zip(numberList, (x, y) => `${x}${y}`);
+            const deferredZipping = letterList.zip(numberList, (x, y) => `${x}${y}`);
 
             letterList.pushRange(["a", "b", "c"]);
             numberList.pushRange([1, 2, 3]);
 
-            Test.isArrayEqual(zipped.toArray(), ["a1", "b2", "c3"]);
+            Test.isArrayEqual(deferredZipping.toArray(), ["a1", "b2", "c3"]);
         });
     }
 }
