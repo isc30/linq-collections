@@ -232,6 +232,9 @@ var EnumerableCollection = /** @class */ (function () {
         }
         return this.asEnumerable().defaultIfEmpty();
     };
+    EnumerableCollection.prototype.zip = function (other, selector) {
+        return this.asEnumerable().zip(other, selector);
+    };
     return EnumerableCollection;
 }());
 exports.EnumerableCollection = EnumerableCollection;
@@ -922,6 +925,12 @@ var EnumerableBase = /** @class */ (function () {
     EnumerableBase.prototype.union = function (other) {
         return new UniqueEnumerable(this.concat(other));
     };
+    EnumerableBase.prototype.zip = function (other, selector) {
+        var otherAsEnumerable = other instanceof Array
+            ? new ArrayEnumerable(other)
+            : other.asEnumerable();
+        return new ZippedEnumerable(this, otherAsEnumerable, selector);
+    };
     return EnumerableBase;
 }());
 exports.EnumerableBase = EnumerableBase;
@@ -1454,6 +1463,43 @@ var DefaultIfEmptyEnumerable = /** @class */ (function (_super) {
     return DefaultIfEmptyEnumerable;
 }(EnumerableBase));
 exports.DefaultIfEmptyEnumerable = DefaultIfEmptyEnumerable;
+// endregion
+// region ZippedEnumerable
+var ZippedEnumerable = /** @class */ (function (_super) {
+    __extends(ZippedEnumerable, _super);
+    function ZippedEnumerable(source, otherSource, selector) {
+        var _this = _super.call(this, source) || this;
+        _this._otherSource = otherSource;
+        _this._isOneOfTheSourcesFinished = false;
+        _this._currentValue = new Utils_1.Cached();
+        _this._selector = selector;
+        return _this;
+    }
+    ZippedEnumerable.prototype.copy = function () {
+        return new ZippedEnumerable(this.source.copy(), this._otherSource.copy(), this._selector);
+    };
+    ZippedEnumerable.prototype.value = function () {
+        if (!this._currentValue.isValid()) {
+            this._currentValue.value = this._selector(this.source.value(), this._otherSource.value());
+        }
+        return this._currentValue.value;
+    };
+    ZippedEnumerable.prototype.reset = function () {
+        _super.prototype.reset.call(this);
+        this._otherSource.reset();
+        this._isOneOfTheSourcesFinished = false;
+        this._currentValue.invalidate();
+    };
+    ZippedEnumerable.prototype.next = function () {
+        this._currentValue.invalidate();
+        if (!this._isOneOfTheSourcesFinished) {
+            this._isOneOfTheSourcesFinished = !_super.prototype.next.call(this) || !this._otherSource.next();
+        }
+        return !this._isOneOfTheSourcesFinished;
+    };
+    return ZippedEnumerable;
+}(EnumerableBase));
+exports.ZippedEnumerable = ZippedEnumerable;
 // endregion
 
 },{"./Collections":1,"./Comparers":2,"./Iterators":4,"./Utils":5}],4:[function(require,module,exports){
@@ -2093,6 +2139,7 @@ var IQueryableUnitTest;
         describe(name + " (SkipWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.SkipWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return false; }); }); });
         describe(name + " (TakeWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.TakeWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (x) { return true; }); }); });
         describe(name + " (DefaultIfEmptyEnumerable)", function () { return test(function (e) { return new Enumerables_1.DefaultIfEmptyEnumerable(Enumerables_1.Enumerable.fromSource(e)).where(function (i) { return i !== undefined; }); }); });
+        describe(name + " (ZippedEnumerable)", function () { return test(function (e) { return new Enumerables_1.ZippedEnumerable(Enumerables_1.Enumerable.fromSource(e), Enumerables_1.Enumerable.fromSource(e), function (x, y) { return x; }); }); });
         describe(name + " (ArrayEnumerable)", function () { return test(function (e) { return new Enumerables_1.ArrayEnumerable(e); }); });
         describe(name + " (EnumerableCollection)", function () { return test(function (e) { return new EnumerableCollectionBase(e); }); });
         describe(name + " (List)", function () { return test(function (e) { return new Collections_1.List(e); }); });
@@ -2119,6 +2166,7 @@ var IQueryableUnitTest;
         runTest("First", first);
         runTest("FirstOrDefault", firstOrDefault);
         runTest("ForEach", forEach);
+        runTest("GroupBy", groupBy);
         runTest("Last", last);
         runTest("LastOrDefault", lastOrDefault);
         runTest("Max", max);
@@ -2141,7 +2189,7 @@ var IQueryableUnitTest;
         runTest("ThenByDescending", thenByDescending);
         runTest("Union", union);
         runTest("Where", where);
-        runTest("GroupBy", groupBy);
+        runTest("Zip", zip);
     }
     IQueryableUnitTest.run = run;
     function toArray(instancer) {
@@ -3474,6 +3522,35 @@ var IQueryableUnitTest;
             Test_1.Test.isArrayEqual(grouped.single(function (g) { return g.key === 3; }).value.toArray(), ["Ivan", "Uxue"]);
         });
     }
+    function zip(instancer) {
+        it("Empty zip if empty sources", function () {
+            var numbers = [1, 2, 3];
+            var selector = function (x, y) { return x + y; };
+            Test_1.Test.isArrayEqual(instancer([]).zip([], selector).toArray(), []);
+            Test_1.Test.isArrayEqual(instancer([]).zip(numbers, selector).toArray(), []);
+            Test_1.Test.isArrayEqual(instancer(numbers).zip([], selector).toArray(), []);
+        });
+        it("Simple zipping", function () {
+            var numbers = [1, 2, 3];
+            var words = ["one", "two", "three"];
+            Test_1.Test.isArrayEqual(instancer(numbers).zip(words, function (x, y) { return x + ": " + y; }).toArray(), ["1: one", "2: two", "3: three"]);
+            Test_1.Test.isArrayEqual(instancer(words).zip(numbers, function (x, y) { return x.length + y; }).toArray(), [4, 5, 8]);
+        });
+        it("Zipping of collections with unequal number of elements", function () {
+            var odd = [1, 3, 5, 7, 9];
+            var even = [2, 4, 6];
+            Test_1.Test.isArrayEqual(instancer(odd).zip(even, function (x, y) { return y - x; }).toArray(), [1, 1, 1]);
+            Test_1.Test.isArrayEqual(instancer(even).zip(odd, function (x, y) { return x * y; }).toArray(), [2, 12, 30]);
+        });
+        it("Deferred zipping", function () {
+            var letterList = instancer([]).toList();
+            var numberList = instancer([]).toList();
+            var deferredZipping = letterList.zip(numberList, function (x, y) { return "" + x + y; });
+            letterList.pushRange(["a", "b", "c"]);
+            numberList.pushRange([1, 2, 3]);
+            Test_1.Test.isArrayEqual(deferredZipping.toArray(), ["a1", "b2", "c3"]);
+        });
+    }
 })(IQueryableUnitTest = exports.IQueryableUnitTest || (exports.IQueryableUnitTest = {}));
 
 },{"../../src/Collections":1,"../../src/Enumerables":3,"../../src/Iterators":4,"../Test":6}],12:[function(require,module,exports){
@@ -3501,6 +3578,7 @@ var IteratorUnitTest;
             .where(function (p) { return p !== undefined; }); }); });
         describe(name + " (TakeWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.TakeWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (e) { return true; }); }); });
         describe(name + " (SkipWhileEnumerable)", function () { return test(function (e) { return new Enumerables_1.SkipWhileEnumerable(Enumerables_1.Enumerable.fromSource(e), function (e) { return false; }); }); });
+        describe(name + " (ZippedEnumerable)", function () { return test(function (e) { return new Enumerables_1.ZippedEnumerable(Enumerables_1.Enumerable.fromSource(e), Enumerables_1.Enumerable.fromSource(e), function (x, y) { return x; }); }); });
     }
     function run() {
         runTest("Next", next);

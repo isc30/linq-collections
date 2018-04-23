@@ -6,7 +6,7 @@
 // region IMPORTS
 // tslint:disable-next-line:max-line-length
 
-import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector, Type } from "./Types";
+import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector, ZipSelector, Type } from "./Types";
 import
 {
     ArrayEnumerable,
@@ -23,6 +23,7 @@ import
     ReverseEnumerable,
     TransformEnumerable,
     UniqueEnumerable,
+    ZippedEnumerable,
 } from "./Enumerables";
 import { Comparer, EqualityComparer, strictEqualityComparer, createComparer } from "./Comparers";
 
@@ -423,6 +424,11 @@ export abstract class EnumerableCollection<TElement>
         }
 
         return this.asEnumerable().defaultIfEmpty();
+    }
+
+    public zip<TOther, TSelectorOut>(other: IQueryable<TOther> | TOther[], selector: ZipSelector<TElement, TOther, TSelectorOut>): IEnumerable<TSelectorOut>
+    {
+        return this.asEnumerable().zip(other, selector);
     }
 }
 // endregion

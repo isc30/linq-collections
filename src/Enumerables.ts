@@ -5,7 +5,7 @@
 
 // region IMPORTS
 
-import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector } from "./Types";
+import { Action, Aggregator, Dynamic, Indexer, Predicate, Selector, ZipSelector } from "./Types";
 import { ArrayIterator, IIterable } from "./Iterators";
 import { Comparer, EqualityComparer, strictEqualityComparer, combineComparers, createComparer } from "./Comparers";
 import { Dictionary, IDictionary, IList, List } from "./Collections";
@@ -143,6 +143,8 @@ export interface IQueryable<TOut>
     union(other: IQueryable<TOut>): IEnumerable<TOut>;
 
     where(predicate: Predicate<TOut>): IEnumerable<TOut>;
+
+    zip<TOther, TSelectorOut>(other: IQueryable<TOther> | TOther[], selector: ZipSelector<TOut, TOther, TSelectorOut>): IEnumerable<TSelectorOut>;
 }
 
 export interface IEnumerable<TOut> extends IQueryable<TOut>, IIterable<TOut>
@@ -719,6 +721,15 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     public union(other: IQueryable<TOut>): IEnumerable<TOut>
     {
         return new UniqueEnumerable(this.concat(other));
+    }
+
+    public zip<TOther, TSelectorOut>(other: IQueryable<TOther> | TOther[], selector: ZipSelector<TOut, TOther, TSelectorOut>): IEnumerable<TSelectorOut>
+    {
+        const otherAsEnumerable = other instanceof Array
+            ? new ArrayEnumerable(other)
+            : other.asEnumerable();
+
+        return new ZippedEnumerable<TOut, TOther, TSelectorOut>(this, otherAsEnumerable, selector);
     }
 }
 // endregion
@@ -1544,6 +1555,59 @@ export class DefaultIfEmptyEnumerable<TOut> extends EnumerableBase<TOut, TOut | 
     {
         super.reset();
         this._mustUseDefaultValue = undefined;
+    }
+}
+// endregion
+// region ZippedEnumerable
+export class ZippedEnumerable<TElement, TOther, TOut> extends EnumerableBase<TElement, TOut>
+{
+    private _otherSource: IIterable<TOther>;
+    private _isOneOfTheSourcesFinished: boolean;
+    private _currentValue: Cached<TOut>;
+    private _selector: ZipSelector<TElement, TOther, TOut>;
+
+    public constructor(source: IIterable<TElement>, otherSource: IIterable<TOther>, selector: ZipSelector<TElement, TOther, TOut>)
+    {
+        super(source);
+        this._otherSource = otherSource;
+        this._isOneOfTheSourcesFinished = false;
+        this._currentValue = new Cached<TOut>();
+        this._selector = selector;
+    }
+
+    public copy(): ZippedEnumerable<TElement, TOther, TOut>
+    {
+        return new ZippedEnumerable<TElement, TOther, TOut>(this.source.copy(), this._otherSource.copy(), this._selector);
+    }
+
+    public value(): TOut
+    {
+        if (!this._currentValue.isValid())
+        {
+            this._currentValue.value = this._selector(this.source.value(), this._otherSource.value());
+        }
+
+        return this._currentValue.value;
+    }
+
+    public reset(): void
+    {
+        super.reset();
+        this._otherSource.reset();
+        this._isOneOfTheSourcesFinished = false;
+        this._currentValue.invalidate();
+    }
+
+    public next(): boolean
+    {
+        this._currentValue.invalidate();
+
+        if (!this._isOneOfTheSourcesFinished)
+        {
+            this._isOneOfTheSourcesFinished = !super.next() || !this._otherSource.next();
+        }
+
+        return !this._isOneOfTheSourcesFinished;
     }
 }
 // endregion
