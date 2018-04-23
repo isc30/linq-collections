@@ -80,3 +80,4 @@ Use `nyc mocha` to run the tests and coverage.
 
 ## Hall of fame
 * [@nikolalukovic](https://github.com/nikolalukovic)
+* [@tholdrim](https://github.com/tholdrim)
