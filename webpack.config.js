@@ -28,7 +28,6 @@ function getConfig(mode)
         output: {
             filename: "[name].js",
             libraryTarget: "umd",
-            library: "linqCollection",
         },
     };
 
