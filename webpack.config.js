@@ -1,10 +1,10 @@
-function getConfig(mode, postFix)
+function getConfig(mode)
 {
     var config = {
         mode,
         entry: {
-            "linq-collection": [
-                './src/WebLinq.ts'
+            "linq-collections": [
+                './src/Linq.ts'
             ],
         },
         resolve: {
@@ -26,14 +26,13 @@ function getConfig(mode, postFix)
             ]
         },
         output: {
-            filename: `[name].${postFix}.js`,
+            filename: "[name].js",
+            libraryTarget: "umd",
+            library: "linqCollection",
         },
     };
 
     return config;
 }
 
-module.exports = [
-    getConfig("production", "bundle.min"),
-    getConfig("development", "bundle")
-];
+module.exports = getConfig("production");

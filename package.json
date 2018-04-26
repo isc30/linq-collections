@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/isc30/linq-collections#readme",
   "scripts": {
-    "build-web": "webpack-cli",
+    "build": "webpack-cli",
     "test": "nyc mocha -r ts-node/register ./test/TestSuite.ts",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls"
   },
@@ -88,11 +88,9 @@
   ],
   "nyc": {
     "extension": [
-      ".ts",
-      ".tsx"
+      ".ts"
     ],
     "exclude": [
-      "**/*.test.ts",
       "test/"
     ]
   }
