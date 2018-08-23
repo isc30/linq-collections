@@ -1415,7 +1415,7 @@ export class ArrayEnumerable<TOut> extends Enumerable<TOut>
 {
     protected list: List<TOut>;
 
-    public constructor(source: TOut[])
+    public constructor(source: TOut[] = [])
     {
         super(new ArrayIterator(source));
 
