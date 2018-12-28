@@ -21,7 +21,8 @@ export class ArrayIterator<TElement> implements IterableIterator<TElement>
         return { done, value };
     }
 
-    public iterator(): IterableIterator<TElement> {
+    public iterator(): IterableIterator<TElement>
+    {
         return this;
     }
 }
