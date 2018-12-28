@@ -1,6 +1,45 @@
 {
   "extends": [
-    "tslint-config-standard",
-    "tslint-config-prettier"
-  ]
+    "tslint:latest"
+  ],
+  "rules": {
+    "class-name": true,
+        "comment-format": [true,
+        "check-space"
+    ],
+    "indent": [true, "spaces", 4],
+    "one-line": [true,
+        "check-whitespace"
+    ],
+    "no-var-keyword": true,
+    "quotemark": [true,
+        "double",
+        "avoid-escape"
+    ],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "whitespace": [true,
+        "check-branch",
+        "check-decl",
+        "check-operator",
+        "check-module",
+        "check-separator",
+        "check-type"
+    ],
+    "ordered-imports": true,
+    "variable-name": [ true, "allow-leading-underscore" ],
+    "brace-style": [true, "allman"],
+    "curly": true,
+    "return-undefined": true,
+    "prefer-for-of": false,
+    "no-empty-interface": false,
+    "unified-signatures": false,
+    "newline-before-return": true,
+    "no-null-keyword": true,
+    "prefer-const": true,    
+    "no-switch-case-fall-through": true,
+    "triple-equals": true,
+    "no-any": true,
+    "no-console": true,
+    "radix": true
+  }
 }
