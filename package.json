@@ -1,19 +1,64 @@
 {
   "name": "linq-collections",
-  "version": "0.0.0",
-  "description": "",
-  "keywords": [],
+  "version": "2.0.0",
+  "description": "Linq-Collections (ES5): [IEnumerable, IQueryable, ...] + [List, Dictionary, Stack, ... + readonly]",
+  "keywords": [
+    "linq",
+    ".net",
+    "dotnet",
+    "c#",
+    "csharp",
+    "visualbasic",
+    "collections",
+    "enumerable",
+    "ienumerable",
+    "ts",
+    "typescript",
+    "js",
+    "javascript",
+    "dictionary",
+    "idictionary",
+    "list",
+    "ilist",
+    "container",
+    "hashset",
+    "objects",
+    "csharp",
+    "map",
+    "iterator",
+    "iterators",
+    "array",
+    "readonly",
+    "read-only",
+    "readonlyList",
+    "readonlydictionary",
+    "mobile",
+    "compatible",
+    "es5",
+    "ecmascript5",
+    "es6"
+  ],
   "main": "dist/linq-collections.umd.js",
   "module": "dist/linq-collections.es5.js",
   "typings": "dist/types/linq-collections.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
-  "author": " <>",
+  "author": {
+    "name": "Ivan Sanz",
+    "email": "ivansanzcarasa@gmail.com",
+    "url": "https://github.com/isc30"
+  },
+  "bugs": {
+    "url": "https://github.com/isc30/linq-collections/issues"
+  },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/isc30/linq-collections"
   },
+  "homepage": "https://github.com/isc30/linq-collections#readme",
   "license": "MIT",
   "engines": {
     "node": ">=6.0.0"
