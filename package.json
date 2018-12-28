@@ -1,95 +1,121 @@
 {
   "name": "linq-collections",
-  "version": "1.0.254",
-  "description": "Linq-Collections (ES5): [IEnumerable, IQueryable, ...] + [List, Dictionary, Stack, ... + readonly]",
-  "main": "./build/src/Linq.js",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "dist/linq-collections.umd.js",
+  "module": "dist/linq-collections.es5.js",
+  "typings": "dist/types/linq-collections.d.ts",
   "files": [
-    "build/src",
-    "README.md",
-    "LICENSE"
+    "dist"
   ],
-  "typescript": {
-    "definition": "./build/src/Linq.d.ts"
-  },
-  "typings": "./build/src/Linq.d.ts",
-  "types": "./build/src/Linq.d.ts",
-  "author": {
-    "name": "Ivan Sanz",
-    "email": "ivansanzcarasa@gmail.com",
-    "url": "https://github.com/isc30"
-  },
-  "bugs": {
-    "url": "https://github.com/isc30/linq-collections/issues"
-  },
+  "author": " <>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/isc30/linq-collections"
-  },
-  "homepage": "https://github.com/isc30/linq-collections#readme",
-  "scripts": {
-    "node-compile": "tsc",
-    "web-tests-compile": "browserify ./test/TestSuite.ts -p [tsify] > linq-tests.web.js",
-    "pretest": "npm run node-compile && npm run web-tests-compile",
-    "test": "nyc mocha ./build/test/TestSuite.js --slow 0",
-    "report-coverage": "nyc report --reporter=text-lcov | coveralls",
-    "publish-node": "npm run node-compile",
-    "publish-web": "browserify ./src/Linq.ts -p [tsify] > ./build/src/linq.web.js",
-    "prepublish": "npm run node-compile"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "typescript": "*",
-    "@types/mocha": "*",
-    "mocha": "*",
-    "coveralls": "*",
-    "nyc": "*",
-    "browserify": "*",
-    "tsify": "*"
-  },
-  "directories": {
-    "test": "test",
-    "lib": "src"
+    "url": ""
   },
   "license": "MIT",
-  "keywords": [
-    "linq",
-    ".net",
-    "dotnet",
-    "c#",
-    "csharp",
-    "visualbasic",
-    "collections",
-    "enumerable",
-    "ienumerable",
-    "ts",
-    "typescript",
-    "js",
-    "javascript",
-    "dictionary",
-    "idictionary",
-    "list",
-    "ilist",
-    "container",
-    "hashset",
-    "objects",
-    "csharp",
-    "map",
-    "iterator",
-    "iterators",
-    "array",
-    "readonly",
-    "read-only",
-    "readonlyList",
-    "readonlydictionary",
-    "mobile",
-    "compatible",
-    "es5",
-    "ecmascript5",
-    "es6"
-  ],
-  "nyc": {
-    "exclude": [
-      "build/test"
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "prebuild": "rimraf dist",
+    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "start": "rollup -c rollup.config.ts -w",
+    "test": "jest --coverage",
+    "test:watch": "jest --coverage --watch",
+    "test:prod": "npm run lint && npm run test -- --no-cache",
+    "deploy-docs": "ts-node tools/gh-pages-publish",
+    "report-coverage": "cat ./coverage/lcov.info | coveralls",
+    "commit": "git-cz",
+    "semantic-release": "semantic-release",
+    "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
+    "precommit": "lint-staged",
+    "travis-deploy-once": "travis-deploy-once"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.ts": [
+      "prettier --write",
+      "git add"
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testEnvironment": "node",
+    "testRegex": "(/__tests__/.*|\\.(test))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "src/linq-collections.(ts|tsx|js)",
+      "index.(ts|tsx|js)",
+      "/node_modules/",
+      "/test/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{js,tsx,ts}"
+    ]
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": false
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^7.1.2",
+    "@commitlint/config-conventional": "^7.1.2",
+    "@types/jest": "^23.3.2",
+    "@types/node": "^10.11.0",
+    "colors": "^1.3.2",
+    "commitizen": "^3.0.0",
+    "coveralls": "^3.0.2",
+    "cross-env": "^5.2.0",
+    "cz-conventional-changelog": "^2.1.0",
+    "husky": "^1.0.1",
+    "jest": "^23.6.0",
+    "jest-config": "^23.6.0",
+    "lint-staged": "^8.0.0",
+    "lodash.camelcase": "^4.3.0",
+    "prettier": "^1.14.3",
+    "prompt": "^1.0.0",
+    "replace-in-file": "^3.4.2",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.67.0",
+    "rollup-plugin-commonjs": "^9.1.8",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-typescript2": "^0.18.0",
+    "semantic-release": "^15.9.16",
+    "ts-jest": "^23.10.2",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-config-standard": "^8.0.1",
+    "typedoc": "^0.12.0",
+    "typescript": "^3.0.3",
+    "travis-deploy-once": "^5.0.9"
   }
 }
