@@ -26,6 +26,7 @@
         "check-type"
     ],
     "ordered-imports": true,
+    "object-literal-sort-keys": false,
     "variable-name": [ true, "allow-leading-underscore" ],
     "brace-style": [true, "allman"],
     "curly": true,
