@@ -1,5 +1,3 @@
-/* tslint:disable no-any */
-
 export interface IteratorResult<T>
 {
     done: boolean;

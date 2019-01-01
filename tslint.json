@@ -26,6 +26,8 @@
         "check-separator",
         "check-type"
     ],
+    "interface-name": false,
+    "arrow-parens": false,
     "no-internal-module": true,
     "no-namespace": false,
     "ordered-imports": true,

@@ -1,13 +1,17 @@
+import { ArrayEnumerable } from ".";
+import { Predicate } from "../Core";
 import { Iterable } from "../Iterators";
-import { ArrayEnumerable } from "./ArrayEnumerable";
 
-export interface IEnumerable<TOut> extends /*IQueryable<TOut>,*/ Iterable<TOut>
+export interface Enumerable<TOut> extends Iterable<TOut>
 {
+    where(predicate: Predicate<TOut>): Enumerable<TOut>;
+
+    toArray(): TOut[];
 }
 
 export namespace Enumerable
 {
-    export function fromSource<T>(source: T[] | Iterable<T>): IEnumerable<T>
+    export function fromSource<T>(source: T[] | Iterable<T>): Enumerable<T>
     {
         if (Array.isArray(source))
         {

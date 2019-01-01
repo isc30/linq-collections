@@ -1,2 +1,3 @@
 export * from "./ES6";
-export { ArrayIterator } from "./ArrayIterator";
+export * from "./ArrayIterator";
+export * from "./WhereIterator";
