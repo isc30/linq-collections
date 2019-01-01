@@ -26,6 +26,8 @@
         "check-separator",
         "check-type"
     ],
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
     "interface-name": false,
     "arrow-parens": false,
     "no-internal-module": true,

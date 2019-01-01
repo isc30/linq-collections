@@ -1,4 +1,4 @@
-import { Predicate } from "../Core";
+import { Predicate } from "@lib/Core";
 import { IteratorBase } from "./IteratorBase";
 
 export class WhereIterator<T> extends IteratorBase<T>

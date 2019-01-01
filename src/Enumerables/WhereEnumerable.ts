@@ -1,6 +1,6 @@
+import { Predicate } from "@lib/Core";
+import { Iterator, WhereIterator } from "@lib/Iterators";
 import { Enumerable } from ".";
-import { Predicate } from "../Core";
-import { Iterator, WhereIterator } from "../Iterators";
 import { EnumerableBase } from "./EnumerableBase";
 
 export class WhereEnumerable<T> extends EnumerableBase<T, T>

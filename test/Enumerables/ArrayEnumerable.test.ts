@@ -1,4 +1,4 @@
-import { ArrayEnumerable } from "../../src/Enumerables";
+import { ArrayEnumerable } from "@lib/Enumerables";
 import { runIterableTests } from "../Iterators/Iterable.spec";
 
 runIterableTests(<T>(elements: T[]) => new ArrayEnumerable<T>(elements));

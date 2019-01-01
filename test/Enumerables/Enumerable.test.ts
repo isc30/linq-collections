@@ -1,4 +1,4 @@
-import { ArrayEnumerable, Enumerable } from "../../src/Enumerables";
+import { ArrayEnumerable, Enumerable } from "@lib/Enumerables";
 
 it("XD", () =>
 {
