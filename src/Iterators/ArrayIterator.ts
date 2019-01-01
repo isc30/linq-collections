@@ -15,14 +15,19 @@ export class ArrayIterator<TElement> implements IterableIterator<TElement>
     {
         ++this._index;
 
-        const done = this._index >= this._source.length;
-        const value = this._source[this._index];
-
-        return { done, value };
+        return {
+            done: this._index >= this._source.length,
+            value: this._source[this._index],
+        };
     }
 
     public iterator(): IterableIterator<TElement>
     {
         return this;
+    }
+
+    public [Symbol.iterator](): IterableIterator<TElement>
+    {
+        return this.iterator();
     }
 }

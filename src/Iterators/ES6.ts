@@ -1,3 +1,5 @@
+/* tslint:disable no-any */
+
 export interface IteratorResult<T>
 {
     done: boolean;
@@ -11,12 +13,12 @@ export interface Iterator<T>
 
 export interface Iterable<T>
 {
-    // [Symbol.iterator](): Iterator<T>;
+    [Symbol.iterator](): Iterator<T>;
     iterator(): Iterator<T>;
 }
 
 export interface IterableIterator<T> extends Iterator<T>
 {
-    // [Symbol.iterator](): IterableIterator<T>;
+    [Symbol.iterator](): IterableIterator<T>;
     iterator(): IterableIterator<T>;
 }

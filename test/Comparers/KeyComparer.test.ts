@@ -26,7 +26,7 @@ test.each([true, false])(
     },
 );
 
-it("OrderedComparer compares keys, not values", () =>
+it("KeyEqualityComparer compares keys, not values", () =>
 {
     const comparer = defaultEqualityComparer;
     const keyEqualityComparer = createKeyEqualityComparer<{ fullName: string }, string>(

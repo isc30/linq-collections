@@ -2,7 +2,7 @@ import { IterableIterator, Iterator } from "../../src/Iterators";
 
 type Instancer = <T>(elements: T[]) => Iterator<T>;
 
-export function run(instancer: Instancer): void
+export function runIteratorTests(instancer: Instancer): void
 {
     runTest("Next", instancer, next);
     runTest("Value", instancer, value);
@@ -88,10 +88,11 @@ function value(instancer: Instancer): void
 
 function es6(instancer: Instancer): void
 {
-    it("Implements [Symbol.Iterator]", () =>
+    it("Implements [Symbol.iterator]", () =>
     {
         const it = instancer([1, 2, 3]) as IterableIterator<number>;
 
         expect(it.iterator()).toBe(it);
+        expect(it[Symbol.iterator]()).toBe(it);
     });
 }

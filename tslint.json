@@ -26,6 +26,8 @@
         "check-separator",
         "check-type"
     ],
+    "no-internal-module": true,
+    "no-namespace": false,
     "ordered-imports": true,
     "object-literal-sort-keys": false,
     "variable-name": [ true, "allow-leading-underscore" ],
