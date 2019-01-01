@@ -88,21 +88,26 @@ function independence(
         expect(it1.next().done).toBe(true);
     });
 
-    /*it("Cloned iterator is identical to original", () =>
+    it("Every iterator is identical", () =>
     {
-        const original = instancer([2, 4, 6]);
-        const cloned = original.copy();
+        const data = [2, 4, 6, 8, 10];
+        const instance = instancer(data);
 
-        Test.isTrue(original.next()); Test.isEqual(original.value(), 2);
-        Test.isTrue(cloned.next()); Test.isEqual(cloned.value(), 2);
+        const it0 = iteratorSelector(instance);
+        const it1 = iteratorSelector(instance);
 
-        Test.isTrue(original.next()); Test.isEqual(original.value(), 4);
-        Test.isTrue(cloned.next()); Test.isEqual(cloned.value(), 4);
+        for (let i = 0; i <= data.length; ++i)
+        {
+            const next0 = it0.next();
+            const next1 = it1.next();
 
-        Test.isTrue(original.next()); Test.isEqual(original.value(), 6);
-        Test.isTrue(cloned.next()); Test.isEqual(cloned.value(), 6);
+            expect(next0.done).toBe(next1.done);
 
-        Test.isFalse(original.next());
-        Test.isFalse(cloned.next());
-    });*/
+            if (next0.done)
+            {
+                expect(next0.value).toBe(data[i]);
+                expect(next0.value).toBe(next1.value);
+            }
+        }
+    });
 }
