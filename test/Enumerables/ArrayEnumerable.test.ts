@@ -6,7 +6,10 @@ runIterableTests(<T>(elements: T[]) => new ArrayEnumerable<T>(elements));
 // TODO: remove
 it("where + toarray", () =>
 {
-    const arr = new ArrayEnumerable([123, 234, 5]).where(i => i < 200).toArray();
+    const arr = new ArrayEnumerable([-5, 123, 234, 5, 155])
+        .where(i => i < 200)
+        .where(i => i > 100)
+        .toArray();
 
-    expect(arr).toEqual([123, 5]);
+    expect(arr).toEqual([123, 155]);
 });
