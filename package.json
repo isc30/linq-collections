@@ -81,7 +81,7 @@
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
-      "tslint --fix",
+      "tslint -p .",
       "git add"
     ]
   },
