@@ -3,20 +3,26 @@ import { IteratorBase } from "./IteratorBase";
 
 export class WhereIterator<T> extends IteratorBase<T>
 {
+    private readonly _source: Iterator<T>;
+    private readonly _predicate: Predicate<T>;
+
     public constructor(
-        protected source: Iterator<T>,
-        protected predicate: Predicate<T>)
+        source: Iterator<T>,
+        predicate: Predicate<T>)
     {
         super();
+
+        this._source = source;
+        this._predicate = predicate;
     }
 
     public next(): IteratorResult<T>
     {
-        let next = this.source.next();
+        let next = this._source.next();
 
-        while (!next.done && !this.predicate(next.value))
+        while (!next.done && !this._predicate(next.value))
         {
-            next = this.source.next();
+            next = this._source.next();
         }
 
         return next;

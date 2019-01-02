@@ -1,12 +1,14 @@
-import { IterableIterator, IteratorResult } from "./ES6";
+import { IteratorResult } from "./ES6";
 import { IteratorBase } from "./IteratorBase";
+import { doneResult, valueResult } from "./IteratorHelper";
 
 export class ArrayIterator<T> extends IteratorBase<T>
 {
     private readonly _source: T[];
     private _index: number;
 
-    public constructor(source: T[])
+    public constructor(
+        source: T[])
     {
         super();
 
@@ -18,9 +20,11 @@ export class ArrayIterator<T> extends IteratorBase<T>
     {
         ++this._index;
 
-        return {
-            done: this._index >= this._source.length,
-            value: this._source[this._index],
-        };
+        if (this._index >= this._source.length)
+        {
+            return doneResult();
+        }
+
+        return valueResult(this._source[this._index]);
     }
 }

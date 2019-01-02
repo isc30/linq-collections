@@ -1,12 +1,15 @@
+import { Predicate, Selector } from "@lib/Core";
+import { Iterable } from "@lib/Iterators";
 import { ArrayEnumerable } from ".";
-import { Predicate } from "../Core";
-import { Iterable } from "../Iterators";
+import { IterableEnumerable } from "./IterableEnumerable";
 
-export interface Enumerable<TOut> extends Iterable<TOut>
+export interface Enumerable<T> extends Iterable<T>
 {
-    where(predicate: Predicate<TOut>): Enumerable<TOut>;
+    where(predicate: Predicate<T>): Enumerable<T>;
 
-    toArray(): TOut[];
+    select<TOut>(selector: Selector<T, TOut>): Enumerable<TOut>;
+
+    toArray(): T[];
 }
 
 export namespace Enumerable
@@ -18,7 +21,6 @@ export namespace Enumerable
             return new ArrayEnumerable<T>(source);
         }
 
-        throw new Error("asd");
-        // return new Enumerable<T>(source);
+        return new IterableEnumerable<T>(source);
     }
 }

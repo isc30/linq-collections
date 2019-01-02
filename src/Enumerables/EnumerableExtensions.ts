@@ -1,12 +1,21 @@
 import { Enumerable, WhereEnumerable } from ".";
-import { Selector } from "../Core";
+import { Predicate, Selector } from "../Core";
+import { SelectEnumerable } from "./SelectEnumerable";
 
 export function where<T>(
     source: Enumerable<T>,
-    predicate: Selector<T, boolean>,
+    predicate: Predicate<T>,
 ): Enumerable<T>
 {
     return new WhereEnumerable(source, predicate);
+}
+
+export function select<TIn, TOut>(
+    source: Enumerable<TIn>,
+    selector: Selector<TIn, TOut>,
+): Enumerable<TOut>
+{
+    return new SelectEnumerable(source, selector);
 }
 
 export function toArray<T>(source: Enumerable<T>): T[]

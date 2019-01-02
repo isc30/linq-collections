@@ -1,7 +1,7 @@
 import { ArrayIterator, Iterator } from "../Iterators";
 import { EnumerableBase } from "./EnumerableBase";
 
-export class ArrayEnumerable<T> extends EnumerableBase<T, T>
+export class ArrayEnumerable<T> extends EnumerableBase<T>
 {
     public constructor(
         protected source: T[])
