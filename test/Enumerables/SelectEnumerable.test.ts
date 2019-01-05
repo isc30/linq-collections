@@ -1,3 +1,4 @@
+/*
 import { ArrayEnumerable, SelectEnumerable } from "@lib/Enumerables";
 import { runIterableTests } from "../Iterators/Iterable.spec";
 import { runEnumerableTests } from "./Enumerable.spec";
@@ -9,3 +10,4 @@ const instancer = <T>(elements: T[]) => new SelectEnumerable(
 
 runIterableTests(instancer);
 runEnumerableTests(instancer);
+*/

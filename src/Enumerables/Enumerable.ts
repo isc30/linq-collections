@@ -1,15 +1,18 @@
 import { Predicate, Selector } from "@lib/Core";
 import { Iterable } from "@lib/Iterators";
-import { ArrayEnumerable } from ".";
-import { IterableEnumerable } from "./IterableEnumerable";
+import { arrayEnumerable } from "./ArrayEnumerable";
+import { EnumerableBase } from "./EnumerableBase";
+import { WhereExtension } from "./WhereExtension";
 
-export interface Enumerable<T> extends Iterable<T>
+export interface Queryable<T> extends WhereExtension<T>
 {
-    where(predicate: Predicate<T>): Enumerable<T>;
-
     select<TOut>(selector: Selector<T, TOut>): Enumerable<TOut>;
 
     toArray(): T[];
+}
+
+export interface Enumerable<T> extends Queryable<T>, Iterable<T>
+{
 }
 
 export namespace Enumerable
@@ -18,9 +21,9 @@ export namespace Enumerable
     {
         if (Array.isArray(source))
         {
-            return new ArrayEnumerable<T>(source);
+            return arrayEnumerable(source);
         }
 
-        return new IterableEnumerable<T>(source);
+        return new EnumerableBase(() => source.iterator());
     }
 }

@@ -1,4 +1,4 @@
-import { ArrayEnumerable, Enumerable } from "@lib/Enumerables";
+import { arrayEnumerable, Enumerable } from "@lib/Enumerables";
 
 it("fromSource (array)", () =>
 {
@@ -11,7 +11,7 @@ it("fromSource (array)", () =>
 it("fromSource (iterable)", () =>
 {
     const data = [1, 2, 3];
-    const source = new ArrayEnumerable(data);
+    const source = arrayEnumerable(data);
     const enumerable = Enumerable.fromSource(source);
 
     expect(enumerable.toArray()).toEqual(data);

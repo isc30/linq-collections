@@ -24,7 +24,9 @@
     ]
   },
   "include": [
-    "src",
+    "src"
+  ],
+  "exclude": [
     "test"
   ]
 }

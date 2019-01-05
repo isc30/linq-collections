@@ -1,16 +1,4 @@
-import { ArrayIterator, Iterator } from "../Iterators";
+import { ArrayIterator } from "@lib/Iterators";
 import { EnumerableBase } from "./EnumerableBase";
 
-export class ArrayEnumerable<T> extends EnumerableBase<T>
-{
-    public constructor(
-        protected source: T[])
-    {
-        super();
-    }
-
-    public iterator(): Iterator<T>
-    {
-        return new ArrayIterator<T>(this.source);
-    }
-}
+export const arrayEnumerable = <T>(source: T[]) => new EnumerableBase(() => new ArrayIterator(source));
