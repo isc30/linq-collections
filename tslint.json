@@ -1,97 +1,54 @@
 {
-    "extends": [
-        "tslint:latest"
+  "extends": [
+    "tslint:latest",
+    "tslint-eslint-rules"
+  ],
+  "rules": {
+    "class-name": true,
+        "comment-format": [true,
+        "check-space"
     ],
-    "rules": {
-        "class-name": true,
-            "comment-format": [true,
-            "check-space"
-        ],
-        "indent": [true,
-            "spaces"
-        ],
-        "linebreak-style": [true, "CRLF"],
-        "one-line": [true,
-            "check-whitespace"
-        ],
-        "no-var-keyword": true,
-        "quotemark": [true,
-            "double",
-            "avoid-escape"
-        ],
-        "semicolon": [true, "always", "ignore-bound-class-methods"],
-        "whitespace": [true,
-            "check-branch",
-            "check-decl",
-            "check-operator",
-            "check-module",
-            "check-separator",
-            "check-type"
-        ],
-        "typedef-whitespace": [
-            true,
-            {
-                //"call-signature": "nospace",
-                "index-signature": "nospace",
-                "parameter": "nospace",
-                "property-declaration": "nospace",
-                "variable-declaration": "nospace"
-            },
-            {
-                "call-signature": "onespace",
-                "index-signature": "onespace",
-                "parameter": "onespace",
-                "property-declaration": "onespace",
-                "variable-declaration": "onespace"
-            }
-        ],
-        "next-line": [true,
-            "check-catch",
-            "check-else",
-            "check-open-brace"
-        ],
-        "return-undefined": true,
-        "prefer-for-of": false, // performance vs readability
-        "no-empty-interface": false,
-        "unified-signatures": false,
-        "newline-before-return": true,
-        "no-parameter-properties": true,
-        "no-unused-variable": true,
-        "no-internal-module": true,
-        "no-trailing-whitespace": true,
-        "object-literal-sort-keys": false,
-        "no-null-keyword": true,
-        "boolean-trivia": true,
-        "type-operator-spacing": true,
-        "prefer-const": true,
-        "no-increment-decrement": true,
-        "object-literal-surrounding-space": true,
-        "no-type-assertion-whitespace": true,
-        "no-in-operator": true,
-        "no-switch-case-fall-through": true,
-        "triple-equals": true,
-        "jsdoc-format": true,
-        "no-unused-expression": true,
-        "no-unused-new": true,
-        "no-unreachable": true,
-        "arrow-parens": false,
-        "max-classes-per-file": [
-            false
-        ],
-        "variable-name": [ true, "allow-leading-underscore" ],
-        "member-ordering": [
-            false
-        ],
-        "no-namespace": [
-            false
-        ],
-        "no-any": false,
-        "no-console": [
-            false
-        ],
-        "radix": false,
-        "no-bitwise": false,
-        "no-reference": false,
-        "ordered-imports": false
-    }
+    "indent": [true, "spaces", 4],
+    "one-line": [true,
+        "check-whitespace"
+    ],
+    "no-var-keyword": true,
+    "quotemark": [true,
+        "double",
+        "avoid-escape"
+    ],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "whitespace": [true,
+        "check-branch",
+        "check-decl",
+        "check-operator",
+        "check-module",
+        "check-separator",
+        "check-type"
+    ],
+    "member-access": true,
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
+    "interface-name": false,
+    "arrow-parens": false,
+    "no-internal-module": true,
+    "no-namespace": false,
+    "ordered-imports": true,
+    "object-literal-sort-keys": false,
+    "variable-name": [ true, "allow-leading-underscore" ],
+    "brace-style": [true, "allman"],
+    "curly": true,
+    "return-undefined": true,
+    "prefer-for-of": false,
+    "no-empty-interface": false,
+    "unified-signatures": false,
+    "newline-before-return": true,
+    "no-null-keyword": true,
+    "prefer-const": true,    
+    "no-switch-case-fall-through": true,
+    "triple-equals": true,
+    "no-any": true,
+    "no-console": true,
+    "radix": true
+  }
 }

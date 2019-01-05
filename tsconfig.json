@@ -1,31 +1,32 @@
 {
-    "compileOnSave": true,
-    "compilerOptions":
-    {
-        "target": "es5",
-        "module": "commonjs",
-        "lib": ["esnext"],
-        "declaration": true,
-        "alwaysStrict": true,
-        "allowSyntheticDefaultImports": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "removeComments": false,
-        "sourceMap": true,
-        "strict": true,
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "strictNullChecks": true,
-        "allowUnreachableCode": false,
-        "strictFunctionTypes": true,
-        "types": ["mocha"],
-        "outDir": "build",
-        "strictPropertyInitialization": false
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es5",
+    "module":"es2015",
+    "lib": ["es5", "es2015.iterable", "dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["src/*"]
     },
-    "exclude": [
-        "node_modules",
-        "!node_modules/@types",
-        "build"
+    "strict": true,
+    "sourceMap": true,
+    "declaration": true,
+    "allowJs": false,
+    "strictFunctionTypes": true,
+    "downlevelIteration": false,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declarationDir": "dist/types",
+    "outDir": "dist/lib",
+    "typeRoots": [
+      "node_modules/@types"
     ]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "test"
+  ]
 }
