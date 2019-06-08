@@ -243,10 +243,10 @@ export namespace IQueryableUnitTest
         it("Custom return type", () =>
         {
             const base = instancer(["a", "b", "a", "a"]);
-            Test.isTrue(base.aggregate((p, c) => p || c === "b", false));
-            Test.isTrue(base.aggregate((p, c) => p || c === "a", false));
-            Test.isFalse(base.aggregate((p, c) => p || c === "x", false));
-            Test.isTrue(base.aggregate((p, c) => p || c === "x", true));
+            Test.isTrue(base.aggregate<boolean>((p, c) => p || c === "b", false));
+            Test.isTrue(base.aggregate<boolean>((p, c) => p || c === "a", false));
+            Test.isFalse(base.aggregate<boolean>((p, c) => p || c === "x", false));
+            Test.isTrue(base.aggregate<boolean>((p, c) => p || c === "x", true));
         });
     }
 
