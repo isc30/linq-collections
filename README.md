@@ -50,7 +50,7 @@ Interfaces for this library are already designed. New versions won't break any o
 We strongly recommend using `*` for version selector
 ```json
 dependencies {
-    "linq-collections": "*"
+    "linq-collections": "1.*"
 }
 ```
 
