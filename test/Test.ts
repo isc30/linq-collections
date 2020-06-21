@@ -1,10 +1,15 @@
 export namespace Test
 {
+    export function fail(): void
+    {
+        throw new Error("Assertion failed")
+    }
+
     export function isTrue(result: boolean): void
     {
         if (result !== true)
         {
-            throw new Error("Assertion failed");
+            fail();
         }
     }
 

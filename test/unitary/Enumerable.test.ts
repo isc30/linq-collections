@@ -6,10 +6,60 @@ export namespace EnumerableUnitTest
 {
     export function run(): void
     {
+        describe("ForOf", forOf);
         it("FromSource", fromSource);
         it("Empty", empty);
         describe("Range", range);
         it("Repeat", repeat);
+    }
+
+    function forOf(): void
+    {
+        it("Empty enumerable forOf works", () => {
+            const e = Enumerable.fromSource([]);
+            for (const item of e) {
+                Test.fail();
+            }
+        });
+
+        it("Enumerable forOf works", () => {
+            const e = Enumerable.fromSource([2, 4, 6]);
+
+            const array = [];
+            for (const item of e) {
+                array.push(item);
+            }
+
+            Test.isArrayEqual([2, 4, 6], array);
+        });
+
+        it("Enumerable where forOf works", () => {
+            const e = Enumerable.fromSource([2, 4, 6]).where(x => x < 5);
+
+            const array = [];
+            for (const item of e) {
+                array.push(item);
+            }
+
+            Test.isArrayEqual([2, 4], array);
+        });
+
+        it("Enumerable multiple enumerations forOf works", () => {
+            const e = Enumerable.fromSource([2, 4, 6]).where(x => x < 5);
+
+            const array = [];
+            for (const item of e) {
+                array.push(item);
+            }
+
+            const array2 = [];
+            for (const item of e) {
+                array2.push(item);
+            }
+
+            Test.isArrayEqual([2, 4], array);
+            Test.isArrayEqual([2, 4], array2);
+        });
     }
 
     function fromSource(): void
