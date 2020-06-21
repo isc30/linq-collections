@@ -5,6 +5,7 @@ export namespace ListUnitTest
 {
     export function run(): void
     {
+        describe("ForOf", forOf);
         describe("AsArray", asArray);
         describe("AsReadOnly", asReadOnly);
         describe("Copy", copy);
@@ -20,6 +21,27 @@ export namespace ListUnitTest
         describe("Set", set);
         describe("IndexOf", indexOf);
         describe("Insert", insert);
+    }
+
+    function forOf(): void
+    {
+        it("Empty list forOf works", () => {
+            const e = new List([]);
+            for (const item of e) {
+                Test.fail();
+            }
+        });
+
+        it("List forOf works", () => {
+            const e = new List([2, 4, 6]);
+
+            const array = [];
+            for (const item of e) {
+                array.push(item);
+            }
+
+            Test.isArrayEqual([2, 4, 6], array);
+        });
     }
 
     function asArray(): void
