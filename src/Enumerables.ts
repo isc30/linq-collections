@@ -181,16 +181,10 @@ export abstract class EnumerableBase<TElement, TOut> implements IEnumerable<TOut
     public abstract copy(): IEnumerable<TOut>;
     public abstract value(): TOut;
 
-    [Symbol.iterator](): Iterator<TOut> {
+    *[Symbol.iterator](): Iterator<TOut> {
         const iterator = this.copy();
-        return {
-            next(): IteratorResult<TOut> {
-                const next = iterator.next();
-                return {
-                    done: !next,
-                    value: next ? iterator.value() : <any>null
-                };
-            }
+        while (iterator.next()) {
+            yield iterator.value();
         }
     }
 
