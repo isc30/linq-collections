@@ -39,6 +39,10 @@ export abstract class EnumerableCollection<TElement>
     public abstract asEnumerable(): IEnumerable<TElement>;
     public abstract toArray(): TElement[];
 
+    [Symbol.iterator](): Iterator<TElement> {
+        return this.asEnumerable()[Symbol.iterator]();
+    }
+
     public toList(): IList<TElement>
     {
         return new List<TElement>(this.toArray());

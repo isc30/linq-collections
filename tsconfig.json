@@ -21,7 +21,8 @@
         "strictFunctionTypes": true,
         "types": ["mocha"],
         "outDir": "build",
-        "strictPropertyInitialization": false
+        "strictPropertyInitialization": false,
+        "downlevelIteration": true
     },
     "exclude": [
         "node_modules",
