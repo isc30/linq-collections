@@ -1,3 +1,14 @@
+## Fork Info
+
+This is fork of [linq-collections](https://github.com/isc30/linq-collections) library by [isc30](https://github.com/isc30). Only support for ES6 iterators were added. It allows direct usage of `ForOf`. Example:
+
+```
+const list = new List([1, 2, 3]);
+for (const item of list) {
+    console.log(item);
+}
+```
+
 # Linq-Collections: (IEnumerable, ...) + (List, Dictionary, ...)
 
 [![npm version](https://img.shields.io/npm/v/linq-collections.svg)](https://npmjs.org/package/linq-collections)

@@ -1,7 +1,7 @@
 {
-  "name": "linq-collections",
+  "name": "linq-collections-es6",
   "version": "1.0.255",
-  "description": "Linq-Collections (ES5): [IEnumerable, IQueryable, ...] + [List, Dictionary, Stack, ... + readonly]",
+  "description": "Linq-Collections (ES6): [IEnumerable, IQueryable, ...] + [List, Dictionary, Stack, ... + readonly]. Compatible with ES6 iterators.",
   "main": "./build/src/Linq.js",
   "files": [
     "build/src",
@@ -14,18 +14,15 @@
   "typings": "./build/src/Linq.d.ts",
   "types": "./build/src/Linq.d.ts",
   "author": {
-    "name": "Ivan Sanz",
-    "email": "ivansanzcarasa@gmail.com",
-    "url": "https://github.com/isc30"
-  },
-  "bugs": {
-    "url": "https://github.com/isc30/linq-collections/issues"
+    "name": "Martin Volek",
+    "email": "martin@vdolek.cz",
+    "url": "https://github.com/vdolek"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/isc30/linq-collections"
+    "url": "https://github.com/vdolek/linq-collections-es6"
   },
-  "homepage": "https://github.com/isc30/linq-collections#readme",
+  "homepage": "https://github.com/vdolek/linq-collections-es6#readme",
   "scripts": {
     "node-compile": "tsc",
     "web-tests-compile": "browserify ./test/TestSuite.ts -p [tsify] > linq-tests.web.js",
