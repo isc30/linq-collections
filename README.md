@@ -12,12 +12,12 @@
 Strongly typed *Linq* implementation for *Javascript* and *TypeScript* (*ES5*, *ES6*, +)<br />
 Includes collections (+ readonly versions): List, Dictionary, Stack, ...
 
-## ![](https://placehold.it/15/f03c15/000000?text=+) Under active development
+## Current Stable Version
 https://github.com/isc30/linq-collections<br/>
-This project is activelly being developed and improved by Ivan Sanz (isc30)<br />
+This project was developed by Ivan Sanz (isc30)<br />
 
-Please expect some missing features until it's finished. [Development status and missing features list](https://github.com/isc30/linq-collections/projects/1)<br/>
-If you want to contribute, open an issue explaining your feature and I will be happy to accept pull requests :D
+The project is already finished, yet some features are missing. If you want to contribute with any of these, please check the [Development status and missing features list](https://github.com/isc30/linq-collections/projects/1)<br/>
+I will be happy to accept pull requests :D
 
 [![](https://img.shields.io/badge/click-run%20browser%20tests-orange.svg)](https://isc30.github.io/linq-collections/mocha)
 
